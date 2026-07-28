@@ -174,17 +174,28 @@ never from an object graph that might be partially loaded.
 - `value < 4` remains the universal "failing" threshold for red/warning
   styling on grades and averages (Swiss convention: 4 = passing).
 
-### 3.5 Search
+### 3.5 Search & filtering
 
-The old app's search grammar (institution split via ` | `, completion-state
-suffix like `(ip)`/`(c)`, numeric year/semester/value matching, `"name
-4"` → name + exact semester) is genuinely useful and worth keeping in
-spirit — but implement it by **filtering in Swift over fetched results
-(`localizedCaseInsensitiveContains`, etc.) rather than SQL `LIKE`**. This is
-a real improvement, not just a port: it fixes the old app's documented
-limitation where accented characters (ü, ö, ä) weren't case-insensitive,
-since SQLite's `NOCASE` collation is ASCII-only but Swift's string
-comparison is Unicode-aware. Same feature, no known bug carried forward.
+Search and filtering are separate, deliberately simple mechanisms — not a
+combined query grammar.
+
+**Search** (all list screens): plain substring match via
+`localizedCaseInsensitiveContains` against name + description, and (for
+Subjects/Grades) the parent entity's name. No embedded syntax, no numeric
+or completion-state parsing inside the search text. Filtering in Swift
+rather than SQL `LIKE` also means accented characters are matched
+correctly and case-insensitively, unlike SQLite's ASCII-only `NOCASE`.
+
+**Filter controls** (separate UI element, not part of the search field):
+- Educations, Subjects: completion state (All / In Progress / Completed),
+  institution (picker of distinct values present in current data)
+- Subjects: semester (bounded numeric filter, same pattern as the Home
+  screen's existing semester filter)
+- Grades: a "failing only" (<4) quick toggle
+
+No institution-suffix search syntax, no `(ip)`/`(c)` text suffixes, no
+trailing-integer semester/value parsing inside search text — all of that
+functionality is covered by the dedicated filter controls instead.
 
 ### 3.6 Sorting — standardize instead of porting inconsistencies
 
