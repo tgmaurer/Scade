@@ -13,7 +13,7 @@ struct SectionDetailView: View {
         case .home:
             ComingSoonScreen(section: section)
         case .educations:
-            ComingSoonScreen(section: section)
+            EducationListScreen()
         case .subjects:
             ComingSoonScreen(section: section)
         case .grades:

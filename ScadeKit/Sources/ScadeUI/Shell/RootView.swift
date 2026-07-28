@@ -21,6 +21,11 @@ public struct RootView: View {
         } detail: {
             NavigationStack {
                 SectionDetailView(section: selection ?? .home)
+                    // Registered here, once for the whole app, rather than on
+                    // each screen that happens to link to an education.
+                    .navigationDestination(for: Education.self) { education in
+                        EducationDetailScreen(education: education)
+                    }
             }
         }
         .environment(\.repositories, repositories)

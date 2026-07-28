@@ -59,6 +59,48 @@ public struct EducationRepository: Sendable {
         }
     }
 
+    // MARK: - Reading whole trees
+
+    /// Every education with its subjects and their grades, newest-created
+    /// first (§3.6).
+    ///
+    /// Three queries no matter how many educations there are, all inside one
+    /// read — the list screen needs a computed average per row, and doing
+    /// that a row at a time would be a query apiece.
+    public func allSummaries() throws -> [EducationSummary] {
+        try database.read { db in
+            let educations = try Education.order(Education.Columns.id.desc).fetchAll(db)
+            let subjects = try Subject.order(SubjectRepository.canonicalOrder).fetchAll(db)
+            let subjectsWithGrades = try SubjectRepository.attachGrades(to: subjects, in: db)
+            let grouped = Dictionary(grouping: subjectsWithGrades, by: \.subject.educationId)
+
+            return educations.map { education in
+                EducationSummary(
+                    education: education,
+                    subjects: education.id.flatMap { grouped[$0] } ?? []
+                )
+            }
+        }
+    }
+
+    /// One education with its subjects and their grades, or `nil` if it isn't
+    /// there. Backs the detail screen.
+    public func summary(id: Int64) throws -> EducationSummary? {
+        try database.read { db in
+            guard let education = try Education.fetchOne(db, key: id) else { return nil }
+
+            let subjects = try Subject
+                .filter(Subject.Columns.educationId == id)
+                .order(SubjectRepository.canonicalOrder)
+                .fetchAll(db)
+
+            return EducationSummary(
+                education: education,
+                subjects: try SubjectRepository.attachGrades(to: subjects, in: db)
+            )
+        }
+    }
+
     // MARK: - Writing
 
     /// Inserts a new education and returns it with its assigned id.

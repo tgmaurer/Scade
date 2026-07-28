@@ -200,7 +200,7 @@ public struct SubjectRepository: Sendable {
     // MARK: - Helpers
 
     /// Fetches all grades for `subjects` in one query and groups them.
-    private static func attachGrades(to subjects: [Subject], in db: Database) throws -> [SubjectGrades] {
+    static func attachGrades(to subjects: [Subject], in db: Database) throws -> [SubjectGrades] {
         let ids = subjects.compactMap(\.id)
         guard ids.isEmpty == false else {
             return subjects.map { SubjectGrades(subject: $0, grades: []) }
