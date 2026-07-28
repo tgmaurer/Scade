@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C22F5543018E95C00C3E1A3 /* ScadeKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1C22F5533018E95C00C3E1A3 /* ScadeKit */; };
+		1C22F5563018E95C00C3E1A3 /* ScadeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 1C22F5553018E95C00C3E1A3 /* ScadeUI */; };
 		1CF372903018C5C40020724D /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 1CF3728F3018C5C40020724D /* LICENSE */; };
 		1CF372923018C5F40020724D /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 1CF372913018C5F40020724D /* README.md */; };
 		1CF372993018C6D30020724D /* CLAUDE.md in Resources */ = {isa = PBXBuildFile; fileRef = 1CF372983018C6D30020724D /* CLAUDE.md */; };
 		1CF3729B3018C70A0020724D /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 1CF3729A3018C70A0020724D /* .gitignore */; };
-		1CF3729E3018CAD60020724D /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 1CF3729D3018CAD60020724D /* GRDB */; };
-		1CF372A03018CAD60020724D /* GRDB-dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 1CF3729F3018CAD60020724D /* GRDB-dynamic */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,9 +33,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1CF3723B3018C0360020724D /* Scade.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Scade.app; path = /Users/timothy/Developer/Projects/Scade/build/Debug/Scade.app; sourceTree = "<absolute>"; };
-		1CF3724C3018C0370020724D /* ScadeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = ScadeTests.xctest; path = /Users/timothy/Developer/Projects/Scade/build/Debug/Scade.app/Contents/PlugIns/ScadeTests.xctest; sourceTree = "<absolute>"; };
-		1CF372563018C0370020724D /* ScadeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = ScadeUITests.xctest; path = "/Users/timothy/Developer/Projects/Scade/build/Debug/ScadeUITests-Runner.app/Contents/PlugIns/ScadeUITests.xctest"; sourceTree = "<absolute>"; };
+		1C22F5093018E57B00C3E1A3 /* Scade.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Scade.app; path = /Users/timothy/Developer/Projects/Scade/build/Debug/Scade.app; sourceTree = "<absolute>"; };
+		1C22F50A3018E57B00C3E1A3 /* ScadeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = ScadeTests.xctest; path = /Users/timothy/Developer/Projects/Scade/build/Debug/Scade.app/Contents/PlugIns/ScadeTests.xctest; sourceTree = "<absolute>"; };
+		1C22F50B3018E57B00C3E1A3 /* ScadeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = ScadeUITests.xctest; path = "/Users/timothy/Developer/Projects/Scade/build/Debug/ScadeUITests-Runner.app/Contents/PlugIns/ScadeUITests.xctest"; sourceTree = "<absolute>"; };
+		1C22F5583018F04400C3E1A3 /* ScadeKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ScadeKit; sourceTree = "<group>"; };
 		1CF3728F3018C5C40020724D /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		1CF372913018C5F40020724D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		1CF372983018C6D30020724D /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
@@ -93,8 +94,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1CF3729E3018CAD60020724D /* GRDB in Frameworks */,
-				1CF372A03018CAD60020724D /* GRDB-dynamic in Frameworks */,
+				1C22F5563018E95C00C3E1A3 /* ScadeUI in Frameworks */,
+				1C22F5543018E95C00C3E1A3 /* ScadeKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,6 +119,7 @@
 		1CF372323018C0360020724D = {
 			isa = PBXGroup;
 			children = (
+				1C22F5583018F04400C3E1A3 /* ScadeKit */,
 				1CF3728E3018C4380020724D /* Resources */,
 				1CF372813018C3930020724D /* Sources */,
 				1CF3723D3018C0360020724D /* App */,
@@ -154,11 +156,11 @@
 			);
 			name = Scade;
 			packageProductDependencies = (
-				1CF3729D3018CAD60020724D /* GRDB */,
-				1CF3729F3018CAD60020724D /* GRDB-dynamic */,
+				1C22F5533018E95C00C3E1A3 /* ScadeKit */,
+				1C22F5553018E95C00C3E1A3 /* ScadeUI */,
 			);
 			productName = Scade;
-			productReference = 1CF3723B3018C0360020724D /* Scade.app */;
+			productReference = 1C22F5093018E57B00C3E1A3 /* Scade.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1CF3724B3018C0370020724D /* ScadeTests */ = {
@@ -181,7 +183,7 @@
 			packageProductDependencies = (
 			);
 			productName = ScadeTests;
-			productReference = 1CF3724C3018C0370020724D /* ScadeTests.xctest */;
+			productReference = 1C22F50A3018E57B00C3E1A3 /* ScadeTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		1CF372553018C0370020724D /* ScadeUITests */ = {
@@ -204,7 +206,7 @@
 			packageProductDependencies = (
 			);
 			productName = ScadeUITests;
-			productReference = 1CF372563018C0370020724D /* ScadeUITests.xctest */;
+			productReference = 1C22F50B3018E57B00C3E1A3 /* ScadeUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -240,7 +242,6 @@
 			mainGroup = 1CF372323018C0360020724D;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				1CF3729C3018CAD60020724D /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1CF372323018C0360020724D;
@@ -543,12 +544,13 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Scade.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Scade";
 				XROS_DEPLOYMENT_TARGET = 26.5;
 			};
@@ -569,12 +571,13 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Scade.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Scade";
 				XROS_DEPLOYMENT_TARGET = 26.5;
 			};
@@ -594,12 +597,13 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Scade;
 				XROS_DEPLOYMENT_TARGET = 26.5;
 			};
@@ -619,12 +623,13 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Scade;
 				XROS_DEPLOYMENT_TARGET = 26.5;
 			};
@@ -671,27 +676,14 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		1CF3729C3018CAD60020724D /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/groue/GRDB.swift.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		1CF3729D3018CAD60020724D /* GRDB */ = {
+		1C22F5533018E95C00C3E1A3 /* ScadeKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 1CF3729C3018CAD60020724D /* XCRemoteSwiftPackageReference "GRDB.swift" */;
-			productName = GRDB;
+			productName = ScadeKit;
 		};
-		1CF3729F3018CAD60020724D /* GRDB-dynamic */ = {
+		1C22F5553018E95C00C3E1A3 /* ScadeUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 1CF3729C3018CAD60020724D /* XCRemoteSwiftPackageReference "GRDB.swift" */;
-			productName = "GRDB-dynamic";
+			productName = ScadeUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
