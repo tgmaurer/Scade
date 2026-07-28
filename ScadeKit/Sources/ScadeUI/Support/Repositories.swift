@@ -11,7 +11,12 @@ public struct Repositories: Sendable {
     public let subjects: SubjectRepository
     public let grades: GradeRepository
 
+    /// Kept for the one job that isn't a repository's: writing an export
+    /// snapshot of the whole file (§4).
+    public let database: AppDatabase
+
     public init(database: AppDatabase) {
+        self.database = database
         educations = EducationRepository(database: database)
         subjects = SubjectRepository(database: database)
         grades = GradeRepository(database: database)

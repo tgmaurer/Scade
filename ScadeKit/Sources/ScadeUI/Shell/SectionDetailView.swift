@@ -11,7 +11,7 @@ struct SectionDetailView: View {
     var body: some View {
         switch section {
         case .home:
-            ComingSoonScreen(section: section)
+            HomeScreen()
         case .educations:
             EducationListScreen()
         case .subjects:
@@ -19,7 +19,7 @@ struct SectionDetailView: View {
         case .grades:
             GradeListScreen()
         case .settings:
-            ComingSoonScreen(section: section)
+            SettingsScreen()
         }
     }
 }

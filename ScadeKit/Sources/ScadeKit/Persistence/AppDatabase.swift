@@ -34,6 +34,23 @@ public struct AppDatabase: Sendable {
     public func write<T>(_ updates: (Database) throws -> T) throws -> T {
         try writer.write(updates)
     }
+
+    /// Writes a self-contained copy of the database to `url`, for the backup
+    /// and export in SPEC §4.
+    ///
+    /// `VACUUM INTO` rather than a file copy: it runs inside a transaction,
+    /// so the snapshot is consistent even if a write is in flight, and it
+    /// produces a single tidy file with no free pages. Any existing file at
+    /// `url` is removed first — SQLite refuses to overwrite.
+    public func exportSnapshot(to url: URL) throws {
+        if FileManager.default.fileExists(atPath: url.path(percentEncoded: false)) {
+            try FileManager.default.removeItem(at: url)
+        }
+
+        try writer.writeWithoutTransaction { db in
+            try db.execute(sql: "VACUUM INTO ?", arguments: [url.path(percentEncoded: false)])
+        }
+    }
 }
 
 extension Configuration {
