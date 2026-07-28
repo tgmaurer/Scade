@@ -15,9 +15,9 @@ struct SectionDetailView: View {
         case .educations:
             EducationListScreen()
         case .subjects:
-            ComingSoonScreen(section: section)
+            SubjectListScreen()
         case .grades:
-            ComingSoonScreen(section: section)
+            GradeListScreen()
         case .settings:
             ComingSoonScreen(section: section)
         }

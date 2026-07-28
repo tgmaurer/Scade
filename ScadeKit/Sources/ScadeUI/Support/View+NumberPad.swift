@@ -12,4 +12,14 @@ extension View {
         self
         #endif
     }
+
+    /// The same, for values that can have a fractional part — weights and
+    /// grade values both can.
+    func decimalPadKeyboard() -> some View {
+        #if os(iOS)
+        keyboardType(.decimalPad)
+        #else
+        self
+        #endif
+    }
 }

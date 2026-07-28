@@ -21,10 +21,16 @@ public struct RootView: View {
         } detail: {
             NavigationStack {
                 SectionDetailView(section: selection ?? .home)
-                    // Registered here, once for the whole app, rather than on
-                    // each screen that happens to link to an education.
+                    // Registered here, once each for the whole app, rather
+                    // than on every screen that happens to link somewhere.
                     .navigationDestination(for: Education.self) { education in
                         EducationDetailScreen(education: education)
+                    }
+                    .navigationDestination(for: Subject.self) { subject in
+                        SubjectDetailScreen(subject: subject)
+                    }
+                    .navigationDestination(for: Grade.self) { grade in
+                        GradeDetailScreen(grade: grade)
                     }
             }
         }

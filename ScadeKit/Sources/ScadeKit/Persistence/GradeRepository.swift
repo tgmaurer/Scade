@@ -50,6 +50,19 @@ public struct GradeRepository: Sendable {
         }
     }
 
+    /// One grade with its subject and education, or `nil` if it isn't there.
+    /// Backs the detail screen.
+    public func listItem(id: Int64) throws -> GradeListItem? {
+        try database.read { db in
+            guard let grade = try Grade.fetchOne(db, key: id),
+                  let subject = try Subject.fetchOne(db, key: grade.subjectId),
+                  let education = try Education.fetchOne(db, key: subject.educationId)
+            else { return nil }
+
+            return GradeListItem(grade: grade, subject: subject, education: education)
+        }
+    }
+
     /// The grades of one subject, newest first (§3.6).
     public func forSubject(_ subjectId: Int64) throws -> [Grade] {
         try database.read { db in

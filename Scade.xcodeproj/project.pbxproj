@@ -130,9 +130,6 @@
 				1CF3729A3018C70A0020724D /* .gitignore */,
 				1CF372983018C6D30020724D /* CLAUDE.md */,
 				1CF3728F3018C5C40020724D /* LICENSE */,
-				1C22F5A230190AE600C3E1A3 /* Scade.app */,
-				1C22F5A330190AE600C3E1A3 /* ScadeTests.xctest */,
-				1C22F5A430190AE600C3E1A3 /* ScadeUITests.xctest */,
 			);
 			sourceTree = "<group>";
 		};

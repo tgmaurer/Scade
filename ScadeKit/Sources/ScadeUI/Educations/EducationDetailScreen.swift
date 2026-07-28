@@ -10,6 +10,7 @@ struct EducationDetailScreen: View {
 
     @State private var model = EducationDetailModel()
     @State private var formMode: EducationFormMode?
+    @State private var subjectFormMode: SubjectFormMode?
 
     var body: some View {
         @Bindable var model = model
@@ -24,11 +25,13 @@ struct EducationDetailScreen: View {
                             .foregroundStyle(.secondary)
                     } else {
                         ForEach(summary.subjects) { subjectGrades in
-                            EducationSubjectRowView(
-                                subjectGrades: subjectGrades,
-                                totalSemesters: summary.education.semesters,
-                                average: GradeCalculator.subjectAverage(of: subjectGrades)
-                            )
+                            NavigationLink(value: subjectGrades.subject) {
+                                EducationSubjectRowView(
+                                    subjectGrades: subjectGrades,
+                                    totalSemesters: summary.education.semesters,
+                                    average: GradeCalculator.subjectAverage(of: subjectGrades)
+                                )
+                            }
                         }
                     }
                 }
@@ -36,6 +39,13 @@ struct EducationDetailScreen: View {
         }
         .navigationTitle(model.summary?.education.name ?? education.name)
         .toolbar {
+            ToolbarItem {
+                // §4: creating from here pre-selects and locks this
+                // education. Unavailable once the education is completed.
+                Button("New Subject", systemImage: "plus", action: startAddingSubject)
+                    .disabled(model.summary?.education.completed ?? true)
+            }
+
             ToolbarItem {
                 Button("Edit", systemImage: "pencil", action: startEditing)
             }
@@ -62,6 +72,9 @@ struct EducationDetailScreen: View {
         .sheet(item: $formMode, onDismiss: reload) { mode in
             EducationFormScreen(mode: mode)
         }
+        .sheet(item: $subjectFormMode, onDismiss: reload) { mode in
+            SubjectFormScreen(mode: mode)
+        }
         .alert("Something went wrong", isPresented: $model.isShowingError) {
         } message: {
             Text(model.errorMessage ?? "")
@@ -77,6 +90,11 @@ struct EducationDetailScreen: View {
     private func startEditing() {
         guard let education = model.summary?.education else { return }
         formMode = .edit(education)
+    }
+
+    private func startAddingSubject() {
+        guard let id = model.summary?.education.id else { return }
+        subjectFormMode = .create(educationId: id)
     }
 
     private func reload() {

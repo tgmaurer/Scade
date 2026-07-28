@@ -59,6 +59,12 @@ extension SubjectListItem: Searchable {
     }
 }
 
+extension SubjectSummary: Searchable {
+    public var searchableFields: [String?] {
+        [subject.name, subject.description, education.name]
+    }
+}
+
 extension GradeListItem: Searchable {
     public var searchableFields: [String?] {
         [grade.description, subject.name, education.name]
