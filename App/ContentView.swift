@@ -1,9 +1,4 @@
-//
-//  ContentView.swift
-//  Scade
-//
-//  Created by Timothy Maurer on 28.07.2026.
-//
+// NOTE: Auto Generated from project scaffolding, safe to delete later
 
 import SwiftUI
 import SwiftData

@@ -1,10 +1,3 @@
-//
-//  ScadeUITests.swift
-//  ScadeUITests
-//
-//  Created by Timothy Maurer on 28.07.2026.
-//
-
 import XCTest
 
 final class ScadeUITests: XCTestCase {

@@ -1,10 +1,3 @@
-//
-//  ScadeTests.swift
-//  ScadeTests
-//
-//  Created by Timothy Maurer on 28.07.2026.
-//
-
 import Testing
 
 struct ScadeTests {

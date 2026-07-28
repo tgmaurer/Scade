@@ -11,6 +11,8 @@
 		1CF372923018C5F40020724D /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 1CF372913018C5F40020724D /* README.md */; };
 		1CF372993018C6D30020724D /* CLAUDE.md in Resources */ = {isa = PBXBuildFile; fileRef = 1CF372983018C6D30020724D /* CLAUDE.md */; };
 		1CF3729B3018C70A0020724D /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 1CF3729A3018C70A0020724D /* .gitignore */; };
+		1CF3729E3018CAD60020724D /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 1CF3729D3018CAD60020724D /* GRDB */; };
+		1CF372A03018CAD60020724D /* GRDB-dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 1CF3729F3018CAD60020724D /* GRDB-dynamic */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +93,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1CF3729E3018CAD60020724D /* GRDB in Frameworks */,
+				1CF372A03018CAD60020724D /* GRDB-dynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,16 +118,16 @@
 		1CF372323018C0360020724D = {
 			isa = PBXGroup;
 			children = (
-				1CF372933018C6520020724D /* docs */,
-				1CF3729A3018C70A0020724D /* .gitignore */,
-				1CF372983018C6D30020724D /* CLAUDE.md */,
-				1CF3728F3018C5C40020724D /* LICENSE */,
-				1CF372913018C5F40020724D /* README.md */,
 				1CF3728E3018C4380020724D /* Resources */,
 				1CF372813018C3930020724D /* Sources */,
 				1CF3723D3018C0360020724D /* App */,
 				1CF3724F3018C0370020724D /* Tests */,
 				1CF372593018C0370020724D /* UITests */,
+				1CF372933018C6520020724D /* docs */,
+				1CF372913018C5F40020724D /* README.md */,
+				1CF3729A3018C70A0020724D /* .gitignore */,
+				1CF372983018C6D30020724D /* CLAUDE.md */,
+				1CF3728F3018C5C40020724D /* LICENSE */,
 			);
 			sourceTree = "<group>";
 		};
@@ -150,6 +154,8 @@
 			);
 			name = Scade;
 			packageProductDependencies = (
+				1CF3729D3018CAD60020724D /* GRDB */,
+				1CF3729F3018CAD60020724D /* GRDB-dynamic */,
 			);
 			productName = Scade;
 			productReference = 1CF3723B3018C0360020724D /* Scade.app */;
@@ -233,6 +239,9 @@
 			);
 			mainGroup = 1CF372323018C0360020724D;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1CF3729C3018CAD60020724D /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1CF372323018C0360020724D;
 			projectDirPath = "";
@@ -661,6 +670,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1CF3729C3018CAD60020724D /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1CF3729D3018CAD60020724D /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1CF3729C3018CAD60020724D /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			productName = GRDB;
+		};
+		1CF3729F3018CAD60020724D /* GRDB-dynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1CF3729C3018CAD60020724D /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			productName = "GRDB-dynamic";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1CF372333018C0360020724D /* Project object */;
 }
