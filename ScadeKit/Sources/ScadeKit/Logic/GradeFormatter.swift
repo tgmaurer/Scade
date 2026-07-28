@@ -14,6 +14,22 @@ public struct GradeFormatter: Sendable {
     /// from `GradeCalculator` rather than by a `0` sentinel.
     public static let noDataPlaceholder = "N/A"
 
+    /// Two decimal places, for grade values and computed averages.
+    ///
+    /// Exposed as a format style so SwiftUI can use it directly —
+    /// `Text(grade.value, format: GradeFormatter.valueStyle)` — instead of
+    /// views carrying their own copy of the precision.
+    public static let valueStyle = FloatingPointFormatStyle<Double>()
+        .precision(.fractionLength(2))
+
+    /// A weight multiplier rendered as a percentage.
+    ///
+    /// Up to one decimal place, which covers the fractional quick-picks in §4
+    /// (`66.7%`, `37.5%`, `12.5%`) without printing `100.0%` for the common
+    /// case.
+    public static let weightStyle = FloatingPointFormatStyle<Double>.Percent()
+        .precision(.fractionLength(0...1))
+
     public let locale: Locale
 
     public init(locale: Locale = .autoupdatingCurrent) {
@@ -23,7 +39,7 @@ public struct GradeFormatter: Sendable {
     /// A grade value or computed average: always two decimal places, e.g.
     /// `5.25`.
     public func value(_ value: Double) -> String {
-        value.formatted(.number.precision(.fractionLength(2)).locale(locale))
+        value.formatted(Self.valueStyle.locale(locale))
     }
 
     /// A computed average, or `"N/A"` when there's nothing to average.
@@ -35,10 +51,8 @@ public struct GradeFormatter: Sendable {
     /// A weight multiplier as a percentage: `1.0` reads as `100%`, `0.625` as
     /// `62.5%`.
     ///
-    /// Storage keeps the multiplier; only the display is a percentage. Up to
-    /// one decimal place, which covers the quick-pick presets in §4 (`66.7%`,
-    /// `37.5%`, `12.5%`) without printing `100.0%` for the common case.
+    /// Storage keeps the multiplier; only the display is a percentage.
     public func weight(_ multiplier: Double) -> String {
-        multiplier.formatted(.percent.precision(.fractionLength(0...1)).locale(locale))
+        multiplier.formatted(Self.weightStyle.locale(locale))
     }
 }
