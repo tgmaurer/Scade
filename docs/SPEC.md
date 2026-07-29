@@ -7,6 +7,10 @@ This is a **functional and data spec, not a visual spec**. Screens below
 describe what data is shown and what a user can do — not layout. Implement
 the UI natively for SwiftUI/macOS+iOS idioms.
 
+Visual refinement, keyboard shortcuts, and the accessibility verification
+pass are deferred until this spec is fully implemented, and are specified
+separately in [SPEC-POLISH.md](SPEC-POLISH.md).
+
 ---
 
 ## 1. Project identity
