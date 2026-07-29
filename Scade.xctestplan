@@ -1,0 +1,44 @@
+{
+  "configurations" : [
+    {
+      "id" : "D4D745C2-4E36-4DF7-9CBC-0BE4E421998A",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Scade.xcodeproj",
+      "identifier" : "1CF3723A3018C0360020724D",
+      "name" : "Scade"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Scade.xcodeproj",
+        "identifier" : "1CF3724B3018C0370020724D",
+        "name" : "ScadeTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Scade.xcodeproj",
+        "identifier" : "1CF372553018C0370020724D",
+        "name" : "ScadeUITests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:ScadeKit",
+        "identifier" : "ScadeKitTests",
+        "name" : "ScadeKitTests"
+      }
+    }
+  ],
+  "version" : 1
+}

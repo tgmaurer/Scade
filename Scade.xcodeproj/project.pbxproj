@@ -34,9 +34,10 @@
 
 /* Begin PBXFileReference section */
 		1C22F5583018F04400C3E1A3 /* ScadeKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ScadeKit; sourceTree = "<group>"; };
-		1C22F5A230190AE600C3E1A3 /* Scade.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Scade.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		1C22F5A330190AE600C3E1A3 /* ScadeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScadeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		1C22F5A430190AE600C3E1A3 /* ScadeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScadeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1CED5658301AA1A3001BF91E /* Scade.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Scade.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1CED5659301AA1A3001BF91E /* ScadeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScadeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1CED565A301AA1A3001BF91E /* ScadeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScadeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1CED567C301AA37C001BF91E /* Scade.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Scade.xctestplan; sourceTree = "<group>"; };
 		1CF3728F3018C5C40020724D /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		1CF372913018C5F40020724D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		1CF372983018C6D30020724D /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
@@ -119,6 +120,7 @@
 		1CF372323018C0360020724D = {
 			isa = PBXGroup;
 			children = (
+				1CED567C301AA37C001BF91E /* Scade.xctestplan */,
 				1C22F5583018F04400C3E1A3 /* ScadeKit */,
 				1CF3728E3018C4380020724D /* Resources */,
 				1CF372813018C3930020724D /* Sources */,
@@ -130,6 +132,9 @@
 				1CF3729A3018C70A0020724D /* .gitignore */,
 				1CF372983018C6D30020724D /* CLAUDE.md */,
 				1CF3728F3018C5C40020724D /* LICENSE */,
+				1CED5658301AA1A3001BF91E /* Scade.app */,
+				1CED5659301AA1A3001BF91E /* ScadeTests.xctest */,
+				1CED565A301AA1A3001BF91E /* ScadeUITests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -160,7 +165,7 @@
 				1C22F5553018E95C00C3E1A3 /* ScadeUI */,
 			);
 			productName = Scade;
-			productReference = 1C22F5A230190AE600C3E1A3 /* Scade.app */;
+			productReference = 1CED5658301AA1A3001BF91E /* Scade.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1CF3724B3018C0370020724D /* ScadeTests */ = {
@@ -183,7 +188,7 @@
 			packageProductDependencies = (
 			);
 			productName = ScadeTests;
-			productReference = 1C22F5A330190AE600C3E1A3 /* ScadeTests.xctest */;
+			productReference = 1CED5659301AA1A3001BF91E /* ScadeTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		1CF372553018C0370020724D /* ScadeUITests */ = {
@@ -206,7 +211,7 @@
 			packageProductDependencies = (
 			);
 			productName = ScadeUITests;
-			productReference = 1C22F5A430190AE600C3E1A3 /* ScadeUITests.xctest */;
+			productReference = 1CED565A301AA1A3001BF91E /* ScadeUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
