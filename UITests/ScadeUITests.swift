@@ -34,6 +34,10 @@ final class ScadeUITests: XCTestCase {
 
         static let newGrade = "grade.new"
         static let gradeValue = "grade.form.value"
+
+        static let settingsSection = "sidebar.settings"
+        static let deleteAll = "settings.deleteAll"
+        static let confirmDeleteAll = "settings.deleteAll.confirm"
     }
 
     private var app: XCUIApplication!
@@ -151,6 +155,25 @@ final class ScadeUITests: XCTestCase {
         )
     }
 
+    /// The only destructive action that isn't scoped to one record, so the
+    /// one most worth pinning down: it has to actually empty the database,
+    /// and it has to be reachable only through the confirmation.
+    func testDeletingAllDataEmptiesTheList() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Doomed Course")
+        XCTAssertTrue(rowMentioning("Doomed Course").waitForExistence(timeout: 5))
+
+        openSection(ID.settingsSection)
+        tap(ID.deleteAll)
+        tap(ID.confirmDeleteAll)
+
+        openSection(ID.educationsSection)
+        XCTAssertFalse(
+            rowMentioning("Doomed Course").waitForExistence(timeout: 3),
+            "Deleting all data should remove every education."
+        )
+    }
+
     // MARK: - Helpers
 
     /// Matches on any element type, because a `Label`'s rendered element kind
@@ -179,10 +202,18 @@ final class ScadeUITests: XCTestCase {
         row.tap()
     }
 
+    /// Taps the one button a person would tap.
+    ///
+    /// A subscript lookup insists on a single match, which iOS breaks for
+    /// confirmation dialogs — it renders the dialog's buttons more than once
+    /// and only one copy is on screen. Picking the hittable match says what
+    /// we actually mean, and behaves the same when there's only one.
     private func tap(_ identifier: String) {
-        let button = app.buttons[identifier]
-        XCTAssertTrue(button.waitForExistence(timeout: 10), "Button \(identifier) never appeared.")
-        button.tap()
+        let matches = app.buttons.matching(identifier: identifier)
+        XCTAssertTrue(matches.firstMatch.waitForExistence(timeout: 10), "Button \(identifier) never appeared.")
+
+        let target = matches.allElementsBoundByIndex.first(where: \.isHittable) ?? matches.firstMatch
+        target.tap()
     }
 
     private func createEducation(named name: String) {

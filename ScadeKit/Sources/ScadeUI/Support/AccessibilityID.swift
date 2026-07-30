@@ -41,4 +41,9 @@ enum AccessibilityID {
         static let new = "grade.new"
         static let value = "grade.form.value"
     }
+
+    enum Settings {
+        static let deleteAll = "settings.deleteAll"
+        static let confirmDeleteAll = "settings.deleteAll.confirm"
+    }
 }
