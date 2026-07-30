@@ -9,7 +9,8 @@ the UI natively for SwiftUI/macOS+iOS idioms.
 
 Visual refinement, keyboard shortcuts, and the accessibility verification
 pass are deferred until this spec is fully implemented, and are specified
-separately in [SPEC-POLISH.md](SPEC-POLISH.md).
+separately in [SPEC-POLISH.md](SPEC-POLISH.md). Behaviour wanted beyond v1
+is collected in [SPEC-BACKLOG.md](SPEC-BACKLOG.md).
 
 ---
 
@@ -240,8 +241,14 @@ average, total semesters, completion state, subject count. Search (§3.5).
 the full list of that education's subjects.
 **Create/Edit fields:** name*, institution, start date*, end date*, total
 semesters* (≥1), completed (edit-only), description.
-**Defaults on create:** start = today, end = today + 1 year, semesters = 2,
-completed = false.
+**Defaults on create:** the school year containing today — 1 August to 31
+July — semesters = 2, completed = false. Before August that means the year
+which began the *previous* August, so the range always contains today.
+That's load-bearing, not cosmetic: §3.4 requires a grade's date to fall
+within its education's range, so a default range that started in the future
+would reject a grade dated today for the seven months from January to July.
+These are still only defaults; an education may span any range where
+`endDate >= startDate`.
 **Actions:** create, edit, delete (confirm — mention subject count and that
 related subjects/grades cascade-delete), search, navigate to detail.
 
