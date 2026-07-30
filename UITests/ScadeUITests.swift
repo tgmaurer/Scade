@@ -9,7 +9,7 @@ import XCTest
 ///
 /// The domain rules themselves are pinned down by `ScadeKitTests`; what these
 /// verify is that the UI is actually connected to them.
-@MainActor
+@MainActor // Potentially remove?
 final class ScadeUITests: XCTestCase {
 
     /// Identifiers mirrored from `ScadeUI`'s `AccessibilityID`, which this
