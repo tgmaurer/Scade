@@ -66,7 +66,7 @@ final class ScadeUITests: XCTestCase {
         createEducation(named: "Bachelor of Science")
 
         XCTAssertTrue(
-            app.staticTexts["Bachelor of Science"].waitForExistence(timeout: 5),
+            rowMentioning("Bachelor of Science").waitForExistence(timeout: 5),
             "A saved education should appear in the list."
         )
     }
@@ -100,7 +100,7 @@ final class ScadeUITests: XCTestCase {
         app.buttons[ID.cancel].tap()
 
         XCTAssertFalse(
-            app.staticTexts["Discarded"].waitForExistence(timeout: 2),
+            rowMentioning("Discarded").waitForExistence(timeout: 2),
             "A cancelled form should not create a record."
         )
     }
@@ -146,7 +146,7 @@ final class ScadeUITests: XCTestCase {
 
         openSection(ID.subjectsSection)
         XCTAssertTrue(
-            app.staticTexts["5.00"].waitForExistence(timeout: 5),
+            rowMentioning("5.00").waitForExistence(timeout: 5),
             "A single grade of 5 should read as a 5.00 average (§3.1, §3.3)."
         )
     }
@@ -157,6 +157,20 @@ final class ScadeUITests: XCTestCase {
     /// isn't guaranteed across platforms.
     private var errorLabels: XCUIElementQuery {
         app.descendants(matching: .any).matching(identifier: ID.error)
+    }
+
+    /// Finds a list row by something written in it.
+    ///
+    /// macOS collapses a row into a single element whose label concatenates
+    /// everything in it — "Bachelor of Science, N/A, 2026–2027, …" — while iOS
+    /// exposes each `Text` separately. "Some element mentions this" is the
+    /// only phrasing that's true on both, so these tests never assert on an
+    /// exact row label; that would just pin down today's row layout, which
+    /// the polish phase is about to change anyway.
+    private func rowMentioning(_ text: String) -> XCUIElement {
+        app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS %@", text))
+            .firstMatch
     }
 
     private func openSection(_ identifier: String) {
@@ -190,14 +204,15 @@ final class ScadeUITests: XCTestCase {
     }
 
     /// Numeric fields arrive prefilled, so typing alone would append.
+    ///
+    /// Selecting rather than counting: a plain tap only places the caret, and
+    /// where it lands differs by platform, while the existing length can't be
+    /// measured reliably either — `value` is a formatted string on iOS but a
+    /// number on macOS. A double tap selects what's there on both, and typing
+    /// over a selection replaces it.
     private func replaceText(_ text: String, in field: XCUIElement) {
         XCTAssertTrue(field.waitForExistence(timeout: 5))
-        field.tap()
-
-        let existing = (field.value as? String) ?? ""
-        if existing.isEmpty == false {
-            field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: existing.count))
-        }
+        field.doubleTap()
         field.typeText(text)
     }
 }
