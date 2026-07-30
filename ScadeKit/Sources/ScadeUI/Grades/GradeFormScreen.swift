@@ -23,6 +23,7 @@ struct GradeFormScreen: View {
                             .decimalPadKeyboard()
                             .multilineTextAlignment(.trailing)
                             .labelsHidden()
+                            .accessibilityIdentifier(AccessibilityID.Grade.value)
                     }
                     FieldErrorLabel(model.message(for: .value))
 
@@ -66,10 +67,12 @@ struct GradeFormScreen: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", role: .cancel, action: dismiss.callAsFunction)
+                        .accessibilityIdentifier(AccessibilityID.Form.cancel)
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", action: save)
+                        .accessibilityIdentifier(AccessibilityID.Form.save)
                 }
             }
             .alert("Couldn't save", isPresented: $model.isShowingError) {
