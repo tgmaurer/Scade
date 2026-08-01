@@ -106,6 +106,14 @@ The current UI is a faithful but plain rendering of the data: stacked `Text`
 in default styles, system list rows, no deliberate hierarchy. It's legible
 and it's correct; it doesn't look designed.
 
+**Assets live in [`design/`](design/README.md)** — mockups in
+`design/mockups/` (the target), GradeMaster screenshots in
+`design/reference/grademaster/` (what information a screen needs), other apps
+in `design/reference/inspiration/`. Read the relevant image alongside the
+section below before starting: this document describes the *problem* on each
+screen, the mockups describe the destination. Where no mockup exists yet, the
+section still stands on its own.
+
 ### 2.1 Identity
 
 - **App icon.** None exists. Needed before this is shippable in any sense.
@@ -198,8 +206,10 @@ unless promoted:
 1. §0 manual QA — produces the actual bug list, which may reorder everything
    below it.
 2. §1 keyboard shortcuts — self-contained, testable, and the shell change it
-   needs is better made before views are restyled.
-3. §2.1 identity (icon, accent) — everything visual depends on it.
+   needs is better made before views are restyled. Independent of the visual
+   direction, so it can run while mockups are still being gathered.
+3. §2.1 identity (icon, accent) — everything visual depends on it. Blocked on
+   `design/mockups/`.
 4. §2.2–2.5 refinement, screen by screen.
 5. §3 accessibility — last, because it's a verification pass over finished
    views, but budgeted, not skipped.

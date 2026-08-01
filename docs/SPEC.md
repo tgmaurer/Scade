@@ -9,8 +9,9 @@ the UI natively for SwiftUI/macOS+iOS idioms.
 
 Visual refinement, keyboard shortcuts, and the accessibility verification
 pass are deferred until this spec is fully implemented, and are specified
-separately in [SPEC-POLISH.md](SPEC-POLISH.md). Behaviour wanted beyond v1
-is collected in [SPEC-BACKLOG.md](SPEC-BACKLOG.md).
+separately in [SPEC-POLISH.md](SPEC-POLISH.md), with mockups and visual
+references in [design/](design/README.md). Behaviour wanted beyond v1 is
+collected in [SPEC-BACKLOG.md](SPEC-BACKLOG.md).
 
 ---
 

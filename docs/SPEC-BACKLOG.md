@@ -10,6 +10,10 @@ Three documents, three jobs:
 | [SPEC-POLISH.md](SPEC-POLISH.md) | how it looks and feels; presentation and interaction only |
 | **SPEC-BACKLOG.md** | behaviour that isn't built and isn't v1 |
 
+Alongside them, [design/](design/README.md) holds mockups and visual
+references. Those are pictures, not decisions — a mockup showing behaviour
+SPEC.md doesn't have belongs *here*, as an item, not in the build.
+
 The split matters because SPEC-POLISH commits to changing no formula,
 validation rule, sort order or schema column. Anything that *does* belongs
 here instead, so neither document has to be read with exceptions in mind.
