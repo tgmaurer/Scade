@@ -35,6 +35,39 @@ something awkward and Scade shouldn't repeat it, that's worth a line in
 [SPEC-BACKLOG.md](../../../SPEC-BACKLOG.md), depending on whether fixing it
 changes behaviour.
 
+## Desktop first — mobile only with care
+
+**These are desktop screens.** GradeMaster was designed for a pointer, a
+keyboard and a wide window, and that assumption is baked into every layout
+decision visible in a screenshot. For Scade's macOS side it's a fair
+reference. For iPhone it mostly isn't, and for iPad it depends on the screen.
+
+What travels to mobile:
+
+- **What information a screen needs** — the domain doesn't change with the
+  window. This is the main thing worth taking anyway.
+- **Grouping and priority** — which fields belong together, what a user looks
+  at first.
+
+What doesn't, and must be re-decided per platform:
+
+- **Density.** A desktop row can carry four or five fields comfortably.
+  The same row on an iPhone is unreadable. Expect to cut, stack, or move
+  fields into a detail view — SPEC-POLISH §2.2 is where that decision lives.
+- **Multi-column and side-by-side layouts.** Anything relying on horizontal
+  room has no mobile equivalent; it becomes navigation, not layout.
+- **Anything assuming hover, right-click, or a resizable window.** Touch has
+  no hover state, and swipe actions are the iOS answer to a context menu.
+- **Table-shaped screens.** A desktop table becomes a list of rows on mobile,
+  and which columns survive as row content is a genuine design question, not
+  a translation.
+
+So: reach for a GradeMaster screenshot when working on macOS, and treat it as
+a loose hint on iPhone and iPad. If a mobile layout looks awkward and the only
+justification is "that's how the old app arranged it", the justification is
+wrong — that arrangement was solving a different problem on a different
+screen.
+
 ## The line
 
 The project [CLAUDE.md](../../../../CLAUDE.md) rule stands and is deliberately
@@ -79,6 +112,11 @@ Examples: `gm-dashboard.png`, `gm-education-list.png`,
 The prefix matters — without it these get mistaken for Scade screenshots at a
 glance in a file listing, which is exactly the confusion this folder is one
 directory away from causing.
+
+Desktop is assumed, so it isn't in the name. If a *mobile* GradeMaster screen
+does exist, say so explicitly — `gm-mobile-grade-entry.png` — because it's the
+rarer and more directly useful case, and an unmarked file will be read as a
+desktop screen and discounted accordingly on iPhone work.
 
 ## Worth capturing
 

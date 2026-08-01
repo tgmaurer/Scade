@@ -109,8 +109,10 @@ and it's correct; it doesn't look designed.
 **Assets live in [`design/`](design/README.md)** — mockups in
 `design/mockups/` (the target), GradeMaster screenshots in
 `design/reference/grademaster/` (what information a screen needs — a starting
-point with known flaws, never a fidelity target), other apps in
-`design/reference/inspiration/`. Read the relevant image alongside the
+point with known flaws, never a fidelity target, and desktop-only: it says
+little about iPhone), other apps in `design/reference/inspiration/`. §2.4 is
+where the density and platform-fit decisions it can't answer get made. Read
+the relevant image alongside the
 section below before starting: this document describes the *problem* on each
 screen, the mockups describe the destination. Where no mockup exists yet, the
 section still stands on its own.

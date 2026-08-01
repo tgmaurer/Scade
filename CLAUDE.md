@@ -22,7 +22,9 @@ starting any feature work.
 - GradeMaster's UI is a starting point, never a fidelity target. Assume it
   carries flaws and non-native idioms. Ask what a screen is trying to tell the
   user, then do that the best way for macOS/iOS — improving on it is the
-  expected outcome, matching it is not.
+  expected outcome, matching it is not. It's a *desktop* reference: on iPhone
+  and iPad use it cautiously, for content and priority only, never for density
+  or layout.
 - Mockups in `docs/design/mockups/` are the visual target, but they do not
   amend SPEC.md. An image implying a new field, rule, or sort order is a
   SPEC-BACKLOG item, not a licence to build it.
