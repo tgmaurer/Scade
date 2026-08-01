@@ -44,6 +44,7 @@ struct EducationListScreen: View {
 
             ToolbarItem {
                 Button("New Education", systemImage: "plus", action: startCreating)
+                    .accessibilityIdentifier(AccessibilityID.Education.new)
             }
         }
         .sheet(item: $formMode, onDismiss: reload) { mode in

@@ -51,6 +51,24 @@ public struct AppDatabase: Sendable {
             try db.execute(sql: "VACUUM INTO ?", arguments: [url.path(percentEncoded: false)])
         }
     }
+
+    /// Removes every record, leaving the schema in place.
+    ///
+    /// The counterpart to `exportSnapshot(to:)` — the only safe way to offer
+    /// this is next to a working backup.
+    ///
+    /// All three tables are emptied explicitly rather than leaning on the
+    /// cascade from `Educations`. The cascade would do it today, but the
+    /// intent here is "empty the database", and saying that outright keeps it
+    /// true if a table is ever added that no education owns. One transaction,
+    /// so a failure part-way leaves the data as it was.
+    public func deleteAllRecords() throws {
+        try write { db in
+            try Grade.deleteAll(db)
+            try Subject.deleteAll(db)
+            try Education.deleteAll(db)
+        }
+    }
 }
 
 extension Configuration {

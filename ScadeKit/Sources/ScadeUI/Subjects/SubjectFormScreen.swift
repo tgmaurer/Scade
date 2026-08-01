@@ -19,6 +19,7 @@ struct SubjectFormScreen: View {
             Form {
                 Section {
                     TextField("Name", text: $model.name)
+                        .accessibilityIdentifier(AccessibilityID.Subject.name)
                     FieldErrorLabel(model.message(for: .name))
 
                     if model.mode.locksEducation {
@@ -38,6 +39,7 @@ struct SubjectFormScreen: View {
                             .numberPadKeyboard()
                             .multilineTextAlignment(.trailing)
                             .labelsHidden()
+                            .accessibilityIdentifier(AccessibilityID.Subject.semester)
                     }
                     FieldErrorLabel(model.message(for: .semester))
 
@@ -69,10 +71,12 @@ struct SubjectFormScreen: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", role: .cancel, action: dismiss.callAsFunction)
+                        .accessibilityIdentifier(AccessibilityID.Form.cancel)
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", action: save)
+                        .accessibilityIdentifier(AccessibilityID.Form.save)
                 }
             }
             .alert("Couldn't save", isPresented: $model.isShowingError) {

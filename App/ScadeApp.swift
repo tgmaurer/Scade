@@ -12,13 +12,28 @@ struct ScadeApp: App {
 
     init() {
         do {
-            repositories = Repositories(database: try AppDatabase.open(at: Self.databaseURL))
+            repositories = Repositories(database: try Self.makeDatabase())
         } catch {
             // The app is a database with a UI on top; there is nothing
             // meaningful to show if it can't be opened.
             fatalError("Could not open the Scade database: \(error)")
         }
     }
+
+    /// The real database, unless UI tests asked for a throwaway one.
+    ///
+    /// Automation creates and deletes records, so it must never be pointed at
+    /// Application Support. An in-memory database also starts every test from
+    /// a known-empty state without needing a teardown step that could fail.
+    private static func makeDatabase() throws -> AppDatabase {
+        guard ProcessInfo.processInfo.arguments.contains(Self.uiTestingArgument) else {
+            return try AppDatabase.open(at: databaseURL)
+        }
+        return try AppDatabase.inMemory()
+    }
+
+    /// Passed by `ScadeUITests`; see the matching constant there.
+    private static let uiTestingArgument = "-ui-testing"
 
     /// `scade.sqlite` in Application Support, created on first launch.
     private static var databaseURL: URL {

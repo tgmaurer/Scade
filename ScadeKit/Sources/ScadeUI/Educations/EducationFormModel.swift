@@ -37,13 +37,14 @@ final class EducationFormModel {
 
         switch mode {
         case .create:
-            // Defaults from §4.
-            let today = CalendarDate.today()
+            // Defaults from §4. The dates open on the school year rather than
+            // on today, since an education almost never starts mid-week.
+            let year = AcademicYear.containing(.today())
             name = ""
             institution = ""
             details = ""
-            startDate = today.startOfDay()
-            endDate = today.adding(years: 1).startOfDay()
+            startDate = year.lowerBound.startOfDay()
+            endDate = year.upperBound.startOfDay()
             semesters = 2
             completed = false
 

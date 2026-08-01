@@ -49,6 +49,7 @@ struct GradeListScreen: View {
 
             ToolbarItem {
                 Button("New Grade", systemImage: "plus", action: startCreating)
+                    .accessibilityIdentifier(AccessibilityID.Grade.new)
                     .disabled(model.creationBlockedReason != nil)
                     .help(model.creationBlockedReason ?? "")
             }

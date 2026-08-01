@@ -47,6 +47,7 @@ struct SubjectListScreen: View {
 
             ToolbarItem {
                 Button("New Subject", systemImage: "plus", action: startCreating)
+                    .accessibilityIdentifier(AccessibilityID.Subject.new)
                     .disabled(model.creationBlockedReason != nil)
                     .help(model.creationBlockedReason ?? "")
             }

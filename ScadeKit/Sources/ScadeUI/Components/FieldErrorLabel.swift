@@ -17,6 +17,7 @@ struct FieldErrorLabel: View {
             Label(message, systemImage: "exclamationmark.circle.fill")
                 .font(.footnote)
                 .foregroundStyle(.red)
+                .accessibilityIdentifier(AccessibilityID.Form.error)
         }
     }
 }

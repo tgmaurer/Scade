@@ -6,7 +6,11 @@ struct SidebarView: View {
 
     var body: some View {
         List(SidebarSection.allCases, selection: $selection) { section in
+            // Combined first: without it the identifier settles on the
+            // symbol rather than the row, and a bare symbol isn't tappable.
             Label(section.title, systemImage: section.systemImage)
+                .accessibilityElement(children: .combine)
+                .accessibilityIdentifier(AccessibilityID.sidebarSection(section))
         }
         .navigationTitle("Scade")
     }

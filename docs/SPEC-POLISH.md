@@ -12,7 +12,8 @@ Met as of commit `c591e0e`.
 **Standing constraint for everything below:** this phase changes presentation
 and interaction only. No formula, validation rule, sort order, or schema
 column changes here. If a section below seems to require one, that's a SPEC.md
-amendment, not a polish task.
+amendment, not a polish task — and if it isn't decided yet, it goes in
+[SPEC-BACKLOG.md](SPEC-BACKLOG.md).
 
 ---
 
