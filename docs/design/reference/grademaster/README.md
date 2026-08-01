@@ -7,6 +7,34 @@ screens evidence of what information a user actually needs in front of them —
 and that is worth mining even though the rewrite exists to leave the old app
 behind.
 
+## A starting point, not a target
+
+**Nothing here is to be matched 1:1.** GradeMaster is a solid reference for
+what's *possible* and what the domain needs on screen. It is not a standard to
+meet. Assume, going in, that any given screen contains:
+
+- layout that grew by accretion rather than by decision,
+- spacing, type and colour that were never deliberately set,
+- deviations from Apple's platform conventions — it was a MAUI app, so its
+  idioms are cross-platform-generic at best,
+- controls chosen for what the framework made easy rather than what the task
+  wanted.
+
+So the question to ask of one of these screenshots is never "how do I
+reproduce this?" It's **"what is this screen trying to tell the user, and
+what's the best way to do that on macOS and iOS?"** Often the answer keeps the
+information and throws away the arrangement entirely.
+
+Where a mockup in [`../../mockups/`](../../mockups/) disagrees with a
+GradeMaster screenshot, the mockup wins without argument — the mockup is a
+decision, the screenshot is a historical artefact.
+
+Treat an observed flaw as a finding, not a nuisance: if the old app made
+something awkward and Scade shouldn't repeat it, that's worth a line in
+[SPEC-POLISH.md](../../../SPEC-POLISH.md) §2 or an item in
+[SPEC-BACKLOG.md](../../../SPEC-BACKLOG.md), depending on whether fixing it
+changes behaviour.
+
 ## The line
 
 The project [CLAUDE.md](../../../../CLAUDE.md) rule stands and is deliberately

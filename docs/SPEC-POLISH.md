@@ -108,8 +108,9 @@ and it's correct; it doesn't look designed.
 
 **Assets live in [`design/`](design/README.md)** — mockups in
 `design/mockups/` (the target), GradeMaster screenshots in
-`design/reference/grademaster/` (what information a screen needs), other apps
-in `design/reference/inspiration/`. Read the relevant image alongside the
+`design/reference/grademaster/` (what information a screen needs — a starting
+point with known flaws, never a fidelity target), other apps in
+`design/reference/inspiration/`. Read the relevant image alongside the
 section below before starting: this document describes the *problem* on each
 screen, the mockups describe the destination. Where no mockup exists yet, the
 section still stands on its own.

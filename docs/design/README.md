@@ -14,8 +14,13 @@ item, not something to build because a mockup showed it.
 | Folder | Holds | Authority |
 |---|---|---|
 | [`mockups/`](mockups/) | intended Scade UI, made or commissioned for this app | **Target.** Build toward these. |
-| [`reference/grademaster/`](reference/grademaster/) | screenshots of the old MAUI app | Layout and information density only — see below. |
+| [`reference/grademaster/`](reference/grademaster/) | screenshots of the old MAUI app | Starting point, not a target. What a screen needs to say — never how it looked. Assume flaws. |
 | [`reference/inspiration/`](reference/inspiration/) | screenshots of other apps | Ideas. Never copy directly. |
+
+Only `mockups/` is something to match. Both `reference/` folders are prior art:
+they show what has been tried, which is useful precisely because some of it was
+tried badly. Improving on a reference is the expected outcome; reproducing one
+is not.
 
 Each folder has its own README with what belongs in it and what doesn't.
 

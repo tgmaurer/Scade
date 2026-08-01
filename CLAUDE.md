@@ -19,6 +19,10 @@ starting any feature work.
   information belongs on a screen. Never for project structure, architecture,
   or MAUI control idioms; that's what this rewrite exists to leave behind.
   Take what it shows, not how it was built.
+- GradeMaster's UI is a starting point, never a fidelity target. Assume it
+  carries flaws and non-native idioms. Ask what a screen is trying to tell the
+  user, then do that the best way for macOS/iOS — improving on it is the
+  expected outcome, matching it is not.
 - Mockups in `docs/design/mockups/` are the visual target, but they do not
   amend SPEC.md. An image implying a new field, rule, or sort order is a
   SPEC-BACKLOG item, not a licence to build it.
