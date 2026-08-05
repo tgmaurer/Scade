@@ -135,8 +135,9 @@ the direction instead, in words.
 
 ### 2.2 Shell and navigation
 
-**Platform priority: macOS and iOS. iPadOS stays supported and must not
-break, but no decision below is made for its sake.**
+**Platform priority: macOS and iPhone.** iPadOS is a build target that must
+not break, and nothing more — no decision in this document is made for its
+sake, and an iPad-only problem gets noted, not fixed.
 
 `RootView` is currently a `NavigationSplitView` on every platform. That's
 right on macOS and wrong on iPhone, where it collapses to a stack whose root

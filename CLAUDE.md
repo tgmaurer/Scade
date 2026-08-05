@@ -11,6 +11,10 @@ starting any feature work.
   lives where; read the relevant image before starting a SPEC-POLISH §2 task.
 
 ## Non-negotiables
+- **Platforms: macOS and iPhone.** iPadOS is a build target that must not
+  break, and nothing more. Never make a design decision for its sake, never
+  open a debugging thread on an iPad-only symptom, and don't spend
+  verification runs on it — note the problem and move on.
 - No ORM change-tracking. GRDB only, explicit queries, no ambient state.
 - Business logic (averages, validation) lives in Sources/Logic/, is unit
   tested, and is never duplicated across call sites.
