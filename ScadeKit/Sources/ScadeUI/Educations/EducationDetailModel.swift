@@ -3,7 +3,6 @@ import SwiftUI
 
 /// Backs the education detail screen.
 @Observable
-@MainActor
 final class EducationDetailModel {
     private(set) var summary: EducationSummary?
     /// Worked out once per load rather than on every `body` pass.

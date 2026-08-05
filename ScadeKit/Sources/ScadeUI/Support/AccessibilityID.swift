@@ -9,8 +9,9 @@ import SwiftUI
 /// The UI test target can't import this module, so it mirrors these strings
 /// in its own `ID` enum. Change one, change the other.
 enum AccessibilityID {
-    static func sidebarSection(_ section: SidebarSection) -> String {
-        "sidebar.\(section.rawValue)"
+    /// A shell section — a tab on iPhone, a sidebar row everywhere else.
+    static func section(_ section: AppSection) -> String {
+        "section.\(section.rawValue)"
     }
 
     /// Shared by all three forms — only one is ever presented at a time.
@@ -43,6 +44,9 @@ enum AccessibilityID {
     }
 
     enum Settings {
+        /// The way in where Settings has no section of its own — everywhere
+        /// but macOS. See `AppSection.showsSettingsSection`.
+        static let open = "settings.open"
         static let deleteAll = "settings.deleteAll"
         static let confirmDeleteAll = "settings.deleteAll.confirm"
     }

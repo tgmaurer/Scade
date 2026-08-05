@@ -38,6 +38,19 @@ struct SettingsScreen: View {
                 }
                 .disabled(model.educationCount == 0)
                 .accessibilityIdentifier(AccessibilityID.Settings.deleteAll)
+                // Attached to the button, not the form: the dialog animates
+                // out of whatever it's attached to.
+                .confirmationDialog(
+                    "Delete All Data?",
+                    isPresented: $model.isShowingResetConfirmation
+                ) {
+                    Button("Delete Everything", role: .destructive) {
+                        model.deleteAllData(from: repositories)
+                    }
+                    .accessibilityIdentifier(AccessibilityID.Settings.confirmDeleteAll)
+                } message: {
+                    Text("^[\(model.educationCount) education](inflect: true) and everything in them will be deleted. This can't be undone.")
+                }
             } header: {
                 Text("Data")
             } footer: {
@@ -48,17 +61,6 @@ struct SettingsScreen: View {
         }
         .formStyle(.grouped)
         .navigationTitle("Settings")
-        .confirmationDialog(
-            "Delete All Data?",
-            isPresented: $model.isShowingResetConfirmation
-        ) {
-            Button("Delete Everything", role: .destructive) {
-                model.deleteAllData(from: repositories)
-            }
-            .accessibilityIdentifier(AccessibilityID.Settings.confirmDeleteAll)
-        } message: {
-            Text("^[\(model.educationCount) education](inflect: true) and everything in them will be deleted. This can't be undone.")
-        }
         .alert("Something went wrong", isPresented: $model.isShowingError) {
         } message: {
             Text(model.errorMessage ?? "")

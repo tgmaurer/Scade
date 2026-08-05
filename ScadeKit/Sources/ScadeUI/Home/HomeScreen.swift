@@ -8,6 +8,7 @@ struct HomeScreen: View {
     @State private var educationFormMode: EducationFormMode?
     @State private var subjectFormMode: SubjectFormMode?
     @State private var gradeFormMode: GradeFormMode?
+    @State private var isShowingSettings = false
 
     var body: some View {
         @Bindable var model = model
@@ -73,6 +74,18 @@ struct HomeScreen: View {
             ToolbarItem {
                 Button("Reload", systemImage: "arrow.clockwise", action: reload)
             }
+
+            // Where Settings has no section of its own — everywhere but
+            // macOS — this is the way in (SPEC-POLISH §2.2).
+            if AppSection.showsSettingsSection == false {
+                ToolbarItem {
+                    Button("Settings", systemImage: "gearshape", action: showSettings)
+                        .accessibilityIdentifier(AccessibilityID.Settings.open)
+                }
+            }
+        }
+        .sheet(isPresented: $isShowingSettings) {
+            SettingsSheet()
         }
         .sheet(item: $educationFormMode, onDismiss: reload) { mode in
             EducationFormScreen(mode: mode)
@@ -97,6 +110,10 @@ struct HomeScreen: View {
 
     private func startCreatingEducation() {
         educationFormMode = .create
+    }
+
+    private func showSettings() {
+        isShowingSettings = true
     }
 
     /// §4: prefilled with the current education, and the filtered semester

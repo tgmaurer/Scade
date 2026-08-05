@@ -3,7 +3,6 @@ import SwiftUI
 
 /// Backs the subject detail screen.
 @Observable
-@MainActor
 final class SubjectDetailModel {
     private(set) var summary: SubjectSummary?
     /// Worked out once per load rather than on every `body` pass.

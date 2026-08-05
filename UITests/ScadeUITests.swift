@@ -9,35 +9,54 @@ import XCTest
 ///
 /// The domain rules themselves are pinned down by `ScadeKitTests`; what these
 /// verify is that the UI is actually connected to them.
-@MainActor // Potentially remove?
+/// Main-actor because the target builds in Swift 6 language mode and
+/// `XCUIApplication` is main-actor isolated; without it every helper below
+/// needs its own annotation.
+@MainActor
 final class ScadeUITests: XCTestCase {
+
+    /// An element addressed two ways, because the identifier doesn't always
+    /// survive to the rendered control: macOS draws sidebar rows in AppKit,
+    /// and iOS re-renders toolbar items that overflow into a "More" menu.
+    /// Both keep the visible label, so it's the fallback.
+    private struct Control {
+        let identifier: String
+        let label: String
+
+        init(_ identifier: String, _ label: String) {
+            self.identifier = identifier
+            self.label = label
+        }
+    }
 
     /// Identifiers mirrored from `ScadeUI`'s `AccessibilityID`, which this
     /// target can't import. Change one, change the other.
     private enum ID {
         static let uiTesting = "-ui-testing"
 
-        static let educationsSection = "sidebar.educations"
-        static let subjectsSection = "sidebar.subjects"
-        static let gradesSection = "sidebar.grades"
+        static let homeSection = Control("section.home", "Home")
+        static let educationsSection = Control("section.educations", "Educations")
+        static let subjectsSection = Control("section.subjects", "Subjects")
+        static let gradesSection = Control("section.grades", "Grades")
 
         static let save = "form.save"
         static let cancel = "form.cancel"
         static let error = "form.error"
 
-        static let newEducation = "education.new"
+        static let newEducation = Control("education.new", "New Education")
         static let educationName = "education.form.name"
 
-        static let newSubject = "subject.new"
+        static let newSubject = Control("subject.new", "New Subject")
         static let subjectName = "subject.form.name"
         static let subjectSemester = "subject.form.semester"
 
-        static let newGrade = "grade.new"
+        static let newGrade = Control("grade.new", "New Grade")
         static let gradeValue = "grade.form.value"
 
-        static let settingsSection = "sidebar.settings"
-        static let deleteAll = "settings.deleteAll"
-        static let confirmDeleteAll = "settings.deleteAll.confirm"
+        static let settingsSection = Control("section.settings", "Settings")
+        static let openSettings = Control("settings.open", "Settings")
+        static let deleteAll = Control("settings.deleteAll", "Delete All Data")
+        static let confirmDeleteAll = Control("settings.deleteAll.confirm", "Delete Everything")
     }
 
     private var app: XCUIApplication!
@@ -45,11 +64,10 @@ final class ScadeUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
 
-        #if os(iOS)
-        // Landscape keeps the split view's sidebar on screen, so section
-        // switching doesn't depend on a disclosure button.
-        XCUIDevice.shared.orientation = .landscapeLeft
-        #endif
+        // No orientation forcing: the shell is a `TabView` now, and its tabs
+        // are on screen in both orientations. The split view this replaced
+        // hid its sidebar in portrait, which is why these tests used to run
+        // in landscape.
 
         app = XCUIApplication()
         // Without this the app opens the real database in Application
@@ -163,9 +181,10 @@ final class ScadeUITests: XCTestCase {
         createEducation(named: "Doomed Course")
         XCTAssertTrue(rowMentioning("Doomed Course").waitForExistence(timeout: 5))
 
-        openSection(ID.settingsSection)
+        openSettings()
         tap(ID.deleteAll)
         tap(ID.confirmDeleteAll)
+        closeSettings()
 
         openSection(ID.educationsSection)
         XCTAssertFalse(
@@ -196,10 +215,38 @@ final class ScadeUITests: XCTestCase {
             .firstMatch
     }
 
-    private func openSection(_ identifier: String) {
-        let row = app.descendants(matching: .any).matching(identifier: identifier).firstMatch
-        XCTAssertTrue(row.waitForExistence(timeout: 10), "Sidebar row \(identifier) never appeared.")
-        row.tap()
+    /// Switches shell section — a tab on iOS, a sidebar row on macOS.
+    ///
+    /// All three platforms need a different handle, and only one of them keeps
+    /// the accessibility identifier:
+    ///
+    /// - **macOS** draws the sidebar row in AppKit, which drops the identifier
+    ///   and exposes a `StaticText` whose *value* — not label — is the title.
+    /// - **iPhone** renders a tab bar whose buttons keep their label but not
+    ///   the identifier.
+    /// - **iPad** renders a top tab bar and keeps both.
+    ///
+    /// So iOS matches on either, and takes whichever is actually on screen.
+    /// Matching on a title is a weaker handle than an identifier; that's the
+    /// cost of these being system-drawn controls rather than views the app
+    /// composes itself.
+    private func openSection(_ section: Control) {
+        #if os(macOS)
+        let matches = app.outlines["Sidebar"].staticTexts
+            .matching(NSPredicate(format: "value == %@", section.label))
+        #else
+        let matches = app.buttons.matching(
+            NSPredicate(format: "identifier == %@ OR label == %@", section.identifier, section.label)
+        )
+        #endif
+
+        XCTAssertTrue(
+            matches.firstMatch.waitForExistence(timeout: 10),
+            "Section \(section.label) never appeared."
+        )
+
+        let target = matches.allElementsBoundByIndex.first(where: \.isHittable) ?? matches.firstMatch
+        target.tap()
     }
 
     /// Taps the one button a person would tap.
@@ -208,12 +255,62 @@ final class ScadeUITests: XCTestCase {
     /// confirmation dialogs — it renders the dialog's buttons more than once
     /// and only one copy is on screen. Picking the hittable match says what
     /// we actually mean, and behaves the same when there's only one.
-    private func tap(_ identifier: String) {
-        let matches = app.buttons.matching(identifier: identifier)
-        XCTAssertTrue(matches.firstMatch.waitForExistence(timeout: 10), "Button \(identifier) never appeared.")
+    ///
+    /// If nothing turns up, the toolbar's overflow menu is opened and the
+    /// search repeated — see `openToolbarOverflow()`.
+    private func tap(_ control: Control) {
+        let byIdentifier = app.buttons.matching(identifier: control.identifier)
+
+        if byIdentifier.firstMatch.waitForExistence(timeout: 5) == false {
+            openToolbarOverflow()
+        }
+
+        // The overflow menu rebuilds its items and drops the identifier on
+        // the way, so inside it the label is all there is.
+        let matches = byIdentifier.firstMatch.exists
+            ? byIdentifier
+            : app.buttons.matching(NSPredicate(format: "label == %@", control.label))
+
+        XCTAssertTrue(matches.firstMatch.waitForExistence(timeout: 10), "Button \(control.label) never appeared.")
 
         let target = matches.allElementsBoundByIndex.first(where: \.isHittable) ?? matches.firstMatch
         target.tap()
+    }
+
+    /// Opens Settings, which each platform offers differently: a sidebar row
+    /// on macOS, and everywhere else a button on Home, because Settings has no
+    /// section of its own there. See `AppSection.showsSettingsSection`.
+    private func openSettings() {
+        #if os(macOS)
+        openSection(ID.settingsSection)
+        #else
+        openSection(ID.homeSection)
+        tap(ID.openSettings)
+        #endif
+    }
+
+    /// Dismisses the Settings sheet, where there was one to dismiss. On macOS
+    /// Settings is a section rather than a sheet, so there's nothing to close.
+    private func closeSettings() {
+        #if os(iOS)
+        let done = app.buttons["Done"]
+        XCTAssertTrue(done.waitForExistence(timeout: 5), "The Settings sheet should have a Done button.")
+        done.tap()
+        #endif
+    }
+
+    /// Opens the "More" menu iOS collapses overflowing toolbar items into.
+    ///
+    /// An 11-inch iPad in portrait doesn't have room for a search field and
+    /// three toolbar buttons, so most of them end up here. The button is still
+    /// reachable, just one tap further away — which is what a person would
+    /// have to do too, so the test does the same rather than forcing an
+    /// orientation that hides the problem.
+    private func openToolbarOverflow() {
+        let overflow = app.buttons["OverflowBarButtonItem"]
+        guard overflow.exists else { return }
+
+        overflow.tap()
     }
 
     private func createEducation(named name: String) {

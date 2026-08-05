@@ -151,10 +151,18 @@ iPhone fix costs no fork.
 
 Tabs, in order: **Home, Educations, Subjects, Grades.**
 
-**Settings is not a content tab on iPhone.** A tab slot is permanent
-real estate and Settings is visited rarely; it belongs behind a toolbar button
-on Home. On macOS and iPadOS it stays a sidebar item, as SPEC §4 has it. This
-is the one platform fork in the shell, and it's one conditional.
+**Settings is a section only on macOS.** A tab slot is permanent real estate
+and Settings is visited rarely; everywhere else it belongs behind a toolbar
+button on Home, opening as a sheet. SPEC §4's "Settings in the sidebar" is
+honoured where a sidebar exists, which turns out to be macOS alone.
+
+iPad was expected to keep it, on the assumption that `.sidebarAdaptable` would
+give iPad a sidebar. **It doesn't.** iPadOS renders a top tab bar, and five
+tabs plus its sidebar toggle don't fit an 11-inch portrait window: the bar
+paginates, and Settings lands on a second page — present in the accessibility
+tree, not reachable by tapping.
+`defaultAdaptableTabBarPlacement(.sidebar)` does not override this; it was
+tried and had no observable effect. Four tabs fit, so four tabs it is.
 
 #### Recorded alternative — "Library"
 
@@ -188,9 +196,13 @@ dead weight on a phone, revisit this then, with usage as evidence.
   §1.4 — it must not become a second copy of screen state.
 - `⌘1`–`⌘5` in §1.1 now map to tab selection rather than sidebar selection.
   Same shortcuts, different binding.
-- `.defaultAdaptableTabBarPlacement(.sidebar)` is the lever if iPadOS should
-  prefer the sidebar over the top bar. iPadOS isn't the focus; take whatever
-  the default gives and only reach for this if it looks wrong.
+- Accessibility identifiers do **not** survive uniformly, which matters
+  because `ScadeUITests` drives the shell. macOS draws sidebar rows in AppKit
+  and drops them, exposing a `StaticText` whose *value* is the title; iPhone's
+  tab bar keeps the label but not the identifier; iPad's top tab bar keeps
+  both. The tests match on identifier-or-label for that reason. The same is
+  true of toolbar items that overflow into a "More" menu — iOS rebuilds them
+  and the identifier is gone.
 
 ### 2.3 Home
 

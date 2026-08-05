@@ -4,7 +4,6 @@ import SwiftUI
 /// Holds what the subject form has been typed into, and decides whether it
 /// can be saved.
 @Observable
-@MainActor
 final class SubjectFormModel {
     let mode: SubjectFormMode
 

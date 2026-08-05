@@ -4,7 +4,6 @@ import SwiftUI
 /// Backs the educations list: what's loaded, what's filtered, what's pending
 /// deletion.
 @Observable
-@MainActor
 final class EducationListModel {
     /// Everything in the database, newest-created first (§3.6). Search and
     /// filters narrow this without reordering it.

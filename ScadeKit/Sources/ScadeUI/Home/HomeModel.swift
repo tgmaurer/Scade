@@ -7,7 +7,6 @@ import SwiftUI
 /// second query — the subjects and grades are all in hand, and §4 wants the
 /// average to follow the filter.
 @Observable
-@MainActor
 final class HomeModel {
     private(set) var educations: [Education] = []
     private(set) var summary: EducationSummary?

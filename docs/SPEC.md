@@ -26,7 +26,7 @@ collected in [SPEC-BACKLOG.md](SPEC-BACKLOG.md).
 | License | GPL-3.0 |
 | Platforms | macOS, iOS (single SwiftUI multiplatform target) |
 | Stack | SwiftUI, GRDB (raw SQLite, no ORM/change-tracker) |
-| Navigation | `TabView` + `.tabViewStyle(.sidebarAdaptable)` — sidebar on macOS/iPad, tab bar on iPhone. Was `NavigationSplitView`; see [SPEC-POLISH.md](SPEC-POLISH.md) §2.2 |
+| Navigation | `TabView` + `.tabViewStyle(.sidebarAdaptable)` — sidebar on macOS, tab bar on iPhone, top tab bar on iPad. Was `NavigationSplitView`; see [SPEC-POLISH.md](SPEC-POLISH.md) §2.2 |
 | Grading system | Swiss 1–6 scale (6 = best, 4 = passing), no multi-scale support planned |
 
 Notes and Color are dropped entirely — no equivalent feature in Scade.

@@ -3,7 +3,6 @@ import SwiftUI
 
 /// Backs the grade detail screen.
 @Observable
-@MainActor
 final class GradeDetailModel {
     private(set) var item: GradeListItem?
 

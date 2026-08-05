@@ -3,7 +3,6 @@ import SwiftUI
 
 /// Backs the subjects list.
 @Observable
-@MainActor
 final class SubjectListModel {
     private(set) var rows: [SubjectRow] = []
     private(set) var institutions: [String] = []

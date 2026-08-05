@@ -45,7 +45,6 @@ enum PreviewData {
 
     /// An in-memory store with a little data in it, so previews of the list
     /// screens aren't all empty states.
-    @MainActor
     static let seededRepositories: Repositories = {
         let repositories = Repositories.inMemory
         try? seed(into: repositories)

@@ -4,7 +4,6 @@ import SwiftUI
 
 /// Backs the settings screen. Only the export needs any state.
 @Observable
-@MainActor
 final class SettingsModel {
     /// A consistent snapshot written to a temporary file, ready to share.
     private(set) var exportURL: URL?

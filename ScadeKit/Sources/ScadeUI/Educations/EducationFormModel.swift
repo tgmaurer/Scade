@@ -4,7 +4,6 @@ import SwiftUI
 /// Holds what the education form has been typed into, and decides whether it
 /// can be saved.
 @Observable
-@MainActor
 final class EducationFormModel {
     let mode: EducationFormMode
 

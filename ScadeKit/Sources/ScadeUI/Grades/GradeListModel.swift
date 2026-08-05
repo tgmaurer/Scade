@@ -3,7 +3,6 @@ import SwiftUI
 
 /// Backs the grades list.
 @Observable
-@MainActor
 final class GradeListModel {
     private(set) var rows: [GradeListItem] = []
     /// §4 disables grade creation, with a reason, when nothing can hold one.

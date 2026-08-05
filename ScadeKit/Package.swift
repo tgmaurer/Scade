@@ -26,9 +26,17 @@ let package = Package(
         // Every screen in the app. The App target is a shell that presents
         // this, which keeps the views compilable — and therefore checkable —
         // without going through the Xcode project.
+        //
+        // Main-actor by default, matching the App target's
+        // SWIFT_DEFAULT_ACTOR_ISOLATION. Views and their models are main-actor
+        // work by definition, so the annotation was on every one of them;
+        // stating it once means new code inherits it instead of remembering
+        // it. `ScadeKit` deliberately does *not* do this — the domain layer is
+        // non-isolated and `Sendable` so it can be used from anywhere.
         .target(
             name: "ScadeUI",
-            dependencies: ["ScadeKit"]
+            dependencies: ["ScadeKit"],
+            swiftSettings: [.defaultIsolation(MainActor.self)]
         ),
         .testTarget(
             name: "ScadeKitTests",
