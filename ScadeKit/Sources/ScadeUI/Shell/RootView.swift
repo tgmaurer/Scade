@@ -93,7 +93,6 @@ public struct RootView: View {
             }
         }
         .tabViewStyle(.sidebarAdaptable)
-        .tint(ScadeDesign.accent)
         .environment(\.repositories, repositories)
         .preferredColorScheme(theme.colorScheme)
     }

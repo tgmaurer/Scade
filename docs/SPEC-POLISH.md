@@ -126,9 +126,12 @@ the direction instead, in words.
 ### 2.1 Identity
 
 - **App icon.** None exists. Needed before this is shippable in any sense.
-- **Accent colour.** The app currently inherits the system accent. A chosen
-  accent that coexists with the failing-red is the single highest-leverage
-  change here — it defines everything downstream.
+- **Accent colour.** Indigo, chosen for hue distance from the failing-red.
+  Defined in `App/Assets.xcassets/AccentColor.colorset` with light and dark
+  variants — **not** as a literal in Swift. The catalog is the only place that
+  reaches the app icon tint, the OS's own chrome and any AppKit/UIKit control
+  SwiftUI doesn't draw; a code literal colours the view hierarchy and nothing
+  else. `ScadeDesign.accent` reads it back, so there's one source of truth.
 - **Failing-red** must stay distinguishable from the accent, in both
   appearances, and must keep working with Differentiate Without Color (the
   icon fallback in `GradeValueLabel` already handles this — don't regress it).

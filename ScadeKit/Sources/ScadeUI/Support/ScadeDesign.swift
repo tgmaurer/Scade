@@ -19,9 +19,21 @@ enum ScadeDesign {
     ///
     /// Indigo, chosen for hue distance from the failing-red: a badge below 4
     /// has to read as trouble at a glance, which it can't do if the accent is
-    /// the neighbouring hue. The system colour rather than a literal, so it
-    /// adapts to light and dark and to increased contrast by itself.
-    static let accent = Color.indigo
+    /// the neighbouring hue.
+    ///
+    /// **Defined in `App/Assets.xcassets/AccentColor.colorset`, not here.** The
+    /// asset catalog is the only place that reaches everything: the app icon
+    /// tint, the OS's own chrome, and any AppKit/UIKit control SwiftUI doesn't
+    /// draw. A literal in this file would colour the view hierarchy and
+    /// nothing else. This property reads whatever the catalog defines, so
+    /// there's one source of truth and changing the hue is a one-file edit.
+    ///
+    /// The catalog carries a light and a dark variant, which is the other
+    /// thing a code literal can't express without branching on the appearance.
+    ///
+    /// Package previews render this as the *system* accent, since they have no
+    /// app target to read the catalog from. Only previews; the app is correct.
+    static let accent = Color.accentColor
 
     // MARK: - Type
     //
