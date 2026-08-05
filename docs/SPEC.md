@@ -9,8 +9,9 @@ the UI natively for SwiftUI/macOS+iOS idioms.
 
 Visual refinement, keyboard shortcuts, and the accessibility verification
 pass are deferred until this spec is fully implemented, and are specified
-separately in [SPEC-POLISH.md](SPEC-POLISH.md). Behaviour wanted beyond v1
-is collected in [SPEC-BACKLOG.md](SPEC-BACKLOG.md).
+separately in [SPEC-POLISH.md](SPEC-POLISH.md), with mockups and visual
+references in [design/](design/README.md). Behaviour wanted beyond v1 is
+collected in [SPEC-BACKLOG.md](SPEC-BACKLOG.md).
 
 ---
 
@@ -25,7 +26,7 @@ is collected in [SPEC-BACKLOG.md](SPEC-BACKLOG.md).
 | License | GPL-3.0 |
 | Platforms | macOS, iOS (single SwiftUI multiplatform target) |
 | Stack | SwiftUI, GRDB (raw SQLite, no ORM/change-tracker) |
-| Navigation | `NavigationSplitView` — sidebar on macOS/iPad, collapses to tab/stack on iPhone |
+| Navigation | `TabView` + `.tabViewStyle(.sidebarAdaptable)` — sidebar on macOS/iPad, tab bar on iPhone. Was `NavigationSplitView`; see [SPEC-POLISH.md](SPEC-POLISH.md) §2.2 |
 | Grading system | Swiss 1–6 scale (6 = best, 4 = passing), no multi-scale support planned |
 
 Notes and Color are dropped entirely — no equivalent feature in Scade.
@@ -222,13 +223,22 @@ three different tiebreaker orders across three screens). Recommend picking
 ### Home / Dashboard
 **Data:** selected education (with completion indicator); subject count and
 grade count for it; education-level weighted average (§3.2) or "N/A";
-optional semester filter indicator; per-subject: name, semester, grade list
-(value + weight, styled red if value <4), subject average badge.
+optional semester filter indicator; subjects grouped by semester; per-subject:
+name, subject average badge, and — in a regular width only — that subject's
+grade list (value + weight, styled red if value <4).
+**Per-subject grades are width-dependent.** In compact width (iPhone) a
+subject row shows its name and average and nothing else; the grades are one
+tap away in the subject detail, which already lists them all. This is the only
+place in the spec where a screen's data varies by platform, and it's
+deliberate: a phone-sized dashboard answers "how am I doing", and inlining
+every grade behind every subject turns that into a wall of numbers. Rationale
+and layout consequences: [SPEC-POLISH.md](SPEC-POLISH.md) §2.3.
 **Actions:** pick education; filter by semester (bounded 0–education's
 semester count); clear filter; create education/subject/grade (prefilled
 with current education + filtered semester where applicable); reload;
-navigate to subject/grade detail; quick-add grade inline per subject
-(hidden if that subject is completed).
+navigate to subject/grade detail; quick-add grade per subject (hidden if that
+subject is completed — in compact width this is a row action rather than a
+button inside the subject's section, since there is no section).
 **Behavior:** filter control disabled until an education is picked; "new
 subject" disabled with reason if education is completed; averages recompute
 on every relevant state change (education switch, filter apply/clear,
