@@ -15,6 +15,11 @@ final class HomeModel {
     private(set) var average: Double?
     private(set) var subjects: [HomeSubject] = []
 
+    /// The same subjects, grouped for display (SPEC-POLISH §2.3). Derived
+    /// here rather than in `body`, which runs far more often than the data
+    /// changes.
+    private(set) var semesters: [HomeSemester] = []
+
     var selectedEducationId: Int64? { didSet { refresh() } }
     var semester: Int? { didSet { recompute() } }
 
@@ -99,12 +104,14 @@ final class HomeModel {
     private func recompute() {
         guard let summary else {
             subjects = []
+            semesters = []
             average = nil
             return
         }
 
         let filtered = summary.subjects.filter { semester == nil || $0.subject.semester == semester }
         subjects = filtered.map(HomeSubject.init)
+        semesters = HomeSemester.grouping(subjects)
         average = GradeCalculator.educationAverage(of: filtered)
     }
 }

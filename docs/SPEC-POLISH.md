@@ -126,17 +126,21 @@ the direction instead, in words.
 ### 2.1 Identity
 
 - **App icon.** None exists. Needed before this is shippable in any sense.
-- **Accent colour.** The app currently inherits the system accent. A chosen
-  accent that coexists with the failing-red is the single highest-leverage
-  change here — it defines everything downstream.
+- **Accent colour.** Indigo, chosen for hue distance from the failing-red.
+  Defined in `App/Assets.xcassets/AccentColor.colorset` with light and dark
+  variants — **not** as a literal in Swift. The catalog is the only place that
+  reaches the app icon tint, the OS's own chrome and any AppKit/UIKit control
+  SwiftUI doesn't draw; a code literal colours the view hierarchy and nothing
+  else. `ScadeDesign.accent` reads it back, so there's one source of truth.
 - **Failing-red** must stay distinguishable from the accent, in both
   appearances, and must keep working with Differentiate Without Color (the
   icon fallback in `GradeValueLabel` already handles this — don't regress it).
 
 ### 2.2 Shell and navigation
 
-**Platform priority: macOS and iOS. iPadOS stays supported and must not
-break, but no decision below is made for its sake.**
+**Platform priority: macOS and iPhone.** iPadOS is a build target that must
+not break, and nothing more — no decision in this document is made for its
+sake, and an iPad-only problem gets noted, not fixed.
 
 `RootView` is currently a `NavigationSplitView` on every platform. That's
 right on macOS and wrong on iPhone, where it collapses to a stack whose root
@@ -284,9 +288,12 @@ are the same failure with a border around each block
 
 The fix is the iOS inset-grouped idea applied deliberately, not more rules:
 
-- **Home stops being a `List`.** It's a dashboard of groups, not a list —
-  `ScrollView` + `LazyVStack` of semester cards, with hairlines only *inside*
-  a card, between its subject rows. This is what removes most of the lines.
+- **Home groups into cards.** One card per semester, hairlines only *inside*
+  a card. Built on `List` rather than the `ScrollView` + `LazyVStack` first
+  sketched here: swipe actions are `List`-only, and quick-add needs one on
+  iPhone (§4). iOS gets this free from `.insetGrouped`; macOS assembles it —
+  `.listStyle(.inset)`, separators hidden, each row on a filled rounded
+  rectangle. See `View+GroupedList.swift`.
 - **The three flat lists stay `List`s.** They are lists; making every row a
   floating card hurts scanning and fights macOS selection and hover states.
   Reduce the noise instead: `.listRowSeparator(.hidden)`, and let spacing and

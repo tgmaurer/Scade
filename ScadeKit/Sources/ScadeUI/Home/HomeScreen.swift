@@ -9,29 +9,36 @@ struct HomeScreen: View {
     @State private var subjectFormMode: SubjectFormMode?
     @State private var gradeFormMode: GradeFormMode?
     @State private var isShowingSettings = false
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     var body: some View {
         @Bindable var model = model
 
         List {
             if let education = model.selectedEducation {
-                HomeSummarySection(
-                    education: education,
-                    average: model.average,
-                    subjectCount: model.subjects.count,
-                    gradeCount: model.gradeCount,
-                    semester: model.semester
-                )
-
-                ForEach(model.subjects) { item in
-                    HomeSubjectSection(
-                        item: item,
+                Section {
+                    HomeSummaryHeader(
                         education: education,
+                        average: model.average,
+                        subjectCount: model.subjects.count,
+                        gradeCount: model.gradeCount,
+                        semester: model.semester
+                    )
+                }
+                .cardRowBackground()
+
+                ForEach(model.semesters) { semester in
+                    HomeSemesterSection(
+                        semester: semester,
+                        education: education,
+                        showsGrades: showsGrades,
                         onAddGrade: startAddingGrade
                     )
+                    .cardRowBackground()
                 }
             }
         }
+        .groupedListStyle()
         .navigationTitle("Home")
         .overlay {
             HomeEmptyState(
@@ -101,6 +108,13 @@ struct HomeScreen: View {
             Text(model.errorMessage ?? "")
         }
         .onAppear(perform: reload)
+    }
+
+    /// §4: a subject's grades are listed under it only in a regular width.
+    /// A compact one shows the name and average, and the grades are a tap
+    /// away in the subject detail (SPEC-POLISH §2.3).
+    private var showsGrades: Bool {
+        sizeClass != .compact
     }
 
     private func reload() {

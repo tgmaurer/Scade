@@ -39,8 +39,8 @@ final class ScadeUITests: XCTestCase {
         static let subjectsSection = Control("section.subjects", "Subjects")
         static let gradesSection = Control("section.grades", "Grades")
 
-        static let save = "form.save"
-        static let cancel = "form.cancel"
+        static let save = Control("form.save", "Save")
+        static let cancel = Control("form.cancel", "Cancel")
         static let error = "form.error"
 
         static let newEducation = Control("education.new", "New Education")
@@ -99,16 +99,14 @@ final class ScadeUITests: XCTestCase {
         openSection(ID.educationsSection)
         tap(ID.newEducation)
 
-        let save = app.buttons[ID.save]
-        XCTAssertTrue(save.waitForExistence(timeout: 5))
-        save.tap()
+        tap(ID.save)
 
         XCTAssertTrue(
             errorLabels.firstMatch.waitForExistence(timeout: 5),
             "An empty name should produce an inline validation error."
         )
         XCTAssertTrue(
-            save.exists,
+            app.buttons[ID.save.identifier].exists,
             "The form should stay open when validation fails."
         )
     }
@@ -119,7 +117,7 @@ final class ScadeUITests: XCTestCase {
         tap(ID.newEducation)
 
         type("Discarded", into: app.textFields[ID.educationName])
-        app.buttons[ID.cancel].tap()
+        tap(ID.cancel)
 
         XCTAssertFalse(
             rowMentioning("Discarded").waitForExistence(timeout: 2),
@@ -139,14 +137,14 @@ final class ScadeUITests: XCTestCase {
 
         type("Impossible Semester", into: app.textFields[ID.subjectName])
         replaceText("7", in: app.textFields[ID.subjectSemester])
-        app.buttons[ID.save].tap()
+        tap(ID.save)
 
         XCTAssertTrue(
             errorLabels.firstMatch.waitForExistence(timeout: 5),
             "Semester 7 of a 2-semester education should be refused."
         )
         XCTAssertTrue(
-            app.buttons[ID.save].exists,
+            app.buttons[ID.save.identifier].exists,
             "The form should stay open rather than clamping the value."
         )
     }
@@ -164,7 +162,7 @@ final class ScadeUITests: XCTestCase {
         openSection(ID.gradesSection)
         tap(ID.newGrade)
         replaceText("5", in: app.textFields[ID.gradeValue])
-        app.buttons[ID.save].tap()
+        tap(ID.save)
 
         openSection(ID.subjectsSection)
         XCTAssertTrue(
@@ -316,13 +314,13 @@ final class ScadeUITests: XCTestCase {
     private func createEducation(named name: String) {
         tap(ID.newEducation)
         type(name, into: app.textFields[ID.educationName])
-        app.buttons[ID.save].tap()
+        tap(ID.save)
     }
 
     private func createSubject(named name: String) {
         tap(ID.newSubject)
         type(name, into: app.textFields[ID.subjectName])
-        app.buttons[ID.save].tap()
+        tap(ID.save)
     }
 
     private func type(_ text: String, into field: XCUIElement) {
