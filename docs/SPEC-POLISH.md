@@ -54,16 +54,22 @@ of how the views look.
 
 | Shortcut | Action |
 |---|---|
-| `⌘1`–`⌘5` | Select sidebar section (Home, Educations, Subjects, Grades, Settings) |
+| `⌘1`–`⌘5` | Select tab (Home, Educations, Subjects, Grades, Settings) |
 | `⌘,` | Settings — the platform convention; on macOS this should open a real Settings scene, not select the sidebar row |
 | `⌘[` / `⌘]` | Back / forward in the detail stack |
 | `⌘F` | Focus the search field on the current list |
+
+These bind to the `TabView` selection from §2.2, not to a sidebar — the
+shortcuts are unchanged, the thing they set isn't. `⌘5` exists only where
+Settings does; on iPhone there is no fifth tab and no hardware keyboard to
+press it with.
 
 `⌘,` is the one that needs a decision rather than an implementation: SPEC §4
 puts Settings in the sidebar, and macOS convention puts it in a separate
 window. Options are (a) keep the sidebar row and let `⌘,` select it,
 (b) move to a `Settings` scene on macOS and keep the sidebar row on iOS.
-(b) is more native and more work.
+(b) is more native and more work. §2.2 already removes Settings from the tab
+bar on iPhone, which makes (b) the smaller step than it was.
 
 ### 1.2 Records
 
@@ -110,12 +116,12 @@ and it's correct; it doesn't look designed.
 `design/mockups/` (the target), GradeMaster screenshots in
 `design/reference/grademaster/` (what information a screen needs — a starting
 point with known flaws, never a fidelity target, and desktop-only: it says
-little about iPhone), other apps in `design/reference/inspiration/`. §2.4 is
+little about iPhone), other apps in `design/reference/inspiration/`. §2.6 is
 where the density and platform-fit decisions it can't answer get made. Read
-the relevant image alongside the
-section below before starting: this document describes the *problem* on each
-screen, the mockups describe the destination. Where no mockup exists yet, the
-section still stands on its own.
+the relevant image alongside the section below before starting: this document
+describes the *problem* on each screen, the references describe what has
+already been tried. No mockups exist and none are planned — §2.2 to §2.5 carry
+the direction instead, in words.
 
 ### 2.1 Identity
 
@@ -127,7 +133,105 @@ section still stands on its own.
   appearances, and must keep working with Differentiate Without Color (the
   icon fallback in `GradeValueLabel` already handles this — don't regress it).
 
-### 2.2 Hierarchy in rows
+### 2.2 Shell and navigation
+
+**Platform priority: macOS and iOS. iPadOS stays supported and must not
+break, but no decision below is made for its sake.**
+
+`RootView` is currently a `NavigationSplitView` on every platform. That's
+right on macOS and wrong on iPhone, where it collapses to a stack whose root
+*is* the sidebar — switching section means navigating back to a menu, which
+no iOS app does.
+
+**Decision: one `TabView` with `.tabViewStyle(.sidebarAdaptable)`,** replacing
+the split view. The style resolves per platform from a single declaration:
+iOS gets a bottom tab bar, macOS a sidebar, iPadOS a top tab bar that adapts
+into one. macOS therefore keeps exactly the shell SPEC §4 describes, and the
+iPhone fix costs no fork.
+
+Tabs, in order: **Home, Educations, Subjects, Grades.**
+
+**Settings is not a content tab on iPhone.** A tab slot is permanent
+real estate and Settings is visited rarely; it belongs behind a toolbar button
+on Home. On macOS and iPadOS it stays a sidebar item, as SPEC §4 has it. This
+is the one platform fork in the shell, and it's one conditional.
+
+#### Recorded alternative — "Library"
+
+Three tabs: Home, Library, Settings — where Library holds a segmented control
+switching between Educations, Subjects and Grades.
+
+Not chosen, for reasons worth keeping written down in case the tab bar turns
+out to feel redundant in use:
+
+- It costs a tap and adds a mode to remember, to save two tab slots that
+  aren't scarce.
+- The top of an iPhone list screen already carries a large title and a search
+  field (§3.5). A segmented control makes three rows of chrome before any
+  content — the opposite of the lean UI it's meant to serve.
+- Search would change scope silently underneath a shared field.
+- It's a desktop instinct: one panel, many modes. A tab bar *is* the mode
+  switcher, so this nests one inside another.
+
+Its real argument — that Educations, Subjects and Grades are one drill-down
+chain rather than three peers — is a fair criticism of the flat list model,
+inherited from GradeMaster's sidebar. If the flat Grades list proves to be
+dead weight on a phone, revisit this then, with usage as evidence.
+
+#### Implementation notes
+
+- Each `Tab` needs its own `NavigationStack`, so the three
+  `navigationDestination` registrations in `RootView` get duplicated per tab.
+  Factor them into one `ViewModifier` rather than copy-pasting; four drifting
+  copies is how a detail screen goes missing on one tab only.
+- Tab selection is shell state. Keep it to *which tab*, per the state rule in
+  §1.4 — it must not become a second copy of screen state.
+- `⌘1`–`⌘5` in §1.1 now map to tab selection rather than sidebar selection.
+  Same shortcuts, different binding.
+- `.defaultAdaptableTabBarPlacement(.sidebar)` is the lever if iPadOS should
+  prefer the sidebar over the top bar. iPadOS isn't the focus; take whatever
+  the default gives and only reach for this if it looks wrong.
+
+### 2.3 Home
+
+The screen most worth designing rather than listing, and the one where the
+two platforms genuinely diverge.
+
+**Group by semester.** Today Home renders one `Section` *per subject*, with
+that subject's grades inside it. GradeMaster instead used one flat table sorted
+by semester, with the semester welded into the row's name (`English - 4`).
+Both are wrong in the same way: semester is the unit a student actually
+thinks in, and neither gives it structure.
+
+So: a section per semester, headed `Semester N`, with that semester's subjects
+as its rows. This also gives the §4 semester filter an honest relationship to
+the layout — filtering now narrows to one visible section rather than
+reshuffling an undifferentiated list.
+
+**iOS: subject and average only.** One row per subject: name, average badge.
+No grade list. Tapping the row opens the subject detail, which already shows
+every grade and can add one — so nothing is lost, it moves one tap away. This
+keeps the phone screen to the question it's actually asked: *how am I doing?*
+
+Quick-add still needs a home on iPhone once the per-subject section is gone.
+A swipe action on the subject row is the native answer; a toolbar `+` is the
+fallback. Either way it must stay hidden for a completed subject, per §4.
+
+**macOS: grades stay inline.** There's room, and seeing the grades behind an
+average is the point of a desktop dashboard. The wide-window grid idea still
+applies — semester cards side by side rather than one column.
+
+> **This changes SPEC §4, which is why it's recorded there too.** §4 lists a
+> per-subject grade list as Home data; making that conditional on size class
+> is a functional change, not presentation. Amended deliberately, not
+> inherited from a picture.
+
+**Also worth doing here:** a summary header that reads as a header — education
+name, average, counts — rather than another list section, and some signal of
+progress through the education, since `semester X of Y` is already in the
+model.
+
+### 2.4 Hierarchy in rows
 
 Each list row currently gives near-equal weight to every field. Decide, per
 entity, what the eye should land on first:
@@ -139,32 +243,63 @@ entity, what the eye should land on first:
 - Grade row: value dominant (it's the point of the row); date and
   description secondary; weight tertiary.
 
+Hierarchy comes from **size and weight before it comes from colour or rules**.
+A settled ladder, applied everywhere:
+
+| Role | Treatment |
+|---|---|
+| The number the screen exists for (education average on Home) | `.largeTitle` or `.title`, `.monospacedDigit()` |
+| Row subject | `.headline` |
+| Row secondary (institution, parent, date) | `.subheadline`, `.secondary` |
+| Metadata (weight, counts) | `.caption`, `.secondary` |
+
+`.monospacedDigit()` on every average and grade value. In a column of numbers
+that's the difference between a table and a jitter — and this app is mostly
+columns of numbers.
+
 The averages and weights already render as badges — that treatment
 (`ScadeDesign.badgeCornerRadius`) should become deliberate rather than
 incidental: settled sizes, settled contrast, consistent across every screen
 that shows one.
 
-### 2.3 Dashboard
+### 2.5 Surfaces and separators
 
-Home is the screen most worth designing rather than listing. Currently a
-vertical stack of sections. Worth exploring:
+The macOS complaint in one sentence: **too many horizontal lines, not enough
+grouping.** Default `List` gives a separator between every row, so a screen
+reads as one undifferentiated ruled page — and GradeMaster's detail screens
+are the same failure with a border around each block
+(`gm-subject_detail.png`: a hairline between every label and value).
 
-- A summary header that reads as a header — education name, average, counts —
-  rather than another list section.
-- Wide-window layout: subject sections in a grid instead of a single column.
-- Some visual signal of progress through an education (semester X of Y is
-  data the model already has).
+The fix is the iOS inset-grouped idea applied deliberately, not more rules:
 
-### 2.4 Density and platform fit
+- **Home stops being a `List`.** It's a dashboard of groups, not a list —
+  `ScrollView` + `LazyVStack` of semester cards, with hairlines only *inside*
+  a card, between its subject rows. This is what removes most of the lines.
+- **The three flat lists stay `List`s.** They are lists; making every row a
+  floating card hurts scanning and fights macOS selection and hover states.
+  Reduce the noise instead: `.listRowSeparator(.hidden)`, and let spacing and
+  weight do the dividing.
+- **Cards are a filled secondary background, not a border.** Contrast against
+  the window background with a rounded rect; an outline is the Windows idiom
+  visible in the references, and it adds back the lines this section exists to
+  remove.
+- **No `.glassEffect()` on content.** Liquid Glass is for chrome and controls
+  floating *over* content — the tab bar and toolbars get it for free. Putting
+  it on a semester card makes the data harder to read and dates the app to one
+  release.
+- Forms already use `.formStyle(.grouped)` and already look right. That's the
+  target texture; match it, don't invent a second one.
+
+### 2.6 Density and platform fit
 
 - macOS: check window minimum size, sidebar width, and that lists don't look
   stranded in a wide window. Hover and selection states on rows.
-- iPhone: verify the split view's collapsed behaviour, that forms are
-  reachable above the keyboard, and that swipe actions on rows are what a
-  user expects.
-- iPad: the middle case; check both orientations and the sidebar toggle.
+- iPhone: forms reachable above the keyboard, swipe actions that match
+  expectation, and no screen carrying more fields than it needs — see §2.3.
+- iPad: supported, not driving. Check both orientations and the sidebar
+  toggle; fix what's broken, don't design for it.
 
-### 2.5 Motion
+### 2.7 Motion
 
 No animation is deliberate right now. Additions should be limited to
 transitions that explain a change — a row leaving on delete, a value updating
@@ -208,11 +343,17 @@ unless promoted:
 
 1. §0 manual QA — produces the actual bug list, which may reorder everything
    below it.
-2. §1 keyboard shortcuts — self-contained, testable, and the shell change it
-   needs is better made before views are restyled. Independent of the visual
-   direction, so it can run while mockups are still being gathered.
-3. §2.1 identity (icon, accent) — everything visual depends on it. Blocked on
-   `design/mockups/`.
-4. §2.2–2.5 refinement, screen by screen.
-5. §3 accessibility — last, because it's a verification pass over finished
+2. **§2.2 shell and navigation.** Promoted to the front: it replaces
+   `RootView`'s split view with a `TabView`, which every screen sits inside.
+   Restyling screens first means restyling them inside a shell that's about to
+   change, and it's what makes the app usable on a phone at all.
+3. §1 keyboard shortcuts — self-contained and testable. After §2.2, because
+   `⌘1`–`⌘5` bind to whatever the shell ended up being.
+4. §2.1 identity (icon, accent) — everything else visual depends on the accent
+   being settled.
+5. §2.3 Home, then §2.4–2.5 across the remaining screens. Home first because
+   it's where the semester grouping, the type ladder and the card treatment
+   all get decided; the other screens then inherit settled answers.
+6. §2.6–2.7 density and motion — passes over finished views.
+7. §3 accessibility — last, because it's a verification pass over finished
    views, but budgeted, not skipped.

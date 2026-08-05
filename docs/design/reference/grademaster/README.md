@@ -1,6 +1,8 @@
 # GradeMaster — Visual Reference
 
-Screenshots of the old MAUI app. Empty until they're added.
+Screenshots of the old MAUI app: home, all three list screens, all three
+detail screens (wide and narrow), all three edit forms, settings, and the
+hover/menu states from home.
 
 GradeMaster is the app Scade replaces. It was used in earnest, which makes its
 screens evidence of what information a user actually needs in front of them —
@@ -25,9 +27,10 @@ reproduce this?" It's **"what is this screen trying to tell the user, and
 what's the best way to do that on macOS and iOS?"** Often the answer keeps the
 information and throws away the arrangement entirely.
 
-Where a mockup in [`../../mockups/`](../../mockups/) disagrees with a
-GradeMaster screenshot, the mockup wins without argument — the mockup is a
-decision, the screenshot is a historical artefact.
+Where [SPEC-POLISH.md](../../../SPEC-POLISH.md) §2 disagrees with a screenshot
+here, SPEC-POLISH wins without argument — it's a decision, the screenshot is a
+historical artefact. Same for anything in [`../../mockups/`](../../mockups/),
+if a mockup ever lands there.
 
 Treat an observed flaw as a finding, not a nuisance: if the old app made
 something awkward and Scade shouldn't repeat it, that's worth a line in
@@ -53,7 +56,7 @@ What doesn't, and must be re-decided per platform:
 
 - **Density.** A desktop row can carry four or five fields comfortably.
   The same row on an iPhone is unreadable. Expect to cut, stack, or move
-  fields into a detail view — SPEC-POLISH §2.2 is where that decision lives.
+  fields into a detail view — SPEC-POLISH §2.3 settles this for Home, §2.6 for the rest.
 - **Multi-column and side-by-side layouts.** Anything relying on horizontal
   room has no mobile equivalent; it becomes navigation, not layout.
 - **Anything assuming hover, right-click, or a resizable window.** Touch has
@@ -118,16 +121,24 @@ does exist, say so explicitly — `gm-mobile-grade-entry.png` — because it's t
 rarer and more directly useful case, and an unmarked file will be read as a
 desktop screen and discounted accordingly on iPhone work.
 
-## Worth capturing
+## What the current set already answered
 
-If screenshots are being taken deliberately rather than found, these are the
-ones that answer questions Scade still has open:
+Read as evidence, these are the conclusions drawn in SPEC-POLISH §2 — recorded
+here so the next reader doesn't have to re-derive them from the images:
 
-- The dashboard / home equivalent, with real data in it. SPEC-POLISH §2.3
-  calls Home the screen most worth designing, and it's the one with the least
-  precedent.
-- A grade list dense with entries — the row-hierarchy question in §2.2 is
-  really a question about what a *full* list looks like.
-- Any screen showing an average alongside the grades that produced it.
-- Whatever the app did about semesters and filtering.
-- Its empty states, if it had any.
+- **`gm-home.png`** — a flat table of `Subject | Grades | Average`, sorted by
+  semester but with no semester structure; the semester is welded into the row
+  name (`English - 4`). The information is right and the grouping is missing.
+  Hence the semester sections in §2.3.
+- **`gm-subject_detail.png`** — a hairline between every label and value, and
+  every block wrapped in an outlined panel. This is the "too many horizontal
+  lines" problem in its purest form, and the reason §2.5 specifies *filled*
+  cards rather than bordered ones.
+- **The detail screens generally** repeat context the screen already
+  establishes (each grade card restating its education and subject) and put
+  Back inside the content rather than the navigation bar. Neither travels.
+- **`gm-*-narrow_window.png`** — the closest thing here to a compact layout,
+  and still a desktop window. Not a substitute for an iPhone reference.
+
+Still unanswered by any screenshot: empty states, and anything at all about
+iPhone.

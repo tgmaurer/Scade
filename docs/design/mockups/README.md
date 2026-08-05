@@ -4,7 +4,16 @@ The intended look of Scade. **This is the target** — when a mockup here and th
 current UI disagree, the mockup wins, subject to the constraints in
 [../README.md](../README.md).
 
-Empty until mockups are added.
+**Empty on purpose, and likely to stay that way.** Drawing mockups for this app
+was judged more work than it's worth, so the visual direction is written out
+instead, in [SPEC-POLISH.md](../../SPEC-POLISH.md) §2.2–§2.5 — shell and
+navigation, Home, the type ladder, surfaces and separators. Treat those
+sections as this folder's contents.
+
+The folder stays because a written spec is bad at exactly one thing: settling
+what something *looks* like when words have run out. If that happens — most
+likely for the app icon and accent colour in §2.1 — an image belongs here and
+outranks the prose.
 
 ## What belongs here
 

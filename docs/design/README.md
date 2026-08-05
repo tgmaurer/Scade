@@ -13,7 +13,7 @@ item, not something to build because a mockup showed it.
 
 | Folder | Holds | Authority |
 |---|---|---|
-| [`mockups/`](mockups/) | intended Scade UI, made or commissioned for this app | **Target.** Build toward these. |
+| [`mockups/`](mockups/) | intended Scade UI, made or commissioned for this app | **Target.** Build toward these. Currently empty by choice — the direction is written out in [SPEC-POLISH.md](../SPEC-POLISH.md) §2.2–§2.5 instead. |
 | [`reference/grademaster/`](reference/grademaster/) | screenshots of the old MAUI app | Starting point, not a target. What a screen needs to say — never how it looked. Assume flaws. **Desktop only**; loose hint at best on iPhone. |
 | [`reference/inspiration/`](reference/inspiration/) | screenshots of other apps | Ideas. Never copy directly. |
 

@@ -11,8 +11,6 @@
 		1C22F5563018E95C00C3E1A3 /* ScadeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 1C22F5553018E95C00C3E1A3 /* ScadeUI */; };
 		1CF372903018C5C40020724D /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 1CF3728F3018C5C40020724D /* LICENSE */; };
 		1CF372923018C5F40020724D /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 1CF372913018C5F40020724D /* README.md */; };
-		1CF372993018C6D30020724D /* CLAUDE.md in Resources */ = {isa = PBXBuildFile; fileRef = 1CF372983018C6D30020724D /* CLAUDE.md */; };
-		1CF3729B3018C70A0020724D /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 1CF3729A3018C70A0020724D /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +43,43 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1C02A5B530234E9E00658268 /* Exceptions for "docs" folder in "Scade" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				design/mockups/README.md,
+				design/README.md,
+				"design/reference/grademaster/gm-education_detail-narrow_window.png",
+				"design/reference/grademaster/gm-education_detail.png",
+				"design/reference/grademaster/gm-education_edit.png",
+				"design/reference/grademaster/gm-educations-list.png",
+				"design/reference/grademaster/gm-faq.png",
+				"design/reference/grademaster/gm-grade_detail-narrow_window.png",
+				"design/reference/grademaster/gm-grade_detail.png",
+				"design/reference/grademaster/gm-grade_edit.png",
+				"design/reference/grademaster/gm-grades-list.png",
+				"design/reference/grademaster/gm-home_snippet-hover_grade.png",
+				"design/reference/grademaster/gm-home_snippet-hover_subject.png",
+				"design/reference/grademaster/gm-home_snippet-open_dropdownmenu.png",
+				"design/reference/grademaster/gm-home_snippet-open_semester_filter.png",
+				"design/reference/grademaster/gm-home.png",
+				"design/reference/grademaster/gm-licenses.png",
+				"design/reference/grademaster/gm-settings.png",
+				"design/reference/grademaster/gm-subject_detail-narrow_window.png",
+				"design/reference/grademaster/gm-subject_detail.png",
+				"design/reference/grademaster/gm-subject_edit.png",
+				"design/reference/grademaster/gm-subjects-list.png",
+				"design/reference/grademaster/gm-tips_and_tricks-part-1.png",
+				"design/reference/grademaster/gm-tips_and_tricks-part-2.png",
+				"design/reference/grademaster/gm-tips_and_tricks-part-3.png",
+				"design/reference/grademaster/gm-tips_and_tricks-part-4.png",
+				design/reference/grademaster/README.md,
+				design/reference/inspiration/README.md,
+				"SPEC-BACKLOG.md",
+				"SPEC-POLISH.md",
+				SPEC.md,
+			);
+			target = 1CF3723A3018C0360020724D /* Scade */;
+		};
 		1CF3725E3018C0370020724D /* Exceptions for "App" folder in "Scade" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -85,6 +120,9 @@
 		};
 		1CF372933018C6520020724D /* docs */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1C02A5B530234E9E00658268 /* Exceptions for "docs" folder in "Scade" target */,
+			);
 			path = docs;
 			sourceTree = "<group>";
 		};
@@ -266,9 +304,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CF372923018C5F40020724D /* README.md in Resources */,
-				1CF372993018C6D30020724D /* CLAUDE.md in Resources */,
 				1CF372903018C5C40020724D /* LICENSE in Resources */,
-				1CF3729B3018C70A0020724D /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
