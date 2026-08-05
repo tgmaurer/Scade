@@ -285,9 +285,12 @@ are the same failure with a border around each block
 
 The fix is the iOS inset-grouped idea applied deliberately, not more rules:
 
-- **Home stops being a `List`.** It's a dashboard of groups, not a list —
-  `ScrollView` + `LazyVStack` of semester cards, with hairlines only *inside*
-  a card, between its subject rows. This is what removes most of the lines.
+- **Home groups into cards.** One card per semester, hairlines only *inside*
+  a card. Built on `List` rather than the `ScrollView` + `LazyVStack` first
+  sketched here: swipe actions are `List`-only, and quick-add needs one on
+  iPhone (§4). iOS gets this free from `.insetGrouped`; macOS assembles it —
+  `.listStyle(.inset)`, separators hidden, each row on a filled rounded
+  rectangle. See `View+GroupedList.swift`.
 - **The three flat lists stay `List`s.** They are lists; making every row a
   floating card hurts scanning and fights macOS selection and hover states.
   Reduce the noise instead: `.listRowSeparator(.hidden)`, and let spacing and

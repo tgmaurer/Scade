@@ -43,6 +43,19 @@ enum PreviewData {
         )
     }
 
+    static func homeSubject(
+        name: String = "Analysis I",
+        semester: Int = 1,
+        failing: Bool = false
+    ) -> HomeSubject {
+        HomeSubject(
+            SubjectGrades(
+                subject: Subject(educationId: 1, name: name, semester: semester),
+                grades: [Grade(subjectId: 1, value: failing ? 3.5 : 5.25, date: .today())]
+            )
+        )
+    }
+
     /// An in-memory store with a little data in it, so previews of the list
     /// screens aren't all empty states.
     static let seededRepositories: Repositories = {
