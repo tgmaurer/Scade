@@ -98,6 +98,6 @@ nonisolated enum ScadeDesign {
     /// A floor rather than a responsive layout: below this the dashboard's
     /// name, grades and average genuinely cannot coexist on one row, and
     /// designing for a window nobody uses costs more than it returns.
-    static let minimumWindowWidth: Double = 880
-    static let minimumWindowHeight: Double = 560
+    static let minimumWindowWidth: Double = 720
+    static let minimumWindowHeight: Double = 420
 }
