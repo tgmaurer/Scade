@@ -215,28 +215,15 @@ final class ScadeUITests: XCTestCase {
 
     /// Switches shell section — a tab on iOS, a sidebar row on macOS.
     ///
-    /// All three platforms need a different handle, and only one of them keeps
-    /// the accessibility identifier:
-    ///
-    /// - **macOS** draws the sidebar row in AppKit, which drops the identifier
-    ///   and exposes a `StaticText` whose *value* — not label — is the title.
-    /// - **iPhone** renders a tab bar whose buttons keep their label but not
-    ///   the identifier.
-    /// - **iPad** renders a top tab bar and keeps both.
-    ///
-    /// So iOS matches on either, and takes whichever is actually on screen.
-    /// Matching on a title is a weaker handle than an identifier; that's the
-    /// cost of these being system-drawn controls rather than views the app
-    /// composes itself.
+    /// Matched on identifier *or* label, because the shells differ in what
+    /// they keep. macOS draws its sidebar rows itself and keeps the
+    /// identifier; iPhone's tab bar is system-drawn and keeps only the label.
+    /// Element type isn't pinned for the same reason — a sidebar row and a tab
+    /// don't report as the same thing.
     private func openSection(_ section: Control) {
-        #if os(macOS)
-        let matches = app.outlines["Sidebar"].staticTexts
-            .matching(NSPredicate(format: "value == %@", section.label))
-        #else
-        let matches = app.buttons.matching(
+        let matches = app.descendants(matching: .any).matching(
             NSPredicate(format: "identifier == %@ OR label == %@", section.identifier, section.label)
         )
-        #endif
 
         XCTAssertTrue(
             matches.firstMatch.waitForExistence(timeout: 10),

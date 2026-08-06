@@ -210,11 +210,26 @@ right on macOS and wrong on iPhone, where it collapses to a stack whose root
 *is* the sidebar — switching section means navigating back to a menu, which
 no iOS app does.
 
-**Decision: one `TabView` with `.tabViewStyle(.sidebarAdaptable)`,** replacing
-the split view. The style resolves per platform from a single declaration:
-iOS gets a bottom tab bar, macOS a sidebar, iPadOS a top tab bar that adapts
-into one. macOS therefore keeps exactly the shell SPEC §4 describes, and the
-iPhone fix costs no fork.
+**Decision: the shell forks per platform.** `NavigationSplitView` with a
+fixed-width sidebar on macOS, `TabView` on iOS. Only the shell — every screen
+below it is shared, and the selected section is one piece of state both drive.
+
+`TabView(.sidebarAdaptable)` was tried first and does serve both from a single
+declaration, rendering as a split view on macOS. It was replaced because it
+gives up control macOS needs:
+
+- **The sidebar's width is system-managed**, so it can't be fixed and its
+  resize handle can't be removed. Widening it reveals nothing — five rows of
+  one word each — so the gesture has no outcome, which is worse than no
+  gesture.
+- **Each tab gets its own `NavigationStack`**, so the push destinations are
+  registered four times instead of once.
+- **AppKit draws the sidebar rows**, discarding their accessibility
+  identifiers. `ScadeUITests` drives the shell, and had to fall back to
+  matching visible titles on macOS.
+
+`navigationSplitViewColumnWidth(_:)` given a single value fixes the width and
+removes the handle, which is what settled it.
 
 Tabs, in order: **Home, Educations, Subjects, Grades.**
 

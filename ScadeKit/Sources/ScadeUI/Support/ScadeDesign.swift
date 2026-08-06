@@ -98,6 +98,13 @@ nonisolated enum ScadeDesign {
     /// the content is falling out of it.
     static let contentMargin: Double = 20
 
+    /// The macOS sidebar's width — fixed, not a starting point.
+    ///
+    /// Passed to `navigationSplitViewColumnWidth(_:)` as a single value, which
+    /// also removes the resize handle. Widening it would show nothing a narrow
+    /// one doesn't: five fixed rows of a word each.
+    static let sidebarWidth: Double = 200
+
     /// The narrowest the macOS window may become.
     ///
     /// A floor rather than a responsive layout: below this the dashboard's

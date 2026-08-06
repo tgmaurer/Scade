@@ -15,6 +15,12 @@ enum AppSection: String, CaseIterable, Identifiable, Hashable, Sendable {
 
     var id: Self { self }
 
+    /// The sections the shell offers, in order. `settings` earns a row only
+    /// where `showsSettingsSection` says so.
+    static var visibleCases: [AppSection] {
+        showsSettingsSection ? allCases : allCases.filter { $0 != .settings }
+    }
+
     /// Whether Settings is one of the shell's sections.
     ///
     /// Only where the shell is a real sidebar, which is macOS alone. A tab
