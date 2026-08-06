@@ -21,12 +21,13 @@ struct HomeSubjectRow: View {
                 Text(item.subject.name)
                     .font(ScadeDesign.rowTitle)
                     .lineLimit(1)
-                    .frame(minWidth: ScadeDesign.subjectColumnWidth, alignment: .leading)
-                    // Inside the link, so the whole column is clickable. With
-                    // the frame outside it the target was the glyphs alone,
-                    // which is why clicks so often did nothing.
                     .contentShape(.rect)
             }
+            // Plain, so the link is the name and nothing more. A
+            // `NavigationLink` in a list row otherwise takes the whole row as
+            // its target, which makes every part of the row navigate.
+            .buttonStyle(.plain)
+            .frame(minWidth: ScadeDesign.subjectColumnWidth, alignment: .leading)
             .layoutPriority(1)
 
             if showsGrades {
@@ -40,6 +41,10 @@ struct HomeSubjectRow: View {
                 .bold()
         }
         .padding(.vertical, ScadeDesign.rowVerticalPadding)
+        // A subject with no grades has no chips to give the row its height,
+        // so it would sit shorter than its neighbours. The floor keeps every
+        // subject the same size whatever it contains.
+        .frame(minHeight: ScadeDesign.subjectRowHeight)
     }
 
     @ViewBuilder

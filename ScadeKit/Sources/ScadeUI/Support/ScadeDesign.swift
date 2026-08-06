@@ -88,6 +88,11 @@ nonisolated enum ScadeDesign {
     /// Inside a grade chip, around its value.
     static let chipPadding: Double = 8
 
+    /// The height every dashboard subject row gets, with or without grades in
+    /// it — a row of chips is taller than a bare line of text, and rows of
+    /// two different heights in one card read as two different kinds of row.
+    static let subjectRowHeight: Double = 30
+
     /// Between a scroll view's content and the window edge. macOS `List`
     /// gives almost none by itself, which is what makes a window look like
     /// the content is falling out of it.

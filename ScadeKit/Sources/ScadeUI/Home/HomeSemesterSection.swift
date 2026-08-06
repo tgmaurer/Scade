@@ -14,7 +14,7 @@ struct HomeSemesterSection: View {
 
     var body: some View {
         Section {
-            ForEach(semester.subjects) { item in
+            ForEach(semester.subjects.enumerated(), id: \.element.id) { index, item in
                 HomeSubjectRow(item: item, showsGrades: showsGrades)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         // §4 hides quick-add once the subject is completed.
@@ -25,6 +25,7 @@ struct HomeSemesterSection: View {
                             .tint(ScadeDesign.accent)
                         }
                     }
+                    .cardRow(CardRowPosition(index: index, count: semester.subjects.count))
             }
         } header: {
             Text(semester.title)

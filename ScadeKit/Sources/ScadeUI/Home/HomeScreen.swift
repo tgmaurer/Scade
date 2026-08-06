@@ -24,8 +24,8 @@ struct HomeScreen: View {
                         gradeCount: model.gradeCount,
                         semester: model.semester
                     )
+                    .cardRow(.only)
                 }
-                .cardRowBackground()
 
                 ForEach(model.semesters) { semester in
                     HomeSemesterSection(
@@ -33,7 +33,6 @@ struct HomeScreen: View {
                         showsGrades: showsGrades,
                         onAddGrade: startAddingGrade
                     )
-                    .cardRowBackground()
                 }
             }
         }

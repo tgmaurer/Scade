@@ -67,6 +67,21 @@ says which section owns the fix.
       and `HomeSemester.grouping` sorted ascending — a regression, not a
       preference.
 
+### 0.1.1 Deferred to a feature pass
+
+Raised during the macOS visual pass but held back deliberately: each one adds
+an *action*, not a style, so they belong after the layout has settled rather
+than tangled up in it.
+
+- [ ] **A subject row needs an inline "add grade" button**, sitting in the run
+      of grades rather than behind a swipe. The swipe action that exists today
+      is the iOS answer and a poor one on a pointer.
+- [ ] **Each grade chip should link to its grade.** SPEC §4 already lists
+      "navigate to grade detail" as a Home action, so this is owed, not new.
+      Held back because nesting a link inside a row that also links is exactly
+      what made clicking unreliable in the first place — it needs doing once,
+      carefully, not bolted on.
+
 ### 0.2 How educations are actually used
 
 Context for every layout decision below, from the user's own use of the old
