@@ -42,6 +42,54 @@ Walk every screen on macOS and on an iPhone simulator:
 Log what's wrong before fixing anything — a written list keeps this phase
 from turning into an open-ended re-write.
 
+### 0.1 macOS findings
+
+From driving the macOS app on 2026-08-06. Open until struck through; each one
+says which section owns the fix.
+
+- [ ] **Padding and spacing throughout.** Space isn't used or distributed
+      well — cramped where it should breathe, and wide windows leave content
+      stranded. §2.5, §2.6.
+- [ ] **Home stacks a subject's grades vertically**, which eats height for no
+      benefit on a screen that has width to spare. Lay them out along the row
+      instead, as `gm-home.png` does — improving on it rather than copying it,
+      since the old app's version is a bare table. §2.3.
+- [ ] **Detail screens are the rawest part of the app.** Every field is the
+      same size, and the layout is a stack of ruled rows. They need the §2.4
+      ladder and the §2.5 card treatment, which so far only Home has.
+- [ ] **The grade list needs separation** — group it into date sections
+      rather than presenting one undifferentiated run of rows. §2.4.
+- [ ] **Detail screens should link to their parents** — grade → subject →
+      education. The data is already on screen as text; it should be
+      navigable. §2.4.
+- [ ] **Home's semester sections are in the wrong order.** Highest semester
+      first. Not a new decision: SPEC §3.6 already specifies semester *desc*,
+      and `HomeSemester.grouping` sorted ascending — a regression, not a
+      preference.
+
+### 0.2 How educations are actually used
+
+Context for every layout decision below, from the user's own use of the old
+app. **An education is one institution's view of a course of study, not the
+course of study itself.** Training as a software developer produced several
+educations in parallel — one for the vocational school, one for the
+introductory year run by a separate training company, one for the employer —
+each with its own subjects and its own grades, because each institution
+grades separately.
+
+Consequences that aren't obvious from SPEC.md:
+
+- **Educations overlap in time.** They aren't a sequence, so "the current
+  one" is not something the app can infer from dates.
+- **Switching education is a frequent, first-class action**, not a rare
+  configuration step. It deserves better than a toolbar menu.
+- **Comparing across educations is meaningful** — the same person's marks in
+  two places at once. Nothing in v1 does this; see
+  [SPEC-BACKLOG.md](SPEC-BACKLOG.md) before inventing it.
+
+This is a usage pattern, not a rule. Nothing stops one education per course
+of study; the app just shouldn't assume it.
+
 ---
 
 ## 1. Keyboard shortcuts & menu commands (macOS first)

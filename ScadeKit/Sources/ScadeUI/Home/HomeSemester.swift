@@ -18,13 +18,16 @@ struct HomeSemester: Identifiable, Hashable, Sendable {
         "Semester \(semester.formatted(.number.grouping(.never)))"
     }
 
-    /// Groups subjects by semester, lowest first.
+    /// Groups subjects by semester, **highest first**.
     ///
-    /// Sorted rather than left in fetch order: a dashboard that reorders
-    /// itself between loads is worse than one that's merely plain.
+    /// Descending because SPEC §3.6 makes `semester desc` the canonical order
+    /// for subjects everywhere, and because the semester a student is in now
+    /// is the one they opened the app to look at. Sorted rather than left in
+    /// fetch order: a dashboard that reorders itself between loads is worse
+    /// than one that's merely plain.
     static func grouping(_ subjects: [HomeSubject]) -> [HomeSemester] {
         Dictionary(grouping: subjects, by: \.subject.semester)
             .map { HomeSemester(semester: $0.key, subjects: $0.value) }
-            .sorted { $0.semester < $1.semester }
+            .sorted { $0.semester > $1.semester }
     }
 }

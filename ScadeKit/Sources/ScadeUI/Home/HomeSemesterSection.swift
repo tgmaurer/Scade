@@ -3,20 +3,19 @@ import SwiftUI
 
 /// One semester's subjects, as a card.
 ///
-/// Grades are listed under each subject only where there's room for them
-/// (SPEC-POLISH §2.3). On a phone the dashboard answers "how am I doing"; a
-/// wall of every grade behind every subject answers a different question, and
-/// subject detail already lists them all one tap away.
+/// Grades sit inside their subject's row where there's width for them, rather
+/// than as rows of their own beneath it (SPEC-POLISH §2.3, §0.1). On a phone
+/// they're dropped entirely: the dashboard answers "how am I doing", and
+/// subject detail already lists every grade one tap away.
 struct HomeSemesterSection: View {
     let semester: HomeSemester
-    let education: Education
     let showsGrades: Bool
     let onAddGrade: (Int64) -> Void
 
     var body: some View {
         Section {
             ForEach(semester.subjects) { item in
-                HomeSubjectRow(item: item)
+                HomeSubjectRow(item: item, showsGrades: showsGrades)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         // §4 hides quick-add once the subject is completed.
                         if item.subject.completed == false, let id = item.subject.id {
@@ -26,26 +25,11 @@ struct HomeSemesterSection: View {
                             .tint(ScadeDesign.accent)
                         }
                     }
-
-                if showsGrades {
-                    ForEach(item.grades) { grade in
-                        NavigationLink(value: grade) {
-                            GradeRowView(
-                                item: GradeListItem(
-                                    grade: grade,
-                                    subject: item.subject,
-                                    education: education
-                                ),
-                                showsContext: false
-                            )
-                        }
-                        .padding(.leading)
-                    }
-                }
             }
         } header: {
             Text(semester.title)
                 .font(ScadeDesign.rowSecondary)
+                .bold()
                 .textCase(nil)
         }
     }
@@ -55,14 +39,13 @@ struct HomeSemesterSection: View {
     List {
         HomeSemesterSection(
             semester: HomeSemester(
-                semester: 1,
+                semester: 3,
                 subjects: [
                     PreviewData.homeSubject(name: "Analysis I"),
                     PreviewData.homeSubject(name: "Lineare Algebra", failing: true),
                 ]
             ),
-            education: PreviewData.education(),
-            showsGrades: false,
+            showsGrades: true,
             onAddGrade: { _ in }
         )
     }

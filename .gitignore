@@ -63,3 +63,7 @@ fastlane/test_output
 
 # Other
 *.DS_Store
+# Screenshots taken while working on the UI. Throwaway by design — git keeps
+# every revision of a binary forever, and these change every few minutes.
+# Reference images meant to be kept go in docs/design/ instead.
+/screenshots/

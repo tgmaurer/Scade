@@ -9,6 +9,10 @@ starting any feature work.
 - `docs/SPEC-BACKLOG.md` — behaviour that isn't built and isn't v1.
 - `docs/design/` — mockups and visual references. See its README for what
   lives where; read the relevant image before starting a SPEC-POLISH §2 task.
+- `screenshots/` — gitignored scratch space for screenshots taken while
+  working on the UI. Write them here, never into the repo proper: git keeps
+  every revision of a binary forever. Anything worth keeping goes in
+  `docs/design/` deliberately.
 
 ## Non-negotiables
 - **Platforms: macOS and iPhone.** iPadOS is a build target that must not

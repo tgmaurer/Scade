@@ -30,7 +30,6 @@ struct HomeScreen: View {
                 ForEach(model.semesters) { semester in
                     HomeSemesterSection(
                         semester: semester,
-                        education: education,
                         showsGrades: showsGrades,
                         onAddGrade: startAddingGrade
                     )
