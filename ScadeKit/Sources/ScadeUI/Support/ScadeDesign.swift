@@ -103,13 +103,13 @@ nonisolated enum ScadeDesign {
     /// Passed to `navigationSplitViewColumnWidth(_:)` as a single value, which
     /// also removes the resize handle. Widening it would show nothing a narrow
     /// one doesn't: five fixed rows of a word each.
-    static let sidebarWidth: Double = 200
+    static let sidebarWidth: Double = 150
 
     /// The narrowest the macOS window may become.
     ///
     /// A floor rather than a responsive layout: below this the dashboard's
     /// name, grades and average genuinely cannot coexist on one row, and
     /// designing for a window nobody uses costs more than it returns.
-    static let minimumWindowWidth: Double = 720
-    static let minimumWindowHeight: Double = 420
+    static let minimumWindowWidth: Double = 740
+    static let minimumWindowHeight: Double = 400
 }
