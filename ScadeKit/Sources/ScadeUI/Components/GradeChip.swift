@@ -23,12 +23,13 @@ struct GradeChip: View {
 
             if showsWeight {
                 WeightLabel(grade.weight)
+                    .font(ScadeDesign.rowMeta)
                     .foregroundStyle(.secondary)
             }
         }
-        .font(ScadeDesign.rowMeta.monospacedDigit())
-        .padding(.horizontal, ScadeDesign.iconTextSpacing + 2)
-        .padding(.vertical, 2)
+        .font(ScadeDesign.value)
+        .padding(.horizontal, ScadeDesign.chipPadding)
+        .padding(.vertical, ScadeDesign.chipPadding / 2)
         .background(
             RoundedRectangle(cornerRadius: ScadeDesign.badgeCornerRadius)
                 .fill(.fill.quaternary)

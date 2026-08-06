@@ -21,8 +21,12 @@ struct HomeSubjectRow: View {
                 Text(item.subject.name)
                     .font(ScadeDesign.rowTitle)
                     .lineLimit(1)
+                    .frame(minWidth: ScadeDesign.subjectColumnWidth, alignment: .leading)
+                    // Inside the link, so the whole column is clickable. With
+                    // the frame outside it the target was the glyphs alone,
+                    // which is why clicks so often did nothing.
+                    .contentShape(.rect)
             }
-            .frame(minWidth: ScadeDesign.subjectColumnWidth, alignment: .leading)
             .layoutPriority(1)
 
             if showsGrades {

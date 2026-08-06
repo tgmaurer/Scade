@@ -93,6 +93,7 @@ public struct RootView: View {
             }
         }
         .tabViewStyle(.sidebarAdaptable)
+        .windowSizeFloor()
         .environment(\.repositories, repositories)
         .preferredColorScheme(theme.colorScheme)
     }

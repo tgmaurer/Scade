@@ -84,4 +84,20 @@ nonisolated enum ScadeDesign {
     /// grades that follow it line up down the screen instead of starting at a
     /// different place on every row.
     static let subjectColumnWidth: Double = 160
+
+    /// Inside a grade chip, around its value.
+    static let chipPadding: Double = 8
+
+    /// Between a scroll view's content and the window edge. macOS `List`
+    /// gives almost none by itself, which is what makes a window look like
+    /// the content is falling out of it.
+    static let contentMargin: Double = 20
+
+    /// The narrowest the macOS window may become.
+    ///
+    /// A floor rather than a responsive layout: below this the dashboard's
+    /// name, grades and average genuinely cannot coexist on one row, and
+    /// designing for a window nobody uses costs more than it returns.
+    static let minimumWindowWidth: Double = 880
+    static let minimumWindowHeight: Double = 560
 }

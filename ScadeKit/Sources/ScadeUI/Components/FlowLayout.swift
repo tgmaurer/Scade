@@ -20,14 +20,24 @@ struct FlowLayout: Layout {
     }
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Void) -> CGSize {
-        let width = proposal.replacingUnspecifiedDimensions().width
-        let lines = lines(of: subviews, within: width)
+        let available = proposal.replacingUnspecifiedDimensions().width
+        let lines = lines(of: subviews, within: available)
 
         let height =
             lines.reduce(0) { $0 + $1.height }
             + Double(max(0, lines.count - 1)) * spacing
 
-        return CGSize(width: width, height: height)
+        // The width actually used, not the width offered. Returning the
+        // proposal would claim the whole row and leave neighbouring views —
+        // the trailing average — nothing to sit in, so they'd overlap.
+        let used = lines.map { lineWidth(of: $0, in: subviews) }.max() ?? 0
+
+        return CGSize(width: min(used, available), height: height)
+    }
+
+    private func lineWidth(of line: Line, in subviews: Subviews) -> Double {
+        let content = line.indices.reduce(0) { $0 + subviews[$1].sizeThatFits(.unspecified).width }
+        return content + Double(max(0, line.indices.count - 1)) * spacing
     }
 
     func placeSubviews(

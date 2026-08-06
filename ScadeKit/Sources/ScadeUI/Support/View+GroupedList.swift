@@ -15,22 +15,31 @@ extension View {
     func groupedListStyle() -> some View {
         #if os(macOS)
         listStyle(.inset)
-            .listRowSeparator(.hidden)
             .scrollContentBackground(.hidden)
+            .contentMargins(.horizontal, ScadeDesign.contentMargin, for: .scrollContent)
         #else
         listStyle(.insetGrouped)
         #endif
     }
 
-    /// The card a row sits on. macOS only — iOS's grouped style draws it.
+    /// The card a row sits on, and the separators it makes redundant.
+    ///
+    /// A card already groups what's inside it, so a rule between every row is
+    /// saying the same thing twice — and a rule under the *last* row of a
+    /// card, with nothing beneath it to separate, says nothing at all.
+    /// Section separators go too: `listRowSeparator` alone doesn't reach the
+    /// line a header draws under itself.
     func cardRowBackground() -> some View {
         #if os(macOS)
-        listRowBackground(
-            RoundedRectangle(cornerRadius: ScadeDesign.cardCornerRadius)
-                .fill(.background.secondary)
-        )
+        listRowSeparator(.hidden)
+            .listSectionSeparator(.hidden)
+            .listRowBackground(
+                RoundedRectangle(cornerRadius: ScadeDesign.cardCornerRadius)
+                    .fill(.background.secondary)
+            )
         #else
-        self
+        listRowSeparator(.hidden)
+            .listSectionSeparator(.hidden)
         #endif
     }
 }
