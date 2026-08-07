@@ -26,6 +26,7 @@ struct HomeScreen: View {
                     )
                     .cardRow(.only)
                 }
+                .cardSection()
 
                 ForEach(model.semesters) { semester in
                     HomeSemesterSection(

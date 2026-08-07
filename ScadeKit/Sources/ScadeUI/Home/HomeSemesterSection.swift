@@ -33,6 +33,7 @@ struct HomeSemesterSection: View {
                 .bold()
                 .textCase(nil)
         }
+        .cardSection()
     }
 }
 

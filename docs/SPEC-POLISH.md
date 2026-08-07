@@ -47,13 +47,23 @@ from turning into an open-ended re-write.
 From driving the macOS app on 2026-08-06. Open until struck through; each one
 says which section owns the fix.
 
+- [x] ~~**Home stacks a subject's grades vertically**~~ — laid out along the
+      row instead. `FlowLayout` + `GradeChip`. §2.3.
+- [x] ~~**Home's semester sections are in the wrong order.**~~ Highest first.
+      Not a new decision: SPEC §3.6 already specifies semester *desc*, and
+      `HomeSemester.grouping` sorted ascending — a regression, not a
+      preference. `Dictionary(grouping:)` has no defined order; the grouping
+      now preserves the query's.
+- [x] ~~**Separators drawn where nothing needs separating.**~~ The list ruled a
+      line above a card's first row, below its last, and across the full list
+      width rather than the card's. Cards draw their own dividers now, inset to
+      their content — see §2.5.
+- [x] ~~**Subject rows changed height with their contents.**~~ A row with no
+      grades sat shorter than one with chips in it. §2.5.
+- [x] ~~**The subject link claimed more than the subject name.**~~ §2.8.
 - [ ] **Padding and spacing throughout.** Space isn't used or distributed
       well — cramped where it should breathe, and wide windows leave content
       stranded. §2.5, §2.6.
-- [ ] **Home stacks a subject's grades vertically**, which eats height for no
-      benefit on a screen that has width to spare. Lay them out along the row
-      instead, as `gm-home.png` does — improving on it rather than copying it,
-      since the old app's version is a bare table. §2.3.
 - [ ] **Detail screens are the rawest part of the app.** Every field is the
       same size, and the layout is a stack of ruled rows. They need the §2.4
       ladder and the §2.5 card treatment, which so far only Home has.
@@ -62,10 +72,10 @@ says which section owns the fix.
 - [ ] **Detail screens should link to their parents** — grade → subject →
       education. The data is already on screen as text; it should be
       navigable. §2.4.
-- [ ] **Home's semester sections are in the wrong order.** Highest semester
-      first. Not a new decision: SPEC §3.6 already specifies semester *desc*,
-      and `HomeSemester.grouping` sorted ascending — a regression, not a
-      preference.
+- [ ] **Hover on the three flat lists** is still whatever macOS gives a
+      full-row `NavigationLink`. Deliberately left until those screens are
+      restyled rather than guessed at against a layout that's about to
+      change. §2.8.
 
 ### 0.1.1 Deferred to a feature pass
 
@@ -76,11 +86,11 @@ than tangled up in it.
 - [ ] **A subject row needs an inline "add grade" button**, sitting in the run
       of grades rather than behind a swipe. The swipe action that exists today
       is the iOS answer and a poor one on a pointer.
-- [ ] **Each grade chip should link to its grade.** SPEC §4 already lists
-      "navigate to grade detail" as a Home action, so this is owed, not new.
-      Held back because nesting a link inside a row that also links is exactly
-      what made clicking unreliable in the first place — it needs doing once,
-      carefully, not bolted on.
+- [x] ~~**Each grade chip should link to its grade.**~~ SPEC §4 already listed
+      "navigate to grade detail" as a Home action, so this was owed, not new.
+      Held back at first because nesting a link inside a row that also linked
+      was what made clicking unreliable — done once the row itself stopped
+      being a link. `GradeChipLink`, §2.8.
 
 ### 0.2 How educations are actually used
 
@@ -371,7 +381,22 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   sketched here: swipe actions are `List`-only, and quick-add needs one on
   iPhone (§4). iOS gets this free from `.insetGrouped`; macOS assembles it —
   `.listStyle(.inset)`, separators hidden, each row on a filled rounded
-  rectangle. See `View+GroupedList.swift`.
+  rectangle. See `View+GroupedList.swift` and `CardRow.swift`.
+- **A card draws its own dividers; the list draws none.** Turning the list's
+  separators off row by row isn't enough and was the source of three separate
+  faults: the line above a section's first row comes from the *section*, not
+  its rows, and the ones that did appear ran the full width of the list
+  instead of stopping at the card. So on macOS every system separator is off
+  and the divider is drawn in the row's background, held back from the card's
+  edges by `cardDividerInset`. It lives in the background rather than the row
+  content because it belongs to the card, not to either of the rows it
+  divides — it has to survive whichever one the pointer is over.
+- **Rows in one card are all the same height.** A row with no grades has no
+  chips to give it height and would otherwise sit shorter than its neighbours,
+  which reads as two different kinds of row. The floor is *derived* from the
+  chip height (`ScadeDesign.subjectRowHeight`), not chosen to match it: a
+  floor the chips exceed is not a floor, which is how the two drifted apart
+  the first time.
 - **The three flat lists stay `List`s.** They are lists; making every row a
   floating card hurts scanning and fights macOS selection and hover states.
   Reduce the noise instead: `.listRowSeparator(.hidden)`, and let spacing and
@@ -400,7 +425,43 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
 
 No animation is deliberate right now. Additions should be limited to
 transitions that explain a change — a row leaving on delete, a value updating
-when the filter changes. Nothing decorative.
+when the filter changes. Nothing decorative. Hover transitions (§2.8) are the
+exception that proves it: ~120ms, only so the highlight doesn't snap.
+
+### 2.8 Pointer states
+
+macOS has a pointer and the app should answer it. Nothing on the dashboard
+looks like a control — it's a table of names and numbers — so hover is what
+tells someone a thing can be clicked *before* they click it.
+
+**Three targets, three different answers, one rule.** Each says "this
+responds", none of them moves anything:
+
+- **The row** takes a wash of `.fill.quaternary` over the card fill. This is
+  the "where am I" cue, and it's why the divider had to move into the
+  background: a hovered row and its neighbour must stay separated.
+- **The subject name** turns accent-coloured *and* underlined. Colour alone
+  would carry the whole signal on one hue, and hover is the only cue this
+  control gets. The underline is the part that survives not seeing it.
+- **A grade chip** steps its fill from `.fill.quaternary` to `.fill.tertiary`
+  — it already has a background, so it brightens rather than growing a second
+  one. Two stacked fills read as a third colour, so `GradeChip` owns both
+  strengths instead of having a highlight layered over it.
+
+All three take `.pointerStyle(.link)` where they navigate.
+
+**Links claim their content and nothing more.** A `NavigationLink` in a list
+row takes the whole row by default, which turned the dashboard into a
+navigation trap — it exists to be *read*, and every stray click left it. The
+name column is a stack whose width is set on the *stack*, with the link inside
+sized to the text and a `Spacer` absorbing the rest. Putting the width on the
+link is what made 160pt of empty space navigate.
+
+**Hover is state, so it needs a view.** A `View` extension has nowhere to keep
+`@State`; each of the three is a `ViewModifier` or a small view of its own
+(`CardRow`, `SubjectLink`, `GradeChipLink`). Hover propagates to ancestors, so
+a chip and its row light together — which is correct: they're nested targets
+and both are live.
 
 ---
 

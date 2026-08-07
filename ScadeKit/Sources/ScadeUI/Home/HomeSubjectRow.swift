@@ -16,19 +16,8 @@ struct HomeSubjectRow: View {
     let showsGrades: Bool
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: ScadeDesign.rowSpacing) {
-            NavigationLink(value: item.subject) {
-                Text(item.subject.name)
-                    .font(ScadeDesign.rowTitle)
-                    .lineLimit(1)
-                    .contentShape(.rect)
-            }
-            // Plain, so the link is the name and nothing more. A
-            // `NavigationLink` in a list row otherwise takes the whole row as
-            // its target, which makes every part of the row navigate.
-            .buttonStyle(.plain)
-            .frame(minWidth: ScadeDesign.subjectColumnWidth, alignment: .leading)
-            .layoutPriority(1)
+        HStack(alignment: .center, spacing: ScadeDesign.rowSpacing) {
+            name
 
             if showsGrades {
                 grades
@@ -42,9 +31,25 @@ struct HomeSubjectRow: View {
         }
         .padding(.vertical, ScadeDesign.rowVerticalPadding)
         // A subject with no grades has no chips to give the row its height,
-        // so it would sit shorter than its neighbours. The floor keeps every
-        // subject the same size whatever it contains.
+        // so it would sit shorter than its neighbours. The floor is derived
+        // from the chip height for exactly that reason — see
+        // `ScadeDesign.subjectRowHeight`.
         .frame(minHeight: ScadeDesign.subjectRowHeight)
+    }
+
+    /// The name column: the link, then whatever's left of the column.
+    ///
+    /// The width belongs to this stack rather than to the link, so the link
+    /// stays as wide as the name it draws. Putting it on the link instead
+    /// would make the empty remainder of the column navigate — a click well
+    /// clear of any text would still leave the screen.
+    private var name: some View {
+        HStack(spacing: 0) {
+            SubjectLink(subject: item.subject)
+            Spacer(minLength: 0)
+        }
+        .frame(minWidth: ScadeDesign.subjectColumnWidth, alignment: .leading)
+        .layoutPriority(1)
     }
 
     @ViewBuilder
@@ -56,7 +61,7 @@ struct HomeSubjectRow: View {
         } else {
             FlowLayout {
                 ForEach(item.grades) { grade in
-                    GradeChip(grade: grade)
+                    GradeChipLink(grade: grade)
                 }
             }
         }

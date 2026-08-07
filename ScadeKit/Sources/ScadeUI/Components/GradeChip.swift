@@ -12,9 +12,17 @@ import SwiftUI
 /// showing it is for.
 struct GradeChip: View {
     let grade: Grade
+    /// Lit because the pointer is over it. Drawn here rather than layered on
+    /// from outside so the chip has one fill, at one of two strengths, instead
+    /// of two stacked fills that read as a third colour.
+    var isHighlighted: Bool = false
 
     private var showsWeight: Bool {
         grade.weight != 1.0
+    }
+
+    private var fill: AnyShapeStyle {
+        isHighlighted ? AnyShapeStyle(.fill.tertiary) : AnyShapeStyle(.fill.quaternary)
     }
 
     var body: some View {
@@ -29,11 +37,15 @@ struct GradeChip: View {
         }
         .font(ScadeDesign.value)
         .padding(.horizontal, ScadeDesign.chipPadding)
-        .padding(.vertical, ScadeDesign.chipPadding / 2)
+        // A stated height, not padding: a subject row is sized to hold a chip,
+        // so the chip has to be a known height for that to mean anything. A
+        // floor rather than a fixed height so larger text still fits.
+        .frame(minHeight: ScadeDesign.chipHeight)
         .background(
             RoundedRectangle(cornerRadius: ScadeDesign.badgeCornerRadius)
-                .fill(.fill.quaternary)
+                .fill(fill)
         )
+        .animation(.easeOut(duration: 0.12), value: isHighlighted)
     }
 }
 

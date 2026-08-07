@@ -24,33 +24,19 @@ extension View {
         #endif
     }
 
-    /// The card a row sits on, shaped for where in the card it sits.
-    ///
-    /// Separators follow the same rule: one *between* two rows of a card is
-    /// doing real work, one under the last row separates it from nothing. The
-    /// section separator goes either way — `listRowSeparator` doesn't reach
-    /// the line a header draws under itself.
+    /// The card a row sits on, shaped for where in the card it sits, and lit
+    /// when the pointer is over it. See `CardRow`.
     func cardRow(_ position: CardRowPosition) -> some View {
-        listRowSeparator(position.hasRowBelow ? .visible : .hidden)
-            .listSectionSeparator(.hidden)
-            .cardRowFill(position)
+        modifier(CardRow(position: position))
     }
 
-    /// macOS only — iOS's grouped style draws its own card.
-    @ViewBuilder
-    private func cardRowFill(_ position: CardRowPosition) -> some View {
-        #if os(macOS)
-        listRowBackground(
-            UnevenRoundedRectangle(
-                topLeadingRadius: position.topRadius,
-                bottomLeadingRadius: position.bottomRadius,
-                bottomTrailingRadius: position.bottomRadius,
-                topTrailingRadius: position.topRadius
-            )
-            .fill(.background.secondary)
-        )
-        #else
-        self
-        #endif
+    /// A section of a card list.
+    ///
+    /// Stops the list ruling its own line above the section's first row.
+    /// `listSectionSeparator` only reaches that line from the section itself,
+    /// never from the rows inside it — which is why hiding it per-row left the
+    /// line above a card's first row still drawn.
+    func cardSection() -> some View {
+        listSectionSeparator(.hidden)
     }
 }
