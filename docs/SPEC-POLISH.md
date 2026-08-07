@@ -465,12 +465,26 @@ survives; more do not. So the dashboard's controls are `Button`s that push
 through `Navigator`, and the three flat lists keep `NavigationLink` because
 there the whole row is the link, which is the case `List` handles well.
 
-**A control claims its own content and nothing more.** The name column is a
-stack whose width is set on the *stack*, with the button inside sized to the
-text. Putting the width on the button is what made 160pt of empty space
-navigate. The exception is the phone, where a finger can't hit a word and no
-chips compete for the row, so there the button takes the column and a 44pt
-height — see `HomeSubjectName`.
+**A control claims its own content and nothing more.** The subject button is
+exactly as wide as the name it draws; a `.frame` around it reserves the
+column. That works because a `.frame` outside a `Button` positions it without
+extending what's clickable — widening the target takes a `contentShape`, and
+that one is on the text.
+
+**Nothing in a dashboard row may have an infinite ideal width.** The name is
+served first (`layoutPriority(1)`), so a greedy view there takes the whole row
+and leaves the grades and average nothing to lay out in. This broke the screen
+twice, both times through a `Spacer` placed beside the button to "absorb the
+rest of the column" — a stack containing a `Spacer` has an infinite ideal
+width, which is the opposite of absorbing anything. The symptoms didn't look
+like a width problem: chips wrapped one per line and lost their backgrounds,
+"No grades yet" wrapped into a tall invisible column, and the average
+disappeared off the edge. `HomeSubjectRowLayoutTests` now measures the row and
+fails on all of it.
+
+On a phone the button keeps its width but takes a 44pt height, since a finger
+can't hit a word. The width is left alone on both platforms — widening it is
+what costs the average its place.
 
 **Hover is state, so it needs a view.** A `View` extension has nowhere to keep
 `@State`; each of the three is a `ViewModifier` or a small view of its own

@@ -10,8 +10,14 @@ import SwiftUI
 /// and underlining are the web's idea of a link, and on macOS they'd promise
 /// something this doesn't do.
 ///
-/// It is sized to the name it draws, so the caller can give the column its
-/// width without making the empty remainder of that column clickable.
+/// **It is exactly as wide as the name it draws.** Callers give the name
+/// column its width with a `.frame` around this, which reserves the space
+/// without handing it over: a `.frame` outside a `Button` positions the button
+/// but doesn't extend what's clickable — that takes a `contentShape`, and the
+/// one here is on the text. Reserving the column any other way is what broke
+/// this screen twice, most recently with a `Spacer` alongside the button,
+/// which gave the enclosing stack an infinite ideal width and left the rest of
+/// the row nothing to lay out in.
 struct SubjectButton: View {
     let subject: Subject
 
@@ -33,11 +39,25 @@ struct SubjectButton: View {
                         .padding(.horizontal, -ScadeDesign.chipPadding)
                         .padding(.vertical, -ScadeDesign.hoverInset)
                 }
+                // Height only. Anything that grows the *width* here is
+                // greedy, and this sits next to content that needs the room.
+                .frame(minHeight: minimumHitHeight, alignment: .leading)
                 .contentShape(.rect)
         }
         .buttonStyle(.plain)
         .onHover { isHovering = $0 }
         .animation(.easeOut(duration: ScadeDesign.hoverDuration), value: isHovering)
+    }
+
+    /// A pointer can hit a word; a finger can't, so on a phone the target is
+    /// grown to the HIG's floor. The width is left alone on both — a name is
+    /// wide enough to hit, and widening it costs the average its place.
+    private var minimumHitHeight: CGFloat? {
+        #if os(macOS)
+        nil
+        #else
+        ScadeDesign.touchTargetHeight
+        #endif
     }
 
     private func open() {

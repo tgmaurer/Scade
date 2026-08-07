@@ -42,5 +42,13 @@ let package = Package(
             name: "ScadeKitTests",
             dependencies: ["ScadeKit"]
         ),
+        // Geometry only. The flow tests in the app's own UI test target drive
+        // the app and assert on what's on screen; these render a view and
+        // measure it, which is the one thing those can't see — a screen can
+        // be wired up correctly and still lay out wrongly.
+        .testTarget(
+            name: "ScadeUILayoutTests",
+            dependencies: ["ScadeKit", "ScadeUI"]
+        ),
     ]
 )

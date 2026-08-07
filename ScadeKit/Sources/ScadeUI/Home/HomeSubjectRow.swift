@@ -14,7 +14,13 @@ struct HomeSubjectRow: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: ScadeDesign.rowSpacing) {
-            HomeSubjectName(subject: item.subject)
+            // The frame reserves the column; the button inside stays the
+            // width of the name, so the empty rest of the column isn't
+            // clickable. Nothing here may have an infinite ideal width — the
+            // priority means it's served first, and a greedy view would take
+            // the whole row and leave the grades and average with nothing.
+            SubjectButton(subject: item.subject)
+                .frame(minWidth: ScadeDesign.subjectColumnWidth, alignment: .leading)
                 .layoutPriority(1)
 
             if showsGrades {
