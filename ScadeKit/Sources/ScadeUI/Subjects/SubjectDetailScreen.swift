@@ -41,6 +41,7 @@ struct SubjectDetailScreen: View {
             }
         }
         .navigationTitle(model.summary?.subject.name ?? subject.name)
+        .accessibilityIdentifier(AccessibilityID.Subject.detail)
         .toolbar {
             ToolbarItem {
                 // §4 hides quick-add on a completed subject.

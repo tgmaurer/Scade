@@ -36,6 +36,11 @@ enum AccessibilityID {
         static let new = "subject.new"
         static let name = "subject.form.name"
         static let semester = "subject.form.semester"
+
+        /// Marks the detail screen itself, so a test can tell that a push
+        /// actually happened rather than that the name is on screen — which
+        /// it also is on the screen the push started from.
+        static let detail = "subject.detail"
     }
 
     enum Grade {

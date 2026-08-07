@@ -89,8 +89,9 @@ than tangled up in it.
 - [x] ~~**Each grade chip should link to its grade.**~~ SPEC §4 already listed
       "navigate to grade detail" as a Home action, so this was owed, not new.
       Held back at first because nesting a link inside a row that also linked
-      was what made clicking unreliable — done once the row itself stopped
-      being a link. `GradeChipLink`, §2.8.
+      was what made clicking unreliable — and that caution turned out to be
+      right for a reason worse than expected: several `NavigationLink`s in one
+      macOS `List` row destroy its layout outright. `GradeChipButton`, §2.8.
 
 ### 0.2 How educations are actually used
 
@@ -434,34 +435,48 @@ macOS has a pointer and the app should answer it. Nothing on the dashboard
 looks like a control — it's a table of names and numbers — so hover is what
 tells someone a thing can be clicked *before* they click it.
 
-**Three targets, three different answers, one rule.** Each says "this
-responds", none of them moves anything:
+**Everything that responds is a button, and looks like one.** Not a link.
+Background shifts under the pointer; text colour and decoration stay put:
 
 - **The row** takes a wash of `.fill.quaternary` over the card fill. This is
   the "where am I" cue, and it's why the divider had to move into the
   background: a hovered row and its neighbour must stay separated.
-- **The subject name** turns accent-coloured *and* underlined. Colour alone
-  would carry the whole signal on one hue, and hover is the only cue this
-  control gets. The underline is the part that survives not seeing it.
+- **The subject name** gets a soft filled rounded rect behind it. The fill is
+  padded *outwards* from the text so the name doesn't shift and every subject
+  on screen isn't indented to reserve room for a highlight that's usually
+  invisible.
 - **A grade chip** steps its fill from `.fill.quaternary` to `.fill.tertiary`
   — it already has a background, so it brightens rather than growing a second
   one. Two stacked fills read as a third colour, so `GradeChip` owns both
   strengths instead of having a highlight layered over it.
 
-All three take `.pointerStyle(.link)` where they navigate.
+**No `.pointerStyle(.link)`.** The pointing hand is a *web* convention that
+macOS reserves for navigation leaving the app. Using it for an in-app push
+promises a browser. Internal navigation keeps the arrow — the background
+change is the whole affordance. Accent-coloured or underlined text is out for
+the same reason: that's what a link looks like, and none of these are links.
 
-**Links claim their content and nothing more.** A `NavigationLink` in a list
-row takes the whole row by default, which turned the dashboard into a
-navigation trap — it exists to be *read*, and every stray click left it. The
-name column is a stack whose width is set on the *stack*, with the link inside
-sized to the text and a `Spacer` absorbing the rest. Putting the width on the
-link is what made 160pt of empty space navigate.
+**None of them is a `NavigationLink` either**, which is a layout constraint
+rather than a style one. macOS `List` gives a row containing one a
+presentation of its own, and a row containing *several* is destroyed by it —
+the name and every chip each took a full-width line, the chips lost their
+backgrounds, the average vanished, and nothing navigated. One link per row
+survives; more do not. So the dashboard's controls are `Button`s that push
+through `Navigator`, and the three flat lists keep `NavigationLink` because
+there the whole row is the link, which is the case `List` handles well.
+
+**A control claims its own content and nothing more.** The name column is a
+stack whose width is set on the *stack*, with the button inside sized to the
+text. Putting the width on the button is what made 160pt of empty space
+navigate. The exception is the phone, where a finger can't hit a word and no
+chips compete for the row, so there the button takes the column and a 44pt
+height — see `HomeSubjectName`.
 
 **Hover is state, so it needs a view.** A `View` extension has nowhere to keep
 `@State`; each of the three is a `ViewModifier` or a small view of its own
-(`CardRow`, `SubjectLink`, `GradeChipLink`). Hover propagates to ancestors, so
-a chip and its row light together — which is correct: they're nested targets
-and both are live.
+(`CardRow`, `SubjectButton`, `GradeChipButton`). Hover propagates to
+ancestors, so a chip and its row light together — which is correct: they're
+nested targets and both are live.
 
 ---
 

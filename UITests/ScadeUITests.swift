@@ -49,6 +49,7 @@ final class ScadeUITests: XCTestCase {
         static let newSubject = Control("subject.new", "New Subject")
         static let subjectName = "subject.form.name"
         static let subjectSemester = "subject.form.semester"
+        static let subjectDetail = "subject.detail"
 
         static let newGrade = Control("grade.new", "New Grade")
         static let gradeValue = "grade.form.value"
@@ -168,6 +169,36 @@ final class ScadeUITests: XCTestCase {
         XCTAssertTrue(
             rowMentioning("5.00").waitForExistence(timeout: 5),
             "A single grade of 5 should read as a 5.00 average (§3.1, §3.3)."
+        )
+    }
+
+    /// Home's rows navigate.
+    ///
+    /// This exists because they once silently stopped. The subject name and
+    /// the grade chips are `Button`s that push a path rather than
+    /// `NavigationLink`s (see `Navigator`), and nothing else in this suite
+    /// would notice if that wiring came undone — every other test reaches a
+    /// detail screen through one of the flat lists, which push a different
+    /// way. The app still built, still launched, and still drew the row.
+    func testTappingASubjectOnHomeOpensIt() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Navigable Course")
+
+        openSection(ID.subjectsSection)
+        createSubject(named: "Databases")
+
+        openSection(ID.homeSection)
+        app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label == %@", "Databases"))
+            .firstMatch
+            .tap()
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.subjectDetail)
+                .firstMatch
+                .waitForExistence(timeout: 5),
+            "Clicking a subject's name on Home should open its detail screen."
         )
     }
 

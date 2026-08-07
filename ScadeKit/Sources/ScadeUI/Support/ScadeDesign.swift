@@ -107,6 +107,23 @@ nonisolated enum ScadeDesign {
     /// reads as a line *within* the card rather than a cut across it.
     static let cardDividerInset: Double = 12
 
+    // MARK: - Pointer
+    //
+    // macOS has a pointer and the app should answer it (SPEC-POLISH §2.8).
+
+    /// How far a hover highlight reaches past the text it sits behind, where
+    /// the control has no padding of its own to fill.
+    static let hoverInset: Double = 3
+
+    /// Long enough not to snap, short enough not to lag the pointer. The one
+    /// animation in the app that isn't explaining a change (§2.7).
+    static let hoverDuration: Double = 0.12
+
+    /// The smallest a control may be where it's hit with a finger, from the
+    /// HIG. Stated only because the dashboard's rows are sized for a pointer
+    /// and would otherwise fall under it.
+    static let touchTargetHeight: Double = 44
+
     /// Between a scroll view's content and the window edge. macOS `List`
     /// gives almost none by itself, which is what makes a window look like
     /// the content is falling out of it.
