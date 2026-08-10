@@ -41,6 +41,11 @@ struct SidebarSectionRow: View {
         .listRowBackground(
             RoundedRectangle(cornerRadius: ScadeDesign.sidebarSelectionRadius)
                 .fill(fill)
+                // A row's background is the full width of the sidebar; a
+                // macOS selection is not. Held back from both edges so it
+                // floats in the column instead of running into the window
+                // border on one side and the split divider on the other.
+                .padding(.horizontal, ScadeDesign.sidebarSelectionInset)
         )
         .onHover { isHovering = $0 }
         .animation(.easeOut(duration: ScadeDesign.hoverDuration), value: isHovering)

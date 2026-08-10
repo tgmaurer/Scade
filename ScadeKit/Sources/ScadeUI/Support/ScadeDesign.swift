@@ -152,6 +152,14 @@ nonisolated enum ScadeDesign {
     /// to draw itself (SPEC-POLISH §2.8).
     static let sidebarSelectionRadius: Double = 8
 
+    /// How far that selection is held back from the sidebar's edges.
+    ///
+    /// A row's background spans the sidebar's whole width, but a macOS
+    /// selection never does — it floats inside the column with a margin on
+    /// both sides. Without this it runs into the window border on one side
+    /// and the split divider on the other, and stops reading as a pill.
+    static let sidebarSelectionInset: Double = 10
+
     /// The macOS sidebar's width — fixed, not a starting point.
     ///
     /// Passed to `navigationSplitViewColumnWidth(_:)` as a single value, which
