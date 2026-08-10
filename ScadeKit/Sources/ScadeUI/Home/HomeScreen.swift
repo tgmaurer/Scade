@@ -24,7 +24,9 @@ struct HomeScreen: View {
                         gradeCount: model.gradeCount,
                         semester: model.semester
                     )
-                    .cardRow(.only)
+                    // The card is figures, not a way through to anything.
+                    // Its one control is the education's name (§2.8).
+                    .cardRow(.only, highlightsOnHover: false)
                 }
                 .cardSection()
 

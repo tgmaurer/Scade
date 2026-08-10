@@ -17,9 +17,13 @@ struct HomeSummaryHeader: View {
         VStack(alignment: .leading, spacing: ScadeDesign.iconTextSpacing) {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading) {
-                    Text(education.name)
-                        .font(.title2)
-                        .bold()
+                    // The name is the way to the education; the rest of the
+                    // card is figures and stays inert (§2.8).
+                    DetailButton(
+                        title: education.name,
+                        destination: education,
+                        font: .title2.bold()
+                    )
 
                     if let institution = education.institution, institution.isEmpty == false {
                         Text(institution)

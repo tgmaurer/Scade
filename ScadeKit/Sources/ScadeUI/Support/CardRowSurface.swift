@@ -15,7 +15,7 @@ struct CardRowSurface: View {
             .fill(.background.secondary)
             .overlay {
                 if isHovering {
-                    shape.fill(.fill.quaternary)
+                    shape.fill(ScadeDesign.rowHoverFill)
                 }
             }
             .overlay(alignment: .bottom) { divider }

@@ -115,6 +115,22 @@ nonisolated enum ScadeDesign {
     /// the control has no padding of its own to fill.
     static let hoverInset: Double = 3
 
+    /// The fill a control carries at rest, where it carries one at all.
+    ///
+    /// Computed rather than stored: these are `AnyShapeStyle`, and a stored
+    /// one would be shared mutable state as far as the compiler is concerned.
+    static var controlFill: AnyShapeStyle { AnyShapeStyle(.fill.quaternary) }
+
+    /// And under the pointer. Two steps up the hierarchy rather than one —
+    /// at one step the change was there but easy to miss, which is no use for
+    /// a cue whose whole job is to be noticed before anything is clicked.
+    static var controlHoverFill: AnyShapeStyle { AnyShapeStyle(.fill.secondary) }
+
+    /// The wash over a hovered row. Deliberately fainter than a control's:
+    /// it answers "where am I", not "this is clickable", and a row-wide
+    /// highlight as strong as a button's would drown the button inside it.
+    static var rowHoverFill: AnyShapeStyle { AnyShapeStyle(.fill.quaternary) }
+
     /// Long enough not to snap, short enough not to lag the pointer. The one
     /// animation in the app that isn't explaining a change (§2.7).
     static let hoverDuration: Double = 0.12

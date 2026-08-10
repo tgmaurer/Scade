@@ -19,7 +19,7 @@ struct HomeSubjectRow: View {
             // clickable. Nothing here may have an infinite ideal width — the
             // priority means it's served first, and a greedy view would take
             // the whole row and leave the grades and average with nothing.
-            SubjectButton(subject: item.subject)
+            DetailButton(title: item.subject.name, destination: item.subject)
                 .frame(minWidth: ScadeDesign.subjectColumnWidth, alignment: .leading)
                 .layoutPriority(1)
 

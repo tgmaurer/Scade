@@ -18,23 +18,18 @@ import SwiftUI
 struct SidebarShell: View {
     @Binding var section: AppSection
 
-    /// `List` selects into an optional; the app's selection never is, since
-    /// some section is always showing. This is the adapter between the two,
-    /// and it refuses `nil` rather than inventing a "nothing selected" state
-    /// the rest of the app would have to handle.
-    private var selection: Binding<AppSection?> {
-        Binding(get: { section }, set: { section = $0 ?? section })
-    }
-
     var body: some View {
         NavigationSplitView {
-            List(AppSection.visibleCases, selection: selection) { item in
-                Label(item.title, systemImage: item.systemImage)
-                    // Combined first: without it the identifier settles on the
-                    // symbol rather than the row.
-                    .accessibilityElement(children: .combine)
-                    .accessibilityIdentifier(AccessibilityID.section(item))
-                    .tag(item)
+            // Not `List(selection:)`. The rows carry their own highlight, so
+            // the current section stays marked once focus moves into the
+            // detail column — see `SidebarSectionRow`. It also means the
+            // app's selection can stay non-optional: `List` selects into an
+            // optional, and some section is always showing.
+            List(AppSection.visibleCases) { item in
+                SidebarSectionRow(section: item, isSelected: item == section) {
+                    section = item
+                }
+                .listRowSeparator(.hidden)
             }
             .navigationSplitViewColumnWidth(ScadeDesign.sidebarWidth)
         } detail: {

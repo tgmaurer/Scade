@@ -1,41 +1,46 @@
-import ScadeKit
 import SwiftUI
 
-/// A subject's name, as the way into its detail screen.
+/// A record's title, as the way into its detail screen.
 ///
 /// A button, not a link — in both senses. It navigates through `Navigator`
 /// rather than `NavigationLink`, because several links in one `List` row
-/// destroy the row's layout, and it *reads* as a button: the name keeps its
+/// destroy the row's layout, and it *reads* as a button: the title keeps its
 /// ordinary colour and the background lights under the pointer. Accent text
 /// and underlining are the web's idea of a link, and on macOS they'd promise
 /// something this doesn't do.
 ///
-/// **It is exactly as wide as the name it draws.** Callers give the name
-/// column its width with a `.frame` around this, which reserves the space
+/// **It is exactly as wide as the title it draws.** Callers reserve whatever
+/// column they want with a `.frame` around this, which reserves the space
 /// without handing it over: a `.frame` outside a `Button` positions the button
 /// but doesn't extend what's clickable — that takes a `contentShape`, and the
-/// one here is on the text. Reserving the column any other way is what broke
-/// this screen twice, most recently with a `Spacer` alongside the button,
-/// which gave the enclosing stack an infinite ideal width and left the rest of
-/// the row nothing to lay out in.
-struct SubjectButton: View {
-    let subject: Subject
+/// one here is on the text. Reserving space any other way is what broke the
+/// dashboard twice, most recently with a `Spacer` alongside the button, which
+/// gave the enclosing stack an infinite ideal width and left the rest of the
+/// row nothing to lay out in.
+///
+/// Generic over what it opens so subjects, educations and anything else
+/// reached this way share one treatment — the hover cue is a promise about
+/// what a click does, and it should not vary by record type.
+struct DetailButton<Destination: Hashable>: View {
+    let title: String
+    let destination: Destination
+    var font: Font = ScadeDesign.rowTitle
 
     @Environment(\.navigate) private var navigate
     @State private var isHovering = false
 
     var body: some View {
         Button(action: open) {
-            Text(subject.name)
-                .font(ScadeDesign.rowTitle)
+            Text(title)
+                .font(font)
                 .lineLimit(1)
                 .background {
                     RoundedRectangle(cornerRadius: ScadeDesign.badgeCornerRadius)
-                        .fill(isHovering ? AnyShapeStyle(.fill.quaternary) : AnyShapeStyle(.clear))
-                        // Outwards, so the name stays where it is and keeps
+                        .fill(isHovering ? ScadeDesign.controlHoverFill : AnyShapeStyle(.clear))
+                        // Outwards, so the title stays where it is and keeps
                         // its column alignment. Padding the text instead
-                        // would indent every subject on the screen to make
-                        // room for a highlight that is usually invisible.
+                        // would indent every row on the screen to make room
+                        // for a highlight that is usually invisible.
                         .padding(.horizontal, -ScadeDesign.chipPadding)
                         .padding(.vertical, -ScadeDesign.hoverInset)
                 }
@@ -50,8 +55,8 @@ struct SubjectButton: View {
     }
 
     /// A pointer can hit a word; a finger can't, so on a phone the target is
-    /// grown to the HIG's floor. The width is left alone on both — a name is
-    /// wide enough to hit, and widening it costs the average its place.
+    /// grown to the HIG's floor. The width is left alone on both — a title is
+    /// wide enough to hit, and widening it costs its neighbours their place.
     private var minimumHitHeight: CGFloat? {
         #if os(macOS)
         nil
@@ -61,11 +66,13 @@ struct SubjectButton: View {
     }
 
     private func open() {
-        navigate(subject)
+        navigate(destination)
     }
 }
 
 #Preview {
-    SubjectButton(subject: PreviewData.homeSubject().subject)
+    let subject = PreviewData.homeSubject().subject
+
+    DetailButton(title: subject.name, destination: subject)
         .padding()
 }

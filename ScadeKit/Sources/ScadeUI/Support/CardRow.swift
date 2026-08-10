@@ -12,6 +12,13 @@ import SwiftUI
 struct CardRow: ViewModifier {
     let position: CardRowPosition
 
+    /// Whether the row itself answers the pointer.
+    ///
+    /// Off for a row that isn't a way through to anything — the summary
+    /// header is a card of figures with one button in it, and lighting the
+    /// whole card up promises a click that does nothing.
+    let highlightsOnHover: Bool
+
     @State private var isHovering = false
 
     func body(content: Content) -> some View {
@@ -20,7 +27,7 @@ struct CardRow: ViewModifier {
             // Without this only the text is hoverable, so the highlight
             // flickers as the pointer crosses the gaps between columns.
             .contentShape(.rect)
-            .onHover { isHovering = $0 }
+            .onHover { isHovering = highlightsOnHover && $0 }
             // Every system separator is off, and the card draws its own
             // instead. The list's are the "too many horizontal lines" problem
             // in miniature: it rules a line above the first row and below the

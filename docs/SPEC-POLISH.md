@@ -438,17 +438,28 @@ tells someone a thing can be clicked *before* they click it.
 **Everything that responds is a button, and looks like one.** Not a link.
 Background shifts under the pointer; text colour and decoration stay put:
 
-- **The row** takes a wash of `.fill.quaternary` over the card fill. This is
-  the "where am I" cue, and it's why the divider had to move into the
-  background: a hovered row and its neighbour must stay separated.
-- **The subject name** gets a soft filled rounded rect behind it. The fill is
-  padded *outwards* from the text so the name doesn't shift and every subject
-  on screen isn't indented to reserve room for a highlight that's usually
+- **The row** takes a wash of `rowHoverFill` over the card fill. This is the
+  "where am I" cue, and it's why the divider had to move into the background:
+  a hovered row and its neighbour must stay separated.
+- **A record's title** gets a filled rounded rect behind it. The fill is
+  padded *outwards* from the text so the title doesn't shift and every row on
+  screen isn't indented to reserve room for a highlight that's usually
   invisible.
-- **A grade chip** steps its fill from `.fill.quaternary` to `.fill.tertiary`
-  — it already has a background, so it brightens rather than growing a second
-  one. Two stacked fills read as a third colour, so `GradeChip` owns both
-  strengths instead of having a highlight layered over it.
+- **A grade chip** steps from `controlFill` to `controlHoverFill` — it already
+  has a background, so it brightens rather than growing a second one. Two
+  stacked fills read as a third colour, so `GradeChip` owns both strengths
+  instead of having a highlight layered over it.
+
+**Two strengths, and controls get the louder one.** `controlHoverFill` is two
+steps up the hierarchy from rest, not one: at one step the change was there
+but easy to miss, which is no use for a cue whose whole job is to be noticed
+*before* anything is clicked. The row's wash stays faint deliberately — a
+row-wide highlight as strong as a button's drowns the button inside it.
+
+**A row that doesn't lead anywhere doesn't light up.** The summary card is
+figures with a single control in it, so the card itself takes
+`highlightsOnHover: false` and only the education's name responds. Lighting
+the whole card would promise a click that does nothing.
 
 **No `.pointerStyle(.link)`.** The pointing hand is a *web* convention that
 macOS reserves for navigation leaving the app. Using it for an in-app push
@@ -485,6 +496,17 @@ fails on all of it.
 On a phone the button keeps its width but takes a 44pt height, since a finger
 can't hit a word. The width is left alone on both platforms — widening it is
 what costs the average its place.
+
+**The sidebar draws its own selection.** `List(selection:)` is an
+`NSTableView` selection underneath, and that greys out whenever the table
+stops being first responder — which here is the moment anything in the detail
+column is clicked, so the highlight was grey nearly all the time. Right for a
+selection you're acting on, wrong for this: the five rows are a mode switch,
+and the highlight answers "which section am I in", which doesn't stop being
+true because focus moved. SwiftUI exposes no hook for the emphasis, so
+`SidebarSectionRow` carries its own background. The app's selection gets to
+stay non-optional as a result. The cost is `List`'s built-in arrow-key
+selection, which §1.1's navigation shortcuts should cover properly anyway.
 
 **Hover is state, so it needs a view.** A `View` extension has nowhere to keep
 `@State`; each of the three is a `ViewModifier` or a small view of its own

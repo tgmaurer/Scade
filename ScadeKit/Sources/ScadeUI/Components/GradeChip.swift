@@ -22,7 +22,7 @@ struct GradeChip: View {
     }
 
     private var fill: AnyShapeStyle {
-        isHighlighted ? AnyShapeStyle(.fill.tertiary) : AnyShapeStyle(.fill.quaternary)
+        isHighlighted ? ScadeDesign.controlHoverFill : ScadeDesign.controlFill
     }
 
     var body: some View {
