@@ -27,16 +27,21 @@ struct SidebarSectionRow: View {
                 // Filling the row is the point here: a sidebar row is a
                 // full-width target, and nothing shares the line with it.
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, ScadeDesign.rowVerticalPadding)
-                .padding(.horizontal, ScadeDesign.chipPadding)
                 .contentShape(.rect)
         }
         .buttonStyle(.plain)
         .foregroundStyle(isSelected ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
-        .background {
-            RoundedRectangle(cornerRadius: ScadeDesign.badgeCornerRadius)
+        // No padding of its own, and the highlight goes in the row's
+        // background rather than behind the label. Both for the same reason:
+        // the sidebar already has metrics — row height, insets, where a
+        // selection sits — and every number added here is one that disagrees
+        // with them. Padding the label indented the text past where the
+        // system puts it and made the rows taller, and a highlight drawn
+        // inside those insets could never reach as wide as a real selection.
+        .listRowBackground(
+            RoundedRectangle(cornerRadius: ScadeDesign.sidebarSelectionRadius)
                 .fill(fill)
-        }
+        )
         .onHover { isHovering = $0 }
         .animation(.easeOut(duration: ScadeDesign.hoverDuration), value: isHovering)
         .accessibilityIdentifier(AccessibilityID.section(section))

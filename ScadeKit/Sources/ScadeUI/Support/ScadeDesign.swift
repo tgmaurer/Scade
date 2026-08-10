@@ -145,6 +145,13 @@ nonisolated enum ScadeDesign {
     /// the content is falling out of it.
     static let contentMargin: Double = 20
 
+    /// The corner radius on a sidebar row's selection.
+    ///
+    /// Larger than a badge's: macOS rounds a sidebar selection more than it
+    /// rounds a small control, and this stands in for a selection the app has
+    /// to draw itself (SPEC-POLISH §2.8).
+    static let sidebarSelectionRadius: Double = 8
+
     /// The macOS sidebar's width — fixed, not a starting point.
     ///
     /// Passed to `navigationSplitViewColumnWidth(_:)` as a single value, which

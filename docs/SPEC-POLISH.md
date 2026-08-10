@@ -508,6 +508,14 @@ true because focus moved. SwiftUI exposes no hook for the emphasis, so
 stay non-optional as a result. The cost is `List`'s built-in arrow-key
 selection, which §1.1's navigation shortcuts should cover properly anyway.
 
+Taking the selection over is *not* a licence to restate the rest. The sidebar
+already has metrics — row height, insets, where a selection sits — and the
+first attempt added padding around the label and drew the highlight behind it,
+which indented the text past where macOS puts it, made the rows taller, and
+left a highlight too narrow to pass for a selection. The row now adds no
+geometry at all: the label sits where the list puts it and the highlight goes
+in `listRowBackground`. Replace one system behaviour, inherit the others.
+
 **Hover is state, so it needs a view.** A `View` extension has nowhere to keep
 `@State`; each of the three is a `ViewModifier` or a small view of its own
 (`CardRow`, `SubjectButton`, `GradeChipButton`). Hover propagates to
