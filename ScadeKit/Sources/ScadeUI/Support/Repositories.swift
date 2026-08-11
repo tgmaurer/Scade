@@ -4,8 +4,9 @@ import SwiftUI
 /// The three repositories, handed to the view layer as one value.
 ///
 /// Holds no rows — it is a handle for making queries, not a cache. Screens
-/// load what they need when they appear and reload after they write, so
-/// nothing goes stale behind a view's back.
+/// mostly don't call these directly any more: they observe a query through
+/// `database.observe…` and are handed a fresh result whenever the rows behind
+/// it change. What's left here backs the writes, the forms, and Settings.
 public struct Repositories: Sendable {
     public let educations: EducationRepository
     public let subjects: SubjectRepository

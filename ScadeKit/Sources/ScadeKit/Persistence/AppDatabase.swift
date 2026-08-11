@@ -35,6 +35,45 @@ public struct AppDatabase: Sendable {
         try writer.write(updates)
     }
 
+    /// Runs `fetch` now, and again whenever anything it read is written to.
+    ///
+    /// This is the one exception to "nothing is retained between calls" above,
+    /// and it exists because the alternative was worse: screens fetched when
+    /// they appeared, and `onAppear` doesn't run again when a pushed screen is
+    /// popped, so a list could sit showing a record that had been renamed on
+    /// the screen it opened. Every fix for that shape of bug is a way of
+    /// guessing when data *might* have changed. SQLite already knows.
+    ///
+    /// It is still an explicit query — `fetch` is written by the caller and
+    /// re-run whole. Nothing is tracked per object, no graph is kept, and
+    /// there is no cache to invalidate; each delivery is a fresh read.
+    ///
+    /// The stream is bridged from GRDB's `ValueObservation` so callers never
+    /// name a GRDB type. Cancelling the task that consumes it — which SwiftUI
+    /// does when a `task` modifier's view goes away — stops the observation.
+    ///
+    /// `fetch` may run several queries; they see one consistent snapshot,
+    /// which separate reads do not.
+    public func observe<Value: Sendable & Equatable>(
+        _ fetch: @escaping @Sendable (Database) throws -> Value
+    ) -> AsyncThrowingStream<Value, any Error> {
+        AsyncThrowingStream { continuation in
+            let cancellable = ValueObservation
+                .tracking(fetch)
+                // A write to a tracked table re-runs the query even when the
+                // result is identical. Without this, editing one subject
+                // would republish every other screen's unchanged rows.
+                .removeDuplicates()
+                .start(in: writer) { error in
+                    continuation.finish(throwing: error)
+                } onChange: { value in
+                    continuation.yield(value)
+                }
+
+            continuation.onTermination = { _ in cancellable.cancel() }
+        }
+    }
+
     /// Writes a self-contained copy of the database to `url`, for the backup
     /// and export in SPEC §4.
     ///

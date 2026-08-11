@@ -50,6 +50,7 @@ final class ScadeUITests: XCTestCase {
         static let subjectName = "subject.form.name"
         static let subjectSemester = "subject.form.semester"
         static let subjectDetail = "subject.detail"
+        static let editSubject = Control("subject.edit", "Edit")
 
         static let newGrade = Control("grade.new", "New Grade")
         static let gradeValue = "grade.form.value"
@@ -244,6 +245,33 @@ final class ScadeUITests: XCTestCase {
         )
     }
 
+    /// A list shows an edit made on the detail screen it pushed.
+    ///
+    /// Screens load in `onAppear`, which doesn't run again when a pushed
+    /// screen is popped, so a list could sit showing a record that had since
+    /// been renamed underneath it.
+    func testRenamingASubjectOnItsDetailUpdatesTheListBehindIt() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Refresh Course")
+
+        openSection(ID.subjectsSection)
+        createSubject(named: "Before Rename")
+
+        rowMentioning("Before Rename").tap()
+        XCTAssertTrue(subjectDetail.waitForExistence(timeout: 5))
+
+        tap(ID.editSubject)
+        replaceText("After Rename", in: app.textFields[ID.subjectName])
+        tap(ID.save)
+
+        goBack()
+
+        XCTAssertTrue(
+            rowMentioning("After Rename").waitForExistence(timeout: 5),
+            "The list should show the renamed subject once the detail is closed."
+        )
+    }
+
     /// The only destructive action that isn't scoped to one record, so the
     /// one most worth pinning down: it has to actually empty the database,
     /// and it has to be reachable only through the confirmation.
@@ -270,6 +298,31 @@ final class ScadeUITests: XCTestCase {
     /// isn't guaranteed across platforms.
     private var errorLabels: XCUIElementQuery {
         app.descendants(matching: .any).matching(identifier: ID.error)
+    }
+
+    /// The subject detail screen, as a way of asking whether a push happened —
+    /// the subject's *name* is on the screen the push started from too.
+    private var subjectDetail: XCUIElement {
+        app.descendants(matching: .any)
+            .matching(identifier: ID.subjectDetail)
+            .firstMatch
+    }
+
+    /// Pops the pushed screen, the way a person would.
+    ///
+    /// macOS gives its back button the chevron's symbol name as an
+    /// identifier; iOS labels its own with the *previous screen's* title, so
+    /// there the navigation bar's first button is the only portable handle.
+    private func goBack() {
+        let chevron = app.buttons["chevron.backward"]
+        if chevron.waitForExistence(timeout: 3) {
+            chevron.tap()
+            return
+        }
+
+        let first = app.navigationBars.buttons.firstMatch
+        XCTAssertTrue(first.waitForExistence(timeout: 5), "No back button on the pushed screen.")
+        first.tap()
     }
 
     /// Finds a list row by something written in it.

@@ -23,11 +23,16 @@ public struct SubjectRepository: Sendable {
 
     // MARK: - Reading
 
+    // Reads used by an observing screen are a `static` query plus a one-line
+    // instance method. See `AppDatabase.observe` for why they're split.
+
     /// Every subject, newest-created first (§3.6).
+    public static func fetchAll(_ db: Database) throws -> [Subject] {
+        try Subject.order(Subject.Columns.id.desc).fetchAll(db)
+    }
+
     public func all() throws -> [Subject] {
-        try database.read { db in
-            try Subject.order(Subject.Columns.id.desc).fetchAll(db)
-        }
+        try database.read(Self.fetchAll)
     }
 
     /// Every subject with its education attached, newest-created first.
@@ -154,38 +159,42 @@ public struct SubjectRepository: Sendable {
     /// Three queries regardless of how many subjects there are — the list
     /// screen shows an average and a parent education per row, and resolving
     /// either one row at a time would be a query apiece.
-    public func allSummaries() throws -> [SubjectSummary] {
-        try database.read { db in
-            let subjects = try Subject.order(Subject.Columns.id.desc).fetchAll(db)
-            let educations = try Self.educations(for: subjects, in: db)
-            let withGrades = try Self.attachGrades(to: subjects, in: db)
+    public static func fetchAllSummaries(_ db: Database) throws -> [SubjectSummary] {
+        let subjects = try Subject.order(Subject.Columns.id.desc).fetchAll(db)
+        let educations = try Self.educations(for: subjects, in: db)
+        let withGrades = try Self.attachGrades(to: subjects, in: db)
 
-            return withGrades.compactMap { entry in
-                guard let education = educations[entry.subject.educationId] else { return nil }
-                return SubjectSummary(
-                    subject: entry.subject,
-                    education: education,
-                    grades: entry.grades
-                )
-            }
+        return withGrades.compactMap { entry in
+            guard let education = educations[entry.subject.educationId] else { return nil }
+            return SubjectSummary(
+                subject: entry.subject,
+                education: education,
+                grades: entry.grades
+            )
         }
+    }
+
+    public func allSummaries() throws -> [SubjectSummary] {
+        try database.read(Self.fetchAllSummaries)
     }
 
     /// One subject with its education and grades, or `nil` if it isn't there.
     /// Backs the detail screen.
+    public static func fetchSummary(id: Int64, in db: Database) throws -> SubjectSummary? {
+        guard let subject = try Subject.fetchOne(db, key: id),
+              let education = try Education.fetchOne(db, key: subject.educationId)
+        else { return nil }
+
+        let grades = try Grade
+            .filter(Grade.Columns.subjectId == id)
+            .order(GradeRepository.canonicalOrder)
+            .fetchAll(db)
+
+        return SubjectSummary(subject: subject, education: education, grades: grades)
+    }
+
     public func summary(id: Int64) throws -> SubjectSummary? {
-        try database.read { db in
-            guard let subject = try Subject.fetchOne(db, key: id),
-                  let education = try Education.fetchOne(db, key: subject.educationId)
-            else { return nil }
-
-            let grades = try Grade
-                .filter(Grade.Columns.subjectId == id)
-                .order(GradeRepository.canonicalOrder)
-                .fetchAll(db)
-
-            return SubjectSummary(subject: subject, education: education, grades: grades)
-        }
+        try database.read { try Self.fetchSummary(id: id, in: $0) }
     }
 
     // MARK: - Writing

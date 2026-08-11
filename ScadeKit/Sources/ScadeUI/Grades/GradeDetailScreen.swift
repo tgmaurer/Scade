@@ -87,14 +87,16 @@ struct GradeDetailScreen: View {
                 }
             }
         }
-        .sheet(item: $formMode, onDismiss: reload) { mode in
+        .sheet(item: $formMode) { mode in
             GradeFormScreen(mode: mode)
         }
         .alert("Something went wrong", isPresented: $model.isShowingError) {
         } message: {
             Text(model.errorMessage ?? "")
         }
-        .onAppear(perform: reload)
+        .task {
+            await model.observe(id: grade.id, from: repositories)
+        }
         .onChange(of: model.wasDeleted) {
             if model.wasDeleted {
                 dismiss()
@@ -107,7 +109,4 @@ struct GradeDetailScreen: View {
         formMode = .edit(grade)
     }
 
-    private func reload() {
-        model.load(id: grade.id, from: repositories)
-    }
 }

@@ -79,10 +79,6 @@ struct HomeScreen: View {
                     )
             }
 
-            ToolbarItem {
-                Button("Reload", systemImage: "arrow.clockwise", action: reload)
-            }
-
             // Where Settings has no section of its own — everywhere but
             // macOS — this is the way in (SPEC-POLISH §2.2).
             if AppSection.showsSettingsSection == false {
@@ -95,20 +91,26 @@ struct HomeScreen: View {
         .sheet(isPresented: $isShowingSettings) {
             SettingsSheet()
         }
-        .sheet(item: $educationFormMode, onDismiss: reload) { mode in
+        // No `onDismiss` reload on any of these: what a form writes, the
+        // observation below already sees.
+        .sheet(item: $educationFormMode) { mode in
             EducationFormScreen(mode: mode)
         }
-        .sheet(item: $subjectFormMode, onDismiss: reload) { mode in
+        .sheet(item: $subjectFormMode) { mode in
             SubjectFormScreen(mode: mode)
         }
-        .sheet(item: $gradeFormMode, onDismiss: reload) { mode in
+        .sheet(item: $gradeFormMode) { mode in
             GradeFormScreen(mode: mode)
         }
         .alert("Something went wrong", isPresented: $model.isShowingError) {
         } message: {
             Text(model.errorMessage ?? "")
         }
-        .onAppear(perform: reload)
+        // Keyed on the selection, so choosing another education restarts the
+        // observation against that one. `HomeModel` relies on this.
+        .task(id: model.selectedEducationId) {
+            await model.observe(repositories)
+        }
     }
 
     /// §4: a subject's grades are listed under it only in a regular width.
@@ -116,11 +118,6 @@ struct HomeScreen: View {
     /// away in the subject detail (SPEC-POLISH §2.3).
     private var showsGrades: Bool {
         sizeClass != .compact
-    }
-
-    private func reload() {
-        model.attach(repositories)
-        model.load(from: repositories)
     }
 
     private func startCreatingEducation() {

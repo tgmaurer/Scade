@@ -57,21 +57,29 @@ final class SubjectListModel {
         }
     }
 
-    func load(from repositories: Repositories) {
+    /// Follows the database for as long as the screen is on screen. See
+    /// `AppDatabase.observe`.
+    func observe(_ repositories: Repositories) async {
         do {
-            rows = try repositories.subjects.allSummaries().map(SubjectRow.init)
-            institutions = try repositories.educations.distinctInstitutions()
-            hasInProgressEducation = try repositories.educations.inProgress().isEmpty == false
-            hasAnyEducation = try repositories.educations.count() > 0
-
-            if let institution, institutions.contains(institution) == false {
-                self.institution = nil
-            }
-            if let semester, availableSemesters.contains(semester) == false {
-                self.semester = nil
+            for try await data in repositories.database.observeSubjectList() {
+                apply(data)
             }
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    private func apply(_ data: SubjectListData) {
+        rows = data.summaries.map(SubjectRow.init)
+        institutions = data.institutions
+        hasInProgressEducation = data.hasInProgressEducation
+        hasAnyEducation = data.hasAnyEducation
+
+        if let institution, institutions.contains(institution) == false {
+            self.institution = nil
+        }
+        if let semester, availableSemesters.contains(semester) == false {
+            self.semester = nil
         }
     }
 
@@ -87,7 +95,7 @@ final class SubjectListModel {
 
         do {
             try repositories.subjects.delete(id: id)
-            load(from: repositories)
+            // No reload: the observation publishes the deletion.
         } catch {
             errorMessage = error.localizedDescription
         }

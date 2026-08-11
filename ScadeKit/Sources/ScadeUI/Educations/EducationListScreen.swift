@@ -47,7 +47,7 @@ struct EducationListScreen: View {
                     .accessibilityIdentifier(AccessibilityID.Education.new)
             }
         }
-        .sheet(item: $formMode, onDismiss: reload) { mode in
+        .sheet(item: $formMode) { mode in
             EducationFormScreen(mode: mode)
         }
         .confirmationDialog(
@@ -68,16 +68,15 @@ struct EducationListScreen: View {
         } message: {
             Text(model.errorMessage ?? "")
         }
-        .onAppear(perform: reload)
+        .task {
+            await model.observe(repositories)
+        }
     }
 
     private func startCreating() {
         formMode = .create
     }
 
-    private func reload() {
-        model.load(from: repositories)
-    }
 }
 
 #Preview {

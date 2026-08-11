@@ -26,6 +26,14 @@ final class SettingsModel {
         "Scade-\(CalendarDate.today().iso8601String).sqlite"
     }
 
+    /// The one screen still on fetch-on-appear, deliberately.
+    ///
+    /// Loading here *writes a file* — the export snapshot — so an observation
+    /// would rewrite it on every change anywhere in the database. Settings
+    /// also has nothing pushed on top of it, so the staleness that drove the
+    /// rest of the app onto `AppDatabase.observe` can't happen here: the only
+    /// thing that changes the count while it's open is the button below,
+    /// which reloads.
     func load(from repositories: Repositories) {
         prepareExport(from: repositories)
 

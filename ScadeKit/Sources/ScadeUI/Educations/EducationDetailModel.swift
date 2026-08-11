@@ -20,12 +20,17 @@ final class EducationDetailModel {
     /// rather than sit on a record that no longer exists.
     private(set) var wasDeleted = false
 
-    func load(id: Int64?, from repositories: Repositories) {
+    /// Follows this education for as long as the screen is on screen — its
+    /// own edits included, so an edit here needs no reload. See
+    /// `AppDatabase.observe`.
+    func observe(id: Int64?, from repositories: Repositories) async {
         guard let id else { return }
 
         do {
-            summary = try repositories.educations.summary(id: id)
-            average = summary.map { GradeCalculator.educationAverage(of: $0.subjects) } ?? nil
+            for try await summary in repositories.database.observeEducation(id: id) {
+                self.summary = summary
+                average = summary.map { GradeCalculator.educationAverage(of: $0.subjects) } ?? nil
+            }
         } catch {
             errorMessage = error.localizedDescription
         }

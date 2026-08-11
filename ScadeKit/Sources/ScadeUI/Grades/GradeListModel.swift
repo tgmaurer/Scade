@@ -43,15 +43,22 @@ final class GradeListModel {
         }
     }
 
-    func load(from repositories: Repositories) {
+    /// Follows the database for as long as the screen is on screen. See
+    /// `AppDatabase.observe`.
+    func observe(_ repositories: Repositories) async {
         do {
-            rows = try repositories.grades.allListItems()
-            let subjects = try repositories.subjects.all()
-            hasAnySubject = subjects.isEmpty == false
-            hasInProgressSubject = subjects.contains { $0.completed == false }
+            for try await data in repositories.database.observeGradeList() {
+                apply(data)
+            }
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    private func apply(_ data: GradeListData) {
+        rows = data.items
+        hasAnySubject = data.subjects.isEmpty == false
+        hasInProgressSubject = data.subjects.contains { $0.completed == false }
     }
 
     func clearFilters() {
@@ -64,7 +71,7 @@ final class GradeListModel {
 
         do {
             try repositories.grades.delete(id: id)
-            load(from: repositories)
+            // No reload: the observation publishes the deletion.
         } catch {
             errorMessage = error.localizedDescription
         }

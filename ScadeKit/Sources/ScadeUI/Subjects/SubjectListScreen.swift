@@ -52,7 +52,7 @@ struct SubjectListScreen: View {
                     .help(model.creationBlockedReason ?? "")
             }
         }
-        .sheet(item: $formMode, onDismiss: reload) { mode in
+        .sheet(item: $formMode) { mode in
             SubjectFormScreen(mode: mode)
         }
         .confirmationDialog(
@@ -70,16 +70,15 @@ struct SubjectListScreen: View {
         } message: {
             Text(model.errorMessage ?? "")
         }
-        .onAppear(perform: reload)
+        .task {
+            await model.observe(repositories)
+        }
     }
 
     private func startCreating() {
         formMode = .create()
     }
 
-    private func reload() {
-        model.load(from: repositories)
-    }
 }
 
 #Preview {

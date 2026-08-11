@@ -17,12 +17,17 @@ final class SubjectDetailModel {
         set { if newValue == false { errorMessage = nil } }
     }
 
-    func load(id: Int64?, from repositories: Repositories) {
+    /// Follows this subject for as long as the screen is on screen — its own
+    /// edits included, so a rename here needs no reload. See
+    /// `AppDatabase.observe`.
+    func observe(id: Int64?, from repositories: Repositories) async {
         guard let id else { return }
 
         do {
-            summary = try repositories.subjects.summary(id: id)
-            average = summary.map { GradeCalculator.subjectAverage(of: $0.grades) } ?? nil
+            for try await summary in repositories.database.observeSubject(id: id) {
+                self.summary = summary
+                average = summary.map { GradeCalculator.subjectAverage(of: $0.grades) } ?? nil
+            }
         } catch {
             errorMessage = error.localizedDescription
         }

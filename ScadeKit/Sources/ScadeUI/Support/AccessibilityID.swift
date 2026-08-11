@@ -41,6 +41,8 @@ enum AccessibilityID {
         /// actually happened rather than that the name is on screen — which
         /// it also is on the screen the push started from.
         static let detail = "subject.detail"
+
+        static let edit = "subject.edit"
     }
 
     enum Grade {

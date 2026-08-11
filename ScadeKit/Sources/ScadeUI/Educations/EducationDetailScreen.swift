@@ -69,17 +69,19 @@ struct EducationDetailScreen: View {
                 }
             }
         }
-        .sheet(item: $formMode, onDismiss: reload) { mode in
+        .sheet(item: $formMode) { mode in
             EducationFormScreen(mode: mode)
         }
-        .sheet(item: $subjectFormMode, onDismiss: reload) { mode in
+        .sheet(item: $subjectFormMode) { mode in
             SubjectFormScreen(mode: mode)
         }
         .alert("Something went wrong", isPresented: $model.isShowingError) {
         } message: {
             Text(model.errorMessage ?? "")
         }
-        .onAppear(perform: reload)
+        .task {
+            await model.observe(id: education.id, from: repositories)
+        }
         .onChange(of: model.wasDeleted) {
             if model.wasDeleted {
                 dismiss()
@@ -97,9 +99,6 @@ struct EducationDetailScreen: View {
         subjectFormMode = .create(educationId: id)
     }
 
-    private func reload() {
-        model.load(id: education.id, from: repositories)
-    }
 }
 
 #Preview {

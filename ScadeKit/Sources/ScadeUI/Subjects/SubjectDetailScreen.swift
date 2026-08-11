@@ -51,6 +51,7 @@ struct SubjectDetailScreen: View {
 
             ToolbarItem {
                 Button("Edit", systemImage: "pencil", action: startEditing)
+                    .accessibilityIdentifier(AccessibilityID.Subject.edit)
             }
 
             ToolbarItem {
@@ -72,17 +73,19 @@ struct SubjectDetailScreen: View {
                 }
             }
         }
-        .sheet(item: $formMode, onDismiss: reload) { mode in
+        .sheet(item: $formMode) { mode in
             SubjectFormScreen(mode: mode)
         }
-        .sheet(item: $gradeFormMode, onDismiss: reload) { mode in
+        .sheet(item: $gradeFormMode) { mode in
             GradeFormScreen(mode: mode)
         }
         .alert("Something went wrong", isPresented: $model.isShowingError) {
         } message: {
             Text(model.errorMessage ?? "")
         }
-        .onAppear(perform: reload)
+        .task {
+            await model.observe(id: subject.id, from: repositories)
+        }
         .onChange(of: model.wasDeleted) {
             if model.wasDeleted {
                 dismiss()
@@ -100,7 +103,4 @@ struct SubjectDetailScreen: View {
         gradeFormMode = .create(subjectId: id)
     }
 
-    private func reload() {
-        model.load(id: subject.id, from: repositories)
-    }
 }

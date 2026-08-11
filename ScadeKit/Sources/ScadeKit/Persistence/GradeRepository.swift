@@ -30,37 +30,41 @@ public struct GradeRepository: Sendable {
 
     /// Every grade with its subject and education attached, newest-created
     /// first. Backs the grades list screen (§3.5, §4).
-    public func allListItems() throws -> [GradeListItem] {
-        try database.read { db in
-            let grades = try Grade.order(Grade.Columns.id.desc).fetchAll(db)
+    public static func fetchAllListItems(_ db: Database) throws -> [GradeListItem] {
+        let grades = try Grade.order(Grade.Columns.id.desc).fetchAll(db)
 
-            let subjectIds = Set(grades.map(\.subjectId))
-            let subjects = try Subject.filter(keys: subjectIds).fetchAll(db)
-            let subjectsById = Dictionary(uniqueKeysWithValues: subjects.compactMap { subject in
-                subject.id.map { ($0, subject) }
-            })
-            let educations = try SubjectRepository.educations(for: subjects, in: db)
+        let subjectIds = Set(grades.map(\.subjectId))
+        let subjects = try Subject.filter(keys: subjectIds).fetchAll(db)
+        let subjectsById = Dictionary(uniqueKeysWithValues: subjects.compactMap { subject in
+            subject.id.map { ($0, subject) }
+        })
+        let educations = try SubjectRepository.educations(for: subjects, in: db)
 
-            return grades.compactMap { grade in
-                guard let subject = subjectsById[grade.subjectId],
-                      let education = educations[subject.educationId]
-                else { return nil }
-                return GradeListItem(grade: grade, subject: subject, education: education)
-            }
+        return grades.compactMap { grade in
+            guard let subject = subjectsById[grade.subjectId],
+                  let education = educations[subject.educationId]
+            else { return nil }
+            return GradeListItem(grade: grade, subject: subject, education: education)
         }
+    }
+
+    public func allListItems() throws -> [GradeListItem] {
+        try database.read(Self.fetchAllListItems)
     }
 
     /// One grade with its subject and education, or `nil` if it isn't there.
     /// Backs the detail screen.
-    public func listItem(id: Int64) throws -> GradeListItem? {
-        try database.read { db in
-            guard let grade = try Grade.fetchOne(db, key: id),
-                  let subject = try Subject.fetchOne(db, key: grade.subjectId),
-                  let education = try Education.fetchOne(db, key: subject.educationId)
-            else { return nil }
+    public static func fetchListItem(id: Int64, in db: Database) throws -> GradeListItem? {
+        guard let grade = try Grade.fetchOne(db, key: id),
+              let subject = try Subject.fetchOne(db, key: grade.subjectId),
+              let education = try Education.fetchOne(db, key: subject.educationId)
+        else { return nil }
 
-            return GradeListItem(grade: grade, subject: subject, education: education)
-        }
+        return GradeListItem(grade: grade, subject: subject, education: education)
+    }
+
+    public func listItem(id: Int64) throws -> GradeListItem? {
+        try database.read { try Self.fetchListItem(id: id, in: $0) }
     }
 
     /// The grades of one subject, newest first (§3.6).
