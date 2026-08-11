@@ -62,6 +62,14 @@ nonisolated enum ScadeDesign {
     /// is mostly columns of numbers.
     static let value: Font = .body.monospacedDigit()
 
+    /// A symbol standing in for a word inside a chip-sized control.
+    ///
+    /// Sized with the values it sits among rather than with the metadata,
+    /// because it's the control in that run, not a footnote to it. Semibold
+    /// because a `plus` is thin strokes and no counters — at `.caption` weight
+    /// it reads as a speck next to solid digits.
+    static let chipGlyph: Font = .body.weight(.semibold)
+
     // MARK: - Surfaces
 
     /// Corner radius for the card a semester's subjects sit on.

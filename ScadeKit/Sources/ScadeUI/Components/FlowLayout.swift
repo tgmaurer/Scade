@@ -53,9 +53,13 @@ struct FlowLayout: Layout {
 
             for index in line.indices {
                 let size = subviews[index].sizeThatFits(.unspecified)
+                // Centred on the line, not hung from its top. A line holds
+                // items of different heights — a chip is taller than a bare
+                // line of text — and topLeading left the shorter ones riding
+                // high next to their neighbours.
                 subviews[index].place(
-                    at: CGPoint(x: x, y: y),
-                    anchor: .topLeading,
+                    at: CGPoint(x: x, y: y + line.height / 2),
+                    anchor: .leading,
                     proposal: ProposedViewSize(size)
                 )
                 x += size.width + spacing

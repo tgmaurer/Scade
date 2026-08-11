@@ -375,6 +375,11 @@ row. Home's summary header is the case — a `.title2` name beside a
 smaller side is a stack, only the rung being compared belongs in the aligned
 row; the rest goes underneath, or there is nothing to centre.
 
+The same goes for a *run* of things at different heights — a subject's grade
+chips, the label that stands in for them when there are none, the button that
+adds one. `FlowLayout` centres each item on its line rather than hanging them
+from the top, which is what left "No grades" riding above the chip beside it.
+
 The averages and weights already render as badges — that treatment
 (`ScadeDesign.badgeCornerRadius`) should become deliberate rather than
 incidental: settled sizes, settled contrast, consistent across every screen

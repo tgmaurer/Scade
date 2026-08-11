@@ -21,7 +21,12 @@ struct HomeSubjectGrades: View {
             if grades.isEmpty {
                 // Kept even when the button is there: it says why the average
                 // reads N/A, which a bare `+` doesn't.
-                Text("No grades yet")
+                //
+                // "No grades", not "no grades *yet*". The button beside it
+                // already says more can be added, so "yet" only repeated it —
+                // and on a completed subject, which has no button and can take
+                // no more grades, it promised something untrue.
+                Text("No grades")
                     .font(ScadeDesign.rowMeta)
                     .foregroundStyle(.secondary)
             }

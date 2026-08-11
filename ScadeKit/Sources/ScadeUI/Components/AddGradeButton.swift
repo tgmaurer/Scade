@@ -22,7 +22,7 @@ struct AddGradeButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: "plus")
-                .font(ScadeDesign.rowMeta)
+                .font(ScadeDesign.chipGlyph)
                 .foregroundStyle(.secondary)
                 .frame(width: ScadeDesign.chipHeight, height: ScadeDesign.chipHeight)
                 .background(
