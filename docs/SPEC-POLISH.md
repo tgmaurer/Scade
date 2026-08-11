@@ -83,9 +83,13 @@ Raised during the macOS visual pass but held back deliberately: each one adds
 an *action*, not a style, so they belong after the layout has settled rather
 than tangled up in it.
 
-- [ ] **A subject row needs an inline "add grade" button**, sitting in the run
-      of grades rather than behind a swipe. The swipe action that exists today
-      is the iOS answer and a poor one on a pointer.
+- [x] ~~**A subject row needs an inline "add grade" button**, sitting in the
+      run of grades rather than behind a swipe.~~ `AddGradeButton`, at the end
+      of the flow so it wraps with the chips. The swipe stays for the phone,
+      where §2.3 shows no grades and so leaves no row to put a button in.
+      Not a new action — SPEC §4 already has quick-add; this is a better way
+      to reach it. Its **absence** is now how a completed subject reads as
+      completed, which costs no badge and no colour (§2.4).
 - [x] ~~**Each grade chip should link to its grade.**~~ SPEC §4 already listed
       "navigate to grade detail" as a Home action, so this was owed, not new.
       Held back at first because nesting a link inside a row that also linked

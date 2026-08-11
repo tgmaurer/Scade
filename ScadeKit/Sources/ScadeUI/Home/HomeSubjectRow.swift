@@ -11,6 +11,7 @@ import SwiftUI
 struct HomeSubjectRow: View {
     let item: HomeSubject
     let showsGrades: Bool
+    let onAddGrade: () -> Void
 
     var body: some View {
         HStack(alignment: .center, spacing: ScadeDesign.rowSpacing) {
@@ -24,7 +25,12 @@ struct HomeSubjectRow: View {
                 .layoutPriority(1)
 
             if showsGrades {
-                HomeSubjectGrades(grades: item.grades)
+                HomeSubjectGrades(
+                    grades: item.grades,
+                    // §4 hides quick-add once the subject is completed.
+                    canAddGrade: item.subject.completed == false,
+                    onAddGrade: onAddGrade
+                )
             }
 
             Spacer(minLength: 0)
@@ -43,8 +49,8 @@ struct HomeSubjectRow: View {
 
 #Preview {
     List {
-        HomeSubjectRow(item: PreviewData.homeSubject(), showsGrades: true)
-        HomeSubjectRow(item: PreviewData.homeSubject(failing: true), showsGrades: true)
-        HomeSubjectRow(item: PreviewData.homeSubject(), showsGrades: false)
+        HomeSubjectRow(item: PreviewData.homeSubject(), showsGrades: true) {}
+        HomeSubjectRow(item: PreviewData.homeSubject(failing: true), showsGrades: true) {}
+        HomeSubjectRow(item: PreviewData.homeSubject(), showsGrades: false) {}
     }
 }

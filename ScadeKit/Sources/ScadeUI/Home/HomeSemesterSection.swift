@@ -15,7 +15,11 @@ struct HomeSemesterSection: View {
     var body: some View {
         Section {
             ForEach(semester.subjects.enumerated(), id: \.element.id) { index, item in
-                HomeSubjectRow(item: item, showsGrades: showsGrades)
+                HomeSubjectRow(item: item, showsGrades: showsGrades) {
+                    add(to: item)
+                }
+                    // Still here for the phone, where the row shows no grades
+                    // and so has no button in it to press (§2.3).
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         // §4 hides quick-add once the subject is completed.
                         if item.subject.completed == false, let id = item.subject.id {
@@ -34,6 +38,12 @@ struct HomeSemesterSection: View {
                 .textCase(nil)
         }
         .cardSection()
+    }
+
+    private func add(to item: HomeSubject) {
+        guard let id = item.subject.id else { return }
+
+        onAddGrade(id)
     }
 }
 

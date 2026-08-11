@@ -67,7 +67,53 @@ control on the form, a second menu item next to New Education, or nothing at
 all if planning ahead turns out to be rare. Not worth designing until someone
 actually wants it.
 
-## 3. Deliberate gaps already recorded elsewhere
+## 3. Completing an education, and what that means for its subjects
+
+**Wanted:** completing an education stops meaning nothing for the subjects
+inside it. Today the two flags are independent, so an education can be marked
+completed while its subjects are still in progress — and those subjects keep
+offering quick-add, which reads as a contradiction on the dashboard.
+
+Three shapes have been considered, and the one that looks most obvious is the
+one to be most careful with:
+
+- **Cascade: completing an education completes its subjects.** Rejected on
+  sight by the person who'd use it, and worth writing down why so it doesn't
+  come back: it destroys information. "Finished", "abandoned" and "still
+  open when the course ended" are different facts about a subject, and a
+  single toggle would flatten all three into the first. It is also a bulk
+  write with no undo (SPEC-POLISH §4), fired by a control that doesn't look
+  like it writes anything but one row.
+- **Invert it: an education can only be completed once no subject is in
+  progress.** Keeps the data honest and needs no cascade. The risk is that it
+  blocks a true statement — a course really can be over with one subject never
+  finished — and a rule that can't express reality gets worked around by
+  marking subjects completed that weren't.
+- **Warn rather than block.** Completing an education with subjects still open
+  asks, naming them, and offers to complete them too. Slower, but it's the
+  only one of the three that lets the user say what actually happened.
+
+**Also raised:** whether an education whose end date is still in the future
+should warn on completion. Probably yes, and probably the same dialog rather
+than a second rule — finishing early is legitimate, being surprised by it
+isn't.
+
+**Open questions:**
+
+- Does the same argument apply one level down, between a subject and its
+  grades? A subject has no equivalent of "unfinished children", so probably
+  not, but the rule should be stated for one level or both, not left implied.
+- If warn-and-confirm wins, does declining leave the education in progress, or
+  complete it and leave the subjects alone? The second is what the words say;
+  the first is what a cautious dialog usually does.
+- What does the dashboard show for a completed education with an in-progress
+  subject, whichever rule lands? That state exists in the data today and has
+  no design.
+
+Not scheduled. It's a validation rule either way, which is why it isn't in
+SPEC-POLISH: that document commits to changing none.
+
+## 4. Deliberate gaps already recorded elsewhere
 
 Not repeated here, to keep one list per item:
 

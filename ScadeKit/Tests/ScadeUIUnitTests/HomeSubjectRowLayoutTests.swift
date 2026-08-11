@@ -21,7 +21,7 @@ struct HomeSubjectRowLayoutTests {
     /// The height of one row at a given width.
     private func height(of item: HomeSubject, width: Double) throws -> Double {
         let renderer = ImageRenderer(
-            content: HomeSubjectRow(item: item, showsGrades: true).frame(width: width)
+            content: HomeSubjectRow(item: item, showsGrades: true) {}.frame(width: width)
         )
         return try #require(renderer.nsImage).size.height
     }
@@ -44,12 +44,28 @@ struct HomeSubjectRowLayoutTests {
         ))
     }
 
+    /// Completed, so `AddGradeButton` isn't drawn — see that type for why its
+    /// absence is the point.
+    private var completed: HomeSubject {
+        var subject = Subject(educationId: 1, name: "Module 300", semester: 2)
+        subject.completed = true
+        return HomeSubject(SubjectGrades(subject: subject, grades: []))
+    }
+
     /// A subject with no grades has no chips to give its row height, and used
     /// to sit shorter than its neighbours. Two heights in one card read as two
     /// kinds of row.
     @Test(arguments: [740.0, 900.0, 1200.0])
     func rowsAreTheSameHeightWithAndWithoutGrades(width: Double) throws {
         #expect(try height(of: withGrades, width: width) == height(of: withoutGrades, width: width))
+    }
+
+    /// Completing a subject takes its add button away, and a row that changes
+    /// height when it loses one control is the same fault as before wearing a
+    /// different hat.
+    @Test(arguments: [740.0, 900.0, 1200.0])
+    func completingASubjectDoesNotChangeItsRowHeight(width: Double) throws {
+        #expect(try height(of: completed, width: width) == height(of: withoutGrades, width: width))
     }
 
     /// The row is one line, whatever is in it.
