@@ -202,6 +202,48 @@ final class ScadeUITests: XCTestCase {
         )
     }
 
+    /// Switching section works from inside a section, not just at its root.
+    ///
+    /// A `NavigationStack`'s path outlives a change of its root, so the macOS
+    /// shell sharing one stack across every section meant switching section
+    /// swapped the root *underneath* whatever was pushed on top of it — the
+    /// sidebar looked dead until you navigated back. Every other test in this
+    /// file switches section from a list, which is the one case that worked.
+    func testSwitchingSectionFromADetailScreenLeavesIt() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Deep Course")
+
+        openSection(ID.subjectsSection)
+        createSubject(named: "Compilers")
+
+        openSection(ID.homeSection)
+        app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label == %@", "Compilers"))
+            .firstMatch
+            .tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.subjectDetail)
+                .firstMatch
+                .waitForExistence(timeout: 5),
+            "Precondition: the subject detail should be open."
+        )
+
+        openSection(ID.educationsSection)
+
+        XCTAssertTrue(
+            rowMentioning("Deep Course").waitForExistence(timeout: 5),
+            "Choosing a section from a pushed screen should land on that section."
+        )
+        XCTAssertFalse(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.subjectDetail)
+                .firstMatch
+                .exists,
+            "The pushed screen should be gone, not left sitting on top."
+        )
+    }
+
     /// The only destructive action that isn't scoped to one record, so the
     /// one most worth pinning down: it has to actually empty the database,
     /// and it has to be reachable only through the confirmation.

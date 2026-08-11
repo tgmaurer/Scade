@@ -497,24 +497,35 @@ On a phone the button keeps its width but takes a 44pt height, since a finger
 can't hit a word. The width is left alone on both platforms — widening it is
 what costs the average its place.
 
-**The sidebar draws its own selection.** `List(selection:)` is an
-`NSTableView` selection underneath, and that greys out whenever the table
-stops being first responder — which here is the moment anything in the detail
-column is clicked, so the highlight was grey nearly all the time. Right for a
-selection you're acting on, wrong for this: the five rows are a mode switch,
-and the highlight answers "which section am I in", which doesn't stop being
-true because focus moved. SwiftUI exposes no hook for the emphasis, so
-`SidebarSectionRow` carries its own background. The app's selection gets to
-stay non-optional as a result. The cost is `List`'s built-in arrow-key
-selection, which §1.1's navigation shortcuts should cover properly anyway.
+**The sidebar is `List(selection:)` and a `Label`, and nothing else.**
 
-Taking the selection over is *not* a licence to restate the rest. The sidebar
-already has metrics — row height, insets, where a selection sits — and the
-first attempt added padding around the label and drew the highlight behind it,
-which indented the text past where macOS puts it, made the rows taller, and
-left a highlight too narrow to pass for a selection. The row now adds no
-geometry at all: the label sits where the list puts it and the highlight goes
-in `listRowBackground`. Replace one system behaviour, inherit the others.
+It was briefly hand-drawn, to stop the selection grey-ing out when focus moves
+to the detail column. That greying is `NSTableView` emphasis and genuinely has
+no SwiftUI hook — but replacing the row to get at it cost four things, three
+of them invisible until someone used the app:
+
+- **The full-row click target.** A button fills the row's *content*; the
+  insets around it belong to the row, so the margins were dead.
+- **Hover.** macOS doesn't hover sidebar rows; that highlight was ours.
+- **Every metric** — row height, insets, where a selection sits. Restating
+  them meant the text sat further right than macOS puts it, the rows grew, and
+  the selection was first too narrow and then edge-to-edge.
+- **Section switching itself.** The selection binding is not decoration: it's
+  how a `NavigationSplitView` learns the detail column should be replaced, and
+  it takes the detail's navigation stack back to its root as part of that.
+  Hand-drawn rows set the same state, but the split view never heard about it,
+  so the stack kept whatever was pushed — choosing a section from a detail
+  screen swapped the root *underneath* it and looked like nothing happened
+  until you navigated back.
+
+That last one is the lesson worth keeping. A system control is often load
+bearing in ways its appearance doesn't advertise, and this one was carrying
+the app's navigation. `testSwitchingSectionFromADetailScreenLeavesIt` pins it:
+it fails against the hand-drawn sidebar and passes against this one.
+
+The selection greys out when the detail column has focus, as it does in Mail
+and Xcode. If that has to change, it is a deliberate trade against the four
+above and not a styling tweak.
 
 **Hover is state, so it needs a view.** A `View` extension has nowhere to keep
 `@State`; each of the three is a `ViewModifier` or a small view of its own

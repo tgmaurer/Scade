@@ -11,7 +11,10 @@ import SwiftUI
 /// Settings has no tab here; Home's toolbar carries it. See
 /// `AppSection.showsSettingsSection`.
 struct TabShell: View {
-    @Binding var section: AppSection
+    /// Owned here, not passed in: each shell selects in the type its own
+    /// control uses — a `TabView` in a non-optional, a `List` in an optional —
+    /// and nothing outside needs to know which section is showing.
+    @State private var section: AppSection = .home
 
     var body: some View {
         TabView(selection: $section) {
@@ -63,9 +66,7 @@ struct TabShell: View {
 }
 
 #Preview {
-    @Previewable @State var section: AppSection = .home
-
-    TabShell(section: $section)
+    TabShell()
         .environment(\.repositories, PreviewData.seededRepositories)
 }
 #endif

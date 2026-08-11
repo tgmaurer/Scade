@@ -12,10 +12,11 @@ import SwiftUI
 /// declaration, but it gave up control macOS needs — chiefly the sidebar's
 /// width, which is system-managed and not constrainable there.
 ///
-/// Only the shell forks. Every screen below it is shared, and the selected
-/// section is held here so both shells drive the same state.
+/// Only the shell forks, and each one owns which section is showing: a
+/// `TabView` selects in a non-optional and a `List` in an optional, so a
+/// shared binding would have to be adapted for one of them. Every screen below
+/// is shared.
 public struct RootView: View {
-    @State private var section: AppSection = .home
     @AppStorage("appTheme") private var theme: AppTheme = .system
 
     private let repositories: Repositories
@@ -27,9 +28,9 @@ public struct RootView: View {
     public var body: some View {
         Group {
             #if os(macOS)
-            SidebarShell(section: $section)
+            SidebarShell()
             #else
-            TabShell(section: $section)
+            TabShell()
             #endif
         }
         .windowSizeFloor()
