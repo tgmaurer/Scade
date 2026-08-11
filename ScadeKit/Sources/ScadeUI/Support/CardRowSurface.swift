@@ -19,6 +19,10 @@ struct CardRowSurface: View {
                 }
             }
             .overlay(alignment: .bottom) { divider }
+            // A row background spans the full width of the list, and the list
+            // is no longer inset — so the card would run into the window edge
+            // without this. Matches the row content's own margin.
+            .padding(.horizontal, ScadeDesign.contentMargin)
             .animation(.easeOut(duration: ScadeDesign.hoverDuration), value: isHovering)
     }
 

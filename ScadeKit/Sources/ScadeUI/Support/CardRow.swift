@@ -24,6 +24,10 @@ struct CardRow: ViewModifier {
     func body(content: Content) -> some View {
         #if os(macOS)
         content
+            // The window margin, applied here rather than to the list — see
+            // `groupedListStyle`. `CardRowSurface` insets the card behind it
+            // by the same amount, so the two edges stay parallel.
+            .padding(.horizontal, ScadeDesign.contentMargin)
             // Without this only the text is hoverable, so the highlight
             // flickers as the pointer crosses the gaps between columns.
             .contentShape(.rect)

@@ -36,6 +36,7 @@ struct HomeSemesterSection: View {
                 .font(ScadeDesign.rowSecondary)
                 .bold()
                 .textCase(nil)
+                .cardSectionHeader()
         }
         .cardSection()
     }

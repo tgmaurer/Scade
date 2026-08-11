@@ -14,11 +14,18 @@ extension View {
     /// lines this exists to remove.
     func groupedListStyle() -> some View {
         #if os(macOS)
+        // Nothing insets the list itself. Padding it — or `safeAreaPadding`,
+        // which behaves the same — shrinks its whole frame and takes the
+        // scroller with it, leaving the scrollbar floating short of the
+        // window edge instead of sitting on it where macOS puts one.
+        // `contentMargins` is the modifier for exactly this and `List`
+        // ignores it, under `.inset` and `.plain` alike (measured, twice).
+        //
+        // So the margin lives on the things inside instead: `cardRow` insets
+        // a row and the card behind it, `cardSectionHeader` insets a header.
+        // Three places, one token, and the scroll view keeps its full width.
         listStyle(.inset)
             .scrollContentBackground(.hidden)
-            // Padding rather than `contentMargins`, which the inset list style
-            // ignores — without it the cards run into the window edge.
-            .padding(.horizontal, ScadeDesign.contentMargin)
         #else
         listStyle(.insetGrouped)
         #endif
@@ -38,5 +45,19 @@ extension View {
     /// line above a card's first row still drawn.
     func cardSection() -> some View {
         listSectionSeparator(.hidden)
+    }
+
+    /// A section header, lined up with the cards below it.
+    ///
+    /// Headers aren't rows, so `cardRow` never reaches them and they'd sit at
+    /// the list's own inset while the cards sat at ours. macOS only: iOS's
+    /// grouped style already places its headers.
+    @ViewBuilder
+    func cardSectionHeader() -> some View {
+        #if os(macOS)
+        padding(.horizontal, ScadeDesign.contentMargin)
+        #else
+        self
+        #endif
     }
 }
