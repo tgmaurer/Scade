@@ -362,6 +362,15 @@ A settled ladder, applied everywhere:
 that's the difference between a table and a jitter — and this app is mostly
 columns of numbers.
 
+**Two rungs of the ladder side by side are centred, not baseline-aligned.** A
+shared baseline is right for text of similar size and wrong once the gap is
+large: it pins the smaller thing's bottom to the larger one's, so every bit of
+slack collects above it and the smaller thing reads as having slipped down the
+row. Home's summary header is the case — a `.title2` name beside a
+`.largeTitle` average — and centring splits the space evenly. Where the
+smaller side is a stack, only the rung being compared belongs in the aligned
+row; the rest goes underneath, or there is nothing to centre.
+
 The averages and weights already render as badges — that treatment
 (`ScadeDesign.badgeCornerRadius`) should become deliberate rather than
 incidental: settled sizes, settled contrast, consistent across every screen
