@@ -20,6 +20,7 @@ struct SubjectFilterMenu: View {
                     Text(filter.title).tag(filter)
                 }
             }
+            .pickerStyle(.inline)
 
             if semesters.isEmpty == false {
                 Picker("Semester", selection: $semester) {
@@ -30,6 +31,7 @@ struct SubjectFilterMenu: View {
                             .tag(Int?.some(value))
                     }
                 }
+                .pickerStyle(.inline)
             }
 
             if institutions.isEmpty == false {
@@ -40,6 +42,7 @@ struct SubjectFilterMenu: View {
                         Text(name).tag(String?.some(name))
                     }
                 }
+                .pickerStyle(.inline)
             }
         } label: {
             Label(

@@ -273,6 +273,7 @@ final class ScadeUITests: XCTestCase {
     }
 
 
+
     /// The only destructive action that isn't scoped to one record, so the
     /// one most worth pinning down: it has to actually empty the database,
     /// and it has to be reachable only through the confirmation.
@@ -430,6 +431,7 @@ final class ScadeUITests: XCTestCase {
         type(name, into: app.textFields[ID.educationName])
         tap(ID.save)
     }
+
 
 
     private func createSubject(named name: String) {
