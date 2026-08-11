@@ -211,6 +211,18 @@ three different tiebreaker orders across three screens). Recommend picking
 **one canonical order per entity type, used everywhere**:
 - Grades: **newest-first** (date desc, then id desc) — matches the majority
   of existing screens.
+  - **One exception, decided later: the run of grades inside a subject's row
+    on Home reads oldest-first.** The premise changed. When this section was
+    written, Home stacked a subject's grades vertically, where newest-first is
+    right for the same reason it is in every list — the most recent is the one
+    you came to see, and it belongs at the top. SPEC-POLISH §2.3 turned that
+    stack into a horizontal run, and a horizontal sequence of dated values is
+    read as a timeline: left to right is earlier to later, so newest-first
+    puts it backwards.
+  - This is not the old app's inconsistency coming back. That one had the same
+    *vertical* list ordered two ways on two screens with no reason. This is
+    one ordering for lists and one for a timeline, which is a difference in
+    what the reader is being shown, not in which screen they're on.
 - Subjects: **semester desc → name asc → id desc** — matches Home's
   ordering, apply it on every screen that lists subjects.
 - Top-level lists (Educations/Subjects/Grades list screens): newest-created
