@@ -15,5 +15,6 @@ struct HomeEducationMenu: View {
             }
         }
         .disabled(educations.isEmpty)
+        .accessibilityIdentifier(AccessibilityID.Home.educationMenu)
     }
 }

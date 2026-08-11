@@ -25,6 +25,11 @@ enum AccessibilityID {
         static let error = "form.error"
     }
 
+    enum Home {
+        /// The dashboard's education picker.
+        static let educationMenu = "home.educationMenu"
+    }
+
     enum Education {
         static let new = "education.new"
         static let name = "education.form.name"

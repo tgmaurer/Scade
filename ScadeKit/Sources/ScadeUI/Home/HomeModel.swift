@@ -21,8 +21,22 @@ final class HomeModel {
     private(set) var semesters: [HomeSemester] = []
 
     /// No `didSet` refetch: the screen's `task` is keyed on this, so changing
-    /// it restarts the observation against the education now chosen.
-    var selectedEducationId: Int64?
+    /// it restarts the observation against the education now chosen. The
+    /// `didSet` that *is* here only writes the choice down, so leaving Home
+    /// and coming back — or relaunching — returns to it. See
+    /// `EducationSelectionStore`.
+    var selectedEducationId: Int64? {
+        didSet { selectionStore.remember(selectedEducationId) }
+    }
+
+    private let selectionStore: EducationSelectionStore
+
+    init(selectionStore: EducationSelectionStore = .shared) {
+        self.selectionStore = selectionStore
+        // Assigning in `init` doesn't call `didSet`, so restoring the
+        // remembered choice doesn't write it straight back.
+        selectedEducationId = selectionStore.remembered()
+    }
 
     /// Narrows what's already in hand, so it needs no query of its own.
     var semester: Int? { didSet { recompute() } }
