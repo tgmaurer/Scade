@@ -37,6 +37,7 @@ struct EducationDetailScreen: View {
                 }
             }
         }
+        .accessibilityIdentifier(AccessibilityID.Education.detail)
         .navigationTitle(model.summary?.education.name ?? education.name)
         .toolbar {
             ToolbarItem {

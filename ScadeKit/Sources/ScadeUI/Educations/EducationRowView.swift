@@ -2,6 +2,14 @@ import ScadeKit
 import SwiftUI
 
 /// One education in the list (SPEC §4).
+///
+/// Two blocks, per the §2.4 ladder: what the education *is* — its name, with
+/// the average as the trailing anchor, over the institution and years that
+/// qualify it — and then, set apart and a rung further down, what it
+/// currently amounts to.
+///
+/// Carries no padding of its own. It's a card tile's content on macOS and a
+/// list row's on iOS, and those two want different room around it.
 struct EducationRowView: View {
     let row: EducationRow
 
@@ -22,36 +30,57 @@ struct EducationRowView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: ScadeDesign.iconTextSpacing) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(row.education.name)
-                    .font(.headline)
+        VStack(alignment: .leading, spacing: ScadeDesign.rowSpacing) {
+            VStack(alignment: .leading, spacing: ScadeDesign.iconTextSpacing) {
+                HStack(alignment: .firstTextBaseline, spacing: ScadeDesign.rowSpacing) {
+                    Text(row.education.name)
+                        .font(ScadeDesign.rowTitle)
 
-                Spacer(minLength: 0)
+                    Spacer(minLength: 0)
 
-                AverageLabel(row.average)
-                    .font(.headline)
+                    // Baseline-aligned, not centred: §2.4 asks for centring
+                    // where the two rungs differ enough in size that a shared
+                    // baseline strands the smaller one. These two are the
+                    // same size, so the baseline is the thing that lines up.
+                    AverageLabel(row.average)
+                        .font(ScadeDesign.value)
+                        .bold()
+                }
+
+                Text(contextLine)
+                    .font(ScadeDesign.rowSecondary)
+                    .foregroundStyle(.secondary)
+                    // A long institution name wraps rather than truncating,
+                    // since the years at the end of the line are the half
+                    // worth keeping — but not past two lines, which would
+                    // make one tile drive the height of a whole grid row.
+                    .lineLimit(2)
             }
 
-            Text(contextLine)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-
-            HStack(alignment: .firstTextBaseline) {
+            HStack(alignment: .firstTextBaseline, spacing: ScadeDesign.rowSpacing) {
                 Text("^[\(row.subjectCount) subject](inflect: true) · ^[\(row.education.semesters) semester](inflect: true)")
 
                 Spacer(minLength: 0)
 
                 CompletionBadge(isCompleted: row.education.completed)
             }
-            .font(.subheadline)
+            .font(ScadeDesign.rowMeta)
             .foregroundStyle(.secondary)
         }
-        .padding(.vertical, ScadeDesign.iconTextSpacing)
     }
 }
 
-#Preview {
+#Preview("Tiles") {
+    CardGrid(items: [
+        PreviewData.educationRow(id: 1, average: 5.25),
+        PreviewData.educationRow(id: 2, average: 3.5, completed: true),
+        PreviewData.educationRow(id: 3, average: nil, subjectCount: 0),
+    ]) { row in
+        EducationRowView(row: row).cardTile()
+    }
+}
+
+#Preview("List row") {
     List {
         EducationRowView(row: PreviewData.educationRow(average: 5.25))
         EducationRowView(row: PreviewData.educationRow(average: 3.5, completed: true))

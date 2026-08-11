@@ -44,6 +44,7 @@ final class ScadeUITests: XCTestCase {
         static let error = "form.error"
 
         static let newEducation = Control("education.new", "New Education")
+        static let educationDetail = "education.detail"
         static let educationName = "education.form.name"
 
         static let newSubject = Control("subject.new", "New Subject")
@@ -200,6 +201,30 @@ final class ScadeUITests: XCTestCase {
                 .firstMatch
                 .waitForExistence(timeout: 5),
             "Clicking a subject's name on Home should open its detail screen."
+        )
+    }
+
+    /// An education in the list opens when you click it.
+    ///
+    /// Trivial while the list was a `List` — a row pushed because that's what
+    /// a `NavigationLink` in a row does, and no test needed to say so. It
+    /// stopped being trivial when macOS moved to a grid of tiles: the tile is
+    /// a `Button` with `.buttonStyle(.plain)` and a `contentShape` deciding
+    /// what counts as a click, and every one of those is a way to draw a card
+    /// that looks right and doesn't navigate. Home's rows made that exact
+    /// mistake once already.
+    func testTappingAnEducationInTheListOpensIt() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Openable Course")
+
+        rowMentioning("Openable Course").tap()
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.educationDetail)
+                .firstMatch
+                .waitForExistence(timeout: 5),
+            "Clicking an education should open its detail screen."
         )
     }
 

@@ -75,7 +75,13 @@ says which section owns the fix.
 - [ ] **Hover on the three flat lists** is still whatever macOS gives a
       full-row `NavigationLink`. Deliberately left until those screens are
       restyled rather than guessed at against a layout that's about to
-      change. §2.8.
+      change. §2.8. *Educations done — its tiles answer the pointer like a
+      card row does. Subjects and grades outstanding.*
+- [x] ~~**The educations list wasted a wide window and separated nothing.**~~
+      One column of plain text in a window three columns wide, with the
+      system's own row separator drawn between records in place of any
+      grouping — and drawn wrong, inset to somewhere near the middle of the
+      row rather than to anything on screen. Now a grid of card tiles. §2.5.
 
 ### 0.1.1 Deferred to a feature pass
 
@@ -416,10 +422,44 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   chip height (`ScadeDesign.subjectRowHeight`), not chosen to match it: a
   floor the chips exceed is not a floor, which is how the two drifted apart
   the first time.
-- **The three flat lists stay `List`s.** They are lists; making every row a
-  floating card hurts scanning and fights macOS selection and hover states.
-  Reduce the noise instead: `.listRowSeparator(.hidden)`, and let spacing and
-  weight do the dividing.
+- **The long flat lists stay `List`s.** Subjects run to dozens and grades to
+  hundreds; those are read down a column, and making every row a floating card
+  hurts scanning and fights macOS selection and hover states. Reduce the noise
+  instead: `.listRowSeparator(.hidden)`, and let spacing and weight do the
+  dividing.
+- **Educations are the exception, and get a grid** (amended 2026-08-11;
+  this section originally said all three lists stay lists). There are a
+  handful of them — several run in parallel, one per institution — so the
+  reasoning above doesn't apply: there is no long column to scan and nothing
+  to scroll past, so a single column left most of a wide window empty while
+  still not showing more. Tiles in a `CardGrid`, one to three columns by
+  width, capped at three because past that a tile is too narrow to hold a name
+  and an average on one line and the eye starts scanning a field of boxes
+  rather than reading a short list. Column count is also capped by the item
+  count, so two educations are two half-width tiles rather than two-thirds of
+  a row with a hole beside them.
+
+  **The grid is earned by cardinality, not by the screen being a list.** If a
+  later screen wants one, that's the question to ask of it. And it is not
+  GradeMaster's card (`gm-educations-list.png`): no stroked outline, no
+  `Label: value` rules inside the tile, and no action buttons on it — the
+  whole tile is the way in to the detail, and delete is a context menu.
+- **Separation comes from the surface, not from a rule.** The complaint that
+  opened this section applies within a screen as well as across it: a list of
+  educations that were only text had nothing marking where one ended and the
+  next began, and a hairline between them would have been the same mistake at
+  a smaller scale. A card is what separates two records; a rule inside a card
+  is what separates two rows of the same record.
+- **A tile carries the same surface as a card row** — `CardTile` and
+  `CardRowSurface` fill the same secondary background at the same radius, and
+  light the same way under the pointer. One card, not two that nearly match.
+  What differs is only what a tile doesn't need: no divider, and all four
+  corners rounded, because it has no neighbour above or below.
+- **Swipe to delete doesn't survive the grid, and shouldn't.**
+  `.swipeActions` is `List`-only, so a grid can't carry it — but it was an iOS
+  gesture on a Mac to begin with, and the macOS answer is a context menu. iOS
+  keeps its `List` and its swipe. Neither is the only way out: the detail
+  screen has a Delete of its own.
 - **Cards are a filled secondary background, not a border.** Contrast against
   the window background with a rounded rect; an outline is the Windows idiom
   visible in the references, and it adds back the lines this section exists to
@@ -575,7 +615,13 @@ Recorded so they're decisions rather than oversights. None are in scope
 unless promoted:
 
 - **Undo.** No undo anywhere; deletes are confirmed-then-permanent.
-- **Multi-select / bulk delete.** Single-row operations only.
+- **Multi-select / bulk delete.** Single-row operations only. Raised again
+  when the educations grid was designed, and still out of scope — but noted
+  there as the one action that would justify putting selection on a list
+  screen at all, since every other operation belongs to a single record and
+  is reachable from its detail. If it's ever promoted, the grid is where it
+  lands, and macOS selection semantics (⌘-click, ⇧-click, Delete key) are the
+  contract to meet — not a row of checkboxes.
 - **User-controlled sort.** SPEC §3.6 standardises one canonical order per
   entity; there's no UI to change it, by design.
 - **Empty-state onboarding.** Empty states explain the state; they don't

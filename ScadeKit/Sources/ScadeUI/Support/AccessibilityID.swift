@@ -32,6 +32,12 @@ enum AccessibilityID {
 
     enum Education {
         static let new = "education.new"
+
+        /// Marks the detail screen itself, for the same reason `Subject`'s
+        /// does: the education's name is on the list the push started from
+        /// too, so its presence proves nothing about navigation.
+        static let detail = "education.detail"
+
         static let name = "education.form.name"
         static let institution = "education.form.institution"
         static let semesters = "education.form.semesters"

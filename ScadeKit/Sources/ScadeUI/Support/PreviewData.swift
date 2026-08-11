@@ -27,6 +27,7 @@ enum PreviewData {
     }
 
     static func educationRow(
+        id: Int64 = 1,
         average: Double?,
         subjectCount: Int = 4,
         completed: Bool = false
@@ -39,7 +40,7 @@ enum PreviewData {
         }
 
         return EducationRow(
-            EducationSummary(education: education(completed: completed), subjects: subjects)
+            EducationSummary(education: education(id: id, completed: completed), subjects: subjects)
         )
     }
 

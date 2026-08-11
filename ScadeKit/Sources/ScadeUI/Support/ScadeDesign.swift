@@ -75,6 +75,32 @@ nonisolated enum ScadeDesign {
     /// Corner radius for the card a semester's subjects sit on.
     static let cardCornerRadius: Double = 12
 
+    /// Inside a card tile, between its content and its edge. Larger than a
+    /// row's, because a tile is a card in its own right rather than one
+    /// stripe of a stack — the fill has to read as a container around the
+    /// content, not a highlight behind it.
+    static let cardTilePadding: Double = 14
+
+    /// Between tiles in a card grid, across and down.
+    ///
+    /// Deliberately smaller than `contentMargin`: the gap that separates two
+    /// tiles from each other must read as narrower than the one that holds
+    /// them off the window, or the grid stops looking like one group.
+    static let cardGridSpacing: Double = 12
+
+    /// The narrowest a card tile may be before the grid drops a column.
+    ///
+    /// Set by the top line, which has to hold a name and an average side by
+    /// side: below this the name starts truncating on ordinary titles.
+    static let minimumCardWidth: Double = 300
+
+    /// The most columns a card grid will use, however wide the window gets.
+    ///
+    /// Past three, tiles are narrow enough that the eye scans a field of
+    /// boxes instead of reading a short list, and the reason for the grid —
+    /// seeing every education at once — is already served at two or three.
+    static let maximumCardColumns: Int = 3
+
     // MARK: - Rhythm
     //
     // SwiftUI's defaults are tuned for forms, not for dense data rows, so
