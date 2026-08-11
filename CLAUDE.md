@@ -20,6 +20,10 @@ starting any feature work.
   open a debugging thread on an iPad-only symptom, and don't spend
   verification runs on it — note the problem and move on.
 - No ORM change-tracking. GRDB only, explicit queries, no ambient state.
+  GRDB's own `ValueObservation` is *not* what this forbids, and screens use it
+  through `AppDatabase.observe`: the query is one you wrote and it is re-run
+  whole, with nothing tracked per object, no graph and no cache. What's banned
+  is a layer that watches objects and decides for you what changed.
 - Business logic (averages, validation) lives in Sources/Logic/, is unit
   tested, and is never duplicated across call sites.
 - If GradeMaster (old MAUI app) is in context: reference for business logic,
