@@ -58,19 +58,21 @@ public struct AppDatabase: Sendable {
         _ fetch: @escaping @Sendable (Database) throws -> Value
     ) -> AsyncThrowingStream<Value, any Error> {
         AsyncThrowingStream { continuation in
-            let cancellable = ValueObservation
-                .tracking(fetch)
-                // A write to a tracked table re-runs the query even when the
-                // result is identical. Without this, editing one subject
-                // would republish every other screen's unchanged rows.
-                .removeDuplicates()
-                .start(in: writer) { error in
-                    continuation.finish(throwing: error)
-                } onChange: { value in
-                    continuation.yield(value)
-                }
+            Task { @MainActor in
+                let cancellable = ValueObservation
+                    .tracking(fetch)
+                    // A write to a tracked table re-runs the query even when the
+                    // result is identical. Without this, editing one subject
+                    // would republish every other screen's unchanged rows.
+                    .removeDuplicates()
+                    .start(in: writer) { error in
+                        continuation.finish(throwing: error)
+                    } onChange: { value in
+                        continuation.yield(value)
+                    }
 
-            continuation.onTermination = { _ in cancellable.cancel() }
+                continuation.onTermination = { _ in cancellable.cancel() }
+            }
         }
     }
 
