@@ -10,6 +10,13 @@ import SwiftUI
 ///
 /// Carries no padding of its own. It's a card tile's content on macOS and a
 /// list row's on iOS, and those two want different room around it.
+///
+/// The two blocks are pushed apart rather than stacked, so that in a grid —
+/// where every tile is as tall as the tallest in its row — the counts and
+/// status sit on one line across the whole row instead of each floating
+/// wherever its own content happened to end. Where there's no spare height,
+/// as in the iOS list, the gap collapses to ordinary row spacing and the
+/// layout is the stack it always was.
 struct EducationRowView: View {
     let row: EducationRow
 
@@ -67,11 +74,21 @@ struct EducationRowView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: ScadeDesign.rowSpacing) {
+        // Zero spacing, because the `Spacer` below carries the gap itself —
+        // stack spacing either side of it would apply twice.
+        VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: ScadeDesign.iconTextSpacing) {
                 HStack(alignment: .firstTextBaseline, spacing: ScadeDesign.rowSpacing) {
                     Text(row.education.name)
                         .font(ScadeDesign.rowTitle)
+                        // Two lines, not one: the name is what identifies the
+                        // education, and nothing else on the tile repeats it —
+                        // "Informatiker EFZ Applikationsentwicklung" one-lined
+                        // is indistinguishable from "Informatiker EFZ". Bounded
+                        // all the same, because names are capped at 255
+                        // characters and that's some fifteen lines here, which
+                        // would drag every tile in the row down with it.
+                        .lineLimit(2)
 
                     Spacer(minLength: 0)
 
@@ -88,6 +105,13 @@ struct EducationRowView: View {
                     .font(ScadeDesign.rowSecondary)
                     .foregroundStyle(.secondary)
             }
+
+            // Takes up whatever height the tallest tile in the row leaves
+            // over, so this block lands at the bottom of every tile rather
+            // than trailing off wherever its own text ran out. `minLength`
+            // is the gap when there's nothing spare — the iOS list row, and
+            // the tallest tile in any grid row.
+            Spacer(minLength: ScadeDesign.rowSpacing)
 
             HStack(alignment: .firstTextBaseline, spacing: ScadeDesign.rowSpacing) {
                 Text("^[\(row.subjectCount) subject](inflect: true) · ^[\(row.education.semesters) semester](inflect: true)")

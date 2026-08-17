@@ -439,14 +439,30 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   count, so two educations are two half-width tiles rather than two-thirds of
   a row with a hole beside them.
 
-  **Every tile in a grid row is as tall as the tallest one in it**, so a
-  field that wraps costs space on every education beside it, not just its own.
-  Anything of unbounded length is held to one line and truncates — and where a
-  line carries two things of different lengths, the long one gives way and the
-  short one is pinned (`.fixedSize()`). An institution can run to "gibb,
-  Gewerblich Industrielle Berufsfachschule Bern"; the years beside it are four
-  digits, and putting both in one string would have let the ellipsis eat the
-  years first.
+  **Every tile in a grid row is as tall as the tallest one in it**, which
+  makes any field that can grow a cost paid by every education beside it. Two
+  rules, and they answer different halves of the problem:
+
+  - **A tile's last block is pushed to the bottom, not stacked under the
+    first.** Spare height collects in the middle, so the counts and status
+    line up across the whole grid row instead of each trailing off wherever
+    its own text ran out — which is better than merely not looking broken.
+    Where there's no spare height, as in the iOS list row, the gap collapses
+    to ordinary row spacing and the layout is the stack it always was.
+  - **Every growable field is bounded**, because bottom-alignment stops dead
+    space but not growth: names are capped at 255 characters, which is some
+    nine lines at tile width, and one such tile would drag its whole row
+    down. How tight the bound is depends on what the field is *for*. The
+    institution is held to one line, since the record is identifiable without
+    it. The name gets two, because it's what identifies the education and
+    nothing else on the tile repeats it — "Informatiker EFZ
+    Applikationsentwicklung" one-lined is indistinguishable from
+    "Informatiker EFZ".
+
+  Where one line carries two things of different lengths, the long one gives
+  way and the short one is pinned (`.fixedSize()`). The years beside an
+  institution are four digits; putting both in one string would have let the
+  ellipsis eat the years first.
 
   **The grid is earned by cardinality, not by the screen being a list.** If a
   later screen wants one, that's the question to ask of it. And it is not
