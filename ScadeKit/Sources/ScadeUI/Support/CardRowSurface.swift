@@ -9,6 +9,9 @@ import SwiftUI
 struct CardRowSurface: View {
     let position: CardRowPosition
     let isHovering: Bool
+    /// Kept in step with `CardRow`'s, so the card and the content on it stay
+    /// the same width. See that type.
+    var maximumWidth: Double = .infinity
 
     var body: some View {
         shape
@@ -23,6 +26,8 @@ struct CardRowSurface: View {
             // is no longer inset — so the card would run into the window edge
             // without this. Matches the row content's own margin.
             .padding(.horizontal, ScadeDesign.contentMargin)
+            .frame(maxWidth: maximumWidth + 2 * ScadeDesign.contentMargin, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .animation(.easeOut(duration: ScadeDesign.hoverDuration), value: isHovering)
     }
 

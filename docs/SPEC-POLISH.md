@@ -446,6 +446,22 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   The distinction that matters is **one card of many rows** versus **many
   cards of one row each**. The first is a list with a surface under it; the
   second is a grid, and needs the cardinality above to earn it.
+- **A row is capped in width; a tile is not** (`ScadeDesign.maximumRowWidth`).
+  Past about 900pt a row stops being read as one thing: the name is at one end
+  of the screen and its average at the other, with nothing in between. Capping
+  keeps the pair within a glance and turns the leftover into a margin instead
+  of a hole. Leading-aligned, not centred, so the card stays lined up with the
+  window title rather than drifting rightwards as the window grows. A row with
+  something to put in the middle — the dashboard's, whose grade chips fill it
+  — is exempt, which is why the cap is an argument to `cardRow` and defaults
+  to off.
+- **What goes hard right is the number, and only the number.** Everything else
+  on a line follows the text before it. Pinning secondary metadata to the
+  trailing edge as well leaves a word at each end of a wide row and a void
+  between them; a continuous phrase is read far more easily than a gap is
+  crossed. The average is the exception because a column of numbers is the one
+  thing on these screens worth aligning — which is what `.monospacedDigit()`
+  in §2.4 exists to serve.
 - **Educations are the exception, and get a grid** (amended 2026-08-11;
   this section originally said all three lists stay lists). There are a
   handful of them — several run in parallel, one per institution — so the
@@ -483,8 +499,28 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   institution are four digits; putting both in one string would have let the
   ellipsis eat the years first.
 
-  **The grid is earned by cardinality, not by the screen being a list.** If a
-  later screen wants one, that's the question to ask of it. And it is not
+  **The grid is earned by cardinality, not by the screen being a list.** Two
+  questions decide it, and both have to point the same way:
+
+  1. **Is there a scanning task?** With a handful of records there isn't —
+     they're all on screen at once, so a two-axis layout costs nothing. With
+     dozens there is, and a list wins: every name starts at the same x and the
+     eye follows one edge, where a grid makes it zigzag between two or three.
+  2. **Is there a column worth aligning?** In a list every average is
+     right-aligned in one vertical column and the outlier is visible without
+     reading. A grid scatters them across two axes and comparing becomes
+     hunting. Educations are the case where this doesn't apply: an average at
+     one institution against an average at another isn't a comparison anyone
+     makes, so there's nothing to line up.
+
+  Educations answer "no" and "no" — a few objects you pick between. Subjects
+  and grades answer "yes" and "yes" — many records you scan and compare. That
+  the old app used cards for all three is not evidence: it used cards for
+  everything, which is a template applied uniformly rather than a decision
+  made per screen, and CLAUDE.md limits that reference to content and
+  priority, "never for density or layout".
+
+  And the tile here is not
   GradeMaster's card (`gm-educations-list.png`): no stroked outline, no
   `Label: value` rules inside the tile, and no action buttons on it — the
   whole tile is the way in to the detail, and delete is a context menu.

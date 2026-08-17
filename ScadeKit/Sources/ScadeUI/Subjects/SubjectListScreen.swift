@@ -16,6 +16,18 @@ struct SubjectListScreen: View {
                     SubjectRowView(row: row)
                         .padding(.vertical, ScadeDesign.rowVerticalPadding)
                 }
+                // macOS draws a link row's pressed state as an accent fill
+                // across the *whole* row, while the card behind it is inset by
+                // the window margin — so pressing a row lit two indigo strips
+                // either side of the card and nothing under it. `.plain` gives
+                // up that fill; the card's own hover is the feedback, and it
+                // is the right width by construction.
+                //
+                // macOS only: iOS's link row draws no such fill, and it does
+                // draw the disclosure chevron, which is worth keeping.
+                #if os(macOS)
+                .buttonStyle(.plain)
+                #endif
                 .swipeActions(edge: .trailing) {
                     Button("Delete", systemImage: "trash", role: .destructive) {
                         model.pendingDeletion = row
@@ -33,7 +45,10 @@ struct SubjectListScreen: View {
                 // own `.insetGrouped` treats a single long section exactly
                 // this way. The card is what replaces the system separators —
                 // see §2.5.
-                .cardRow(CardRowPosition(index: index, count: model.visibleRows.count))
+                .cardRow(
+                    CardRowPosition(index: index, count: model.visibleRows.count),
+                    maximumWidth: ScadeDesign.maximumRowWidth
+                )
             }
         }
         .groupedListStyle()

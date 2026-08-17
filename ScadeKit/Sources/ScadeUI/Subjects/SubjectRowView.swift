@@ -56,9 +56,17 @@ struct SubjectRowView: View {
                 Text(row.education.name)
                     .font(ScadeDesign.rowSecondary)
                     .lineLimit(1)
+                    // Gives way before the metadata does: it's the longest
+                    // thing on the line and the only one that repeats down
+                    // the list, so it's the one that can afford to.
+                    .layoutPriority(-1)
 
-                Spacer(minLength: 0)
-
+                // Follows the education rather than being pinned to the far
+                // edge. Pinned, the line was a word at each end of a very wide
+                // row with nothing in between; the eye reads a continuous
+                // phrase far more easily than it crosses a void. Only the
+                // average stays hard right, because a column of numbers is
+                // the one thing on this screen worth aligning.
                 HStack(spacing: ScadeDesign.rowSpacing) {
                     Text("^[\(row.gradeCount) grade](inflect: true)")
 
@@ -72,6 +80,8 @@ struct SubjectRowView: View {
                 }
                 .font(ScadeDesign.rowMeta)
                 .fixedSize()
+
+                Spacer(minLength: 0)
             }
             .foregroundStyle(.secondary)
         }

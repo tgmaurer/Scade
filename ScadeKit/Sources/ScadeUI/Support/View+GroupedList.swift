@@ -33,8 +33,18 @@ extension View {
 
     /// The card a row sits on, shaped for where in the card it sits, and lit
     /// when the pointer is over it. See `CardRow`.
-    func cardRow(_ position: CardRowPosition, highlightsOnHover: Bool = true) -> some View {
-        modifier(CardRow(position: position, highlightsOnHover: highlightsOnHover))
+    func cardRow(
+        _ position: CardRowPosition,
+        highlightsOnHover: Bool = true,
+        maximumWidth: Double = .infinity
+    ) -> some View {
+        modifier(
+            CardRow(
+                position: position,
+                highlightsOnHover: highlightsOnHover,
+                maximumWidth: maximumWidth
+            )
+        )
     }
 
     /// A section of a card list.
