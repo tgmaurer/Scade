@@ -439,6 +439,15 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   count, so two educations are two half-width tiles rather than two-thirds of
   a row with a hole beside them.
 
+  **Every tile in a grid row is as tall as the tallest one in it**, so a
+  field that wraps costs space on every education beside it, not just its own.
+  Anything of unbounded length is held to one line and truncates — and where a
+  line carries two things of different lengths, the long one gives way and the
+  short one is pinned (`.fixedSize()`). An institution can run to "gibb,
+  Gewerblich Industrielle Berufsfachschule Bern"; the years beside it are four
+  digits, and putting both in one string would have let the ellipsis eat the
+  years first.
+
   **The grid is earned by cardinality, not by the screen being a list.** If a
   later screen wants one, that's the question to ask of it. And it is not
   GradeMaster's card (`gm-educations-list.png`): no stroked outline, no

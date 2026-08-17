@@ -13,20 +13,57 @@ import SwiftUI
 struct EducationRowView: View {
     let row: EducationRow
 
-    /// Institution and year span, skipping the institution when there isn't
-    /// one rather than leaving a stray separator behind.
-    private var contextLine: String {
-        let years = "\(yearText(row.education.startDate.year))–\(yearText(row.education.endDate.year))"
-
+    /// The institution, when there is one — an empty string counts as none,
+    /// so a blank field doesn't leave a stray separator behind.
+    private var institution: String? {
         guard let institution = row.education.institution, institution.isEmpty == false else {
-            return years
+            return nil
         }
-        return "\(institution) · \(years)"
+        return institution
+    }
+
+    private var years: String {
+        "\(yearText(row.education.startDate.year))–\(yearText(row.education.endDate.year))"
     }
 
     /// Years are identifiers, not quantities — no thousands separator.
     private func yearText(_ year: Int) -> String {
         year.formatted(.number.grouping(.never))
+    }
+
+    /// Institution and years, on one line whatever the institution's length.
+    ///
+    /// Two `Text`s rather than one interpolated string, because they truncate
+    /// differently: an institution can run to "gibb, Gewerblich Industrielle
+    /// Berufsfachschule Bern" and has to give way, while the years are four
+    /// digits that must not. One string would have put the years at the end of
+    /// the line, where the ellipsis eats them first.
+    ///
+    /// One line and not two: a tile that wraps is taller than its neighbours,
+    /// and since a grid row is as tall as the tallest tile in it, one long
+    /// institution used to leave dead space under every other education on
+    /// that row.
+    private var contextLine: some View {
+        HStack(spacing: 0) {
+            if let institution {
+                Text(institution)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    // The name is worth reading in full even when it doesn't
+                    // fit — nothing else on the tile carries it.
+                    .help(institution)
+
+                Text(" · ")
+            }
+
+            Text(years)
+                // Never the thing that gives way. Without this the two Texts
+                // share the squeeze and the years truncate alongside the
+                // institution, which loses the shorter and more useful half.
+                .fixedSize()
+
+            Spacer(minLength: 0)
+        }
     }
 
     var body: some View {
@@ -47,14 +84,9 @@ struct EducationRowView: View {
                         .bold()
                 }
 
-                Text(contextLine)
+                contextLine
                     .font(ScadeDesign.rowSecondary)
                     .foregroundStyle(.secondary)
-                    // A long institution name wraps rather than truncating,
-                    // since the years at the end of the line are the half
-                    // worth keeping — but not past two lines, which would
-                    // make one tile drive the height of a whole grid row.
-                    .lineLimit(2)
             }
 
             HStack(alignment: .firstTextBaseline, spacing: ScadeDesign.rowSpacing) {
