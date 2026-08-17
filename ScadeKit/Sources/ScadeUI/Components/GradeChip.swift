@@ -7,9 +7,8 @@ import SwiftUI
 /// and how much it counts — nothing else. Date and description belong to the
 /// grade's own screens.
 ///
-/// The weight is dropped when it's the default 100%: printing it on every
-/// chip makes the exceptions harder to spot, which is the opposite of what
-/// showing it is for.
+/// The weight is dropped when it's the default 100% — see
+/// `WeightLabel.isMeaningful`, which the subjects list applies too.
 struct GradeChip: View {
     let grade: Grade
     /// Lit because the pointer is over it. Drawn here rather than layered on
@@ -18,7 +17,7 @@ struct GradeChip: View {
     var isHighlighted: Bool = false
 
     private var showsWeight: Bool {
-        grade.weight != 1.0
+        WeightLabel.isMeaningful(grade.weight)
     }
 
     private var fill: AnyShapeStyle {

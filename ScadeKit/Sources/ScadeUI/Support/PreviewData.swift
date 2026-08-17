@@ -26,6 +26,23 @@ enum PreviewData {
         return education
     }
 
+    static func subjectRow(
+        id: Int64 = 1,
+        name: String = "Analysis",
+        semester: Int = 3,
+        weight: Double = 1.0,
+        completed: Bool = false,
+        grades: [Grade] = [Grade(subjectId: 1, value: 5.5, date: .today())]
+    ) -> SubjectRow {
+        var subject = Subject(educationId: 1, name: name, semester: semester, weight: weight)
+        subject.id = id
+        subject.completed = completed
+
+        return SubjectRow(
+            SubjectSummary(subject: subject, education: education(), grades: grades)
+        )
+    }
+
     static func educationRow(
         id: Int64 = 1,
         average: Double?,

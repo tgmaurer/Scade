@@ -75,8 +75,17 @@ says which section owns the fix.
 - [ ] **Hover on the three flat lists** is still whatever macOS gives a
       full-row `NavigationLink`. Deliberately left until those screens are
       restyled rather than guessed at against a layout that's about to
-      change. §2.8. *Educations done — its tiles answer the pointer like a
-      card row does. Subjects and grades outstanding.*
+      change. §2.8. *Educations and subjects done — both answer the pointer
+      the way a card row does, which each got by being restyled onto one.
+      Grades outstanding.*
+- [x] ~~**The subjects list spent four lines saying two lines' worth.**~~ The
+      institution was printed in full on every row — it belongs to the
+      education, not the subject, and repeating "gibb, Gewerblich Industrielle
+      Berufsfachschule Bern" down the list said nothing about any subject in
+      it. The semester had a line to itself when §2.4 puts it beside the name.
+      The weight read "100%" on every row, which is the absence of weighting
+      announcing itself — `WeightLabel.isMeaningful` now decides, the rule
+      `GradeChip` already had. §2.4, §2.5.
 - [x] ~~**The educations list wasted a wide window and separated nothing.**~~
       One column of plain text in a window three columns wide, with the
       system's own row separator drawn between records in place of any
@@ -424,9 +433,19 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   the first time.
 - **The long flat lists stay `List`s.** Subjects run to dozens and grades to
   hundreds; those are read down a column, and making every row a floating card
-  hurts scanning and fights macOS selection and hover states. Reduce the noise
-  instead: `.listRowSeparator(.hidden)`, and let spacing and weight do the
-  dividing.
+  hurts scanning and fights macOS selection and hover states.
+
+  They still get the card *surface*, though — **one card holding the whole
+  list**, not one per row (amended 2026-08-11; this bullet originally said to
+  hide the separators and let spacing and weight do the dividing, which was
+  written before Home had proved the card treatment). One card is what
+  replaces the system separators, and it's what iOS's own `.insetGrouped`
+  does with a single long section, so it isn't a Mac invention. It also brings
+  the row hover with it, which is the §0.1 item those lists were waiting on.
+
+  The distinction that matters is **one card of many rows** versus **many
+  cards of one row each**. The first is a list with a surface under it; the
+  second is a grid, and needs the cardinality above to earn it.
 - **Educations are the exception, and get a grid** (amended 2026-08-11;
   this section originally said all three lists stay lists). There are a
   handful of them — several run in parallel, one per institution — so the

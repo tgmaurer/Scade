@@ -11,17 +11,32 @@ struct SubjectListScreen: View {
         @Bindable var model = model
 
         List {
-            ForEach(model.visibleRows) { row in
+            ForEach(model.visibleRows.enumerated(), id: \.element.id) { index, row in
                 NavigationLink(value: row.subject) {
                     SubjectRowView(row: row)
+                        .padding(.vertical, ScadeDesign.rowVerticalPadding)
                 }
                 .swipeActions(edge: .trailing) {
                     Button("Delete", systemImage: "trash", role: .destructive) {
                         model.pendingDeletion = row
                     }
                 }
+                // Right-click is how a Mac deletes a row; swipe is the iOS
+                // gesture above. Same choice as the educations grid.
+                .contextMenu {
+                    Button("Delete", systemImage: "trash", role: .destructive) {
+                        model.pendingDeletion = row
+                    }
+                }
+                // One card for the whole list rather than one per row: these
+                // are rows of a list, not objects that stand alone, and iOS's
+                // own `.insetGrouped` treats a single long section exactly
+                // this way. The card is what replaces the system separators —
+                // see §2.5.
+                .cardRow(CardRowPosition(index: index, count: model.visibleRows.count))
             }
         }
+        .groupedListStyle()
         .navigationTitle("Subjects")
         .searchable(text: $model.searchText, prompt: "Search subjects")
         .overlay {

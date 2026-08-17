@@ -113,7 +113,44 @@ isn't.
 Not scheduled. It's a validation rule either way, which is why it isn't in
 SPEC-POLISH: that document commits to changing none.
 
-## 4. Deliberate gaps already recorded elsewhere
+## 4. Sections on the top-level lists, and the sort order they'd need
+
+Raised while restyling the subjects list (2026-08-11), and the first thing
+anyone will suggest looking at that screen: Home groups subjects into semester
+sections and it reads far better than a flat run, so why doesn't the subjects
+list?
+
+**Because it's sorted differently, and the difference is deliberate.** SPEC
+§3.6 gives subjects a canonical order — semester desc, name asc — *and then
+exempts the top-level lists*, which are newest-created first (id desc). Home,
+the education detail, and the semester filter all use the canonical order;
+the Subjects/Educations/Grades list screens are a different thing, a record of
+what you have most recently added.
+
+So sectioning by semester isn't a presentation change. It requires the list to
+be sorted by semester, which is a SPEC §3.6 amendment — and SPEC-POLISH
+commits to changing no sort order, which is why this is here and not there.
+
+**Worth deciding, not assumed.** The questions:
+
+- Is "newest-created first" actually serving anyone on these screens? It's the
+  order of least surprise after you add something, and nothing else. Against
+  that: it's the only order in the app that no screen displays a cue for, so a
+  list in it looks unordered.
+- Semester numbers aren't comparable across educations. Several educations run
+  in parallel, one per institution, so a "Semester 2" section would merge two
+  unrelated semester 2s. The row still names its education, but the section
+  header would be claiming a relationship that isn't there. Grouping by
+  education first, semester within, is the honest version — and is two levels
+  of nesting on a flat list.
+- The grades list has the same shape of question and a better answer already
+  written down: date sections (SPEC-POLISH §0.1, §2.4). Dates *are* comparable
+  across parents, so grades may section cleanly while subjects don't. Whatever
+  is decided here should explain why the two differ, if they do.
+
+Not scheduled.
+
+## 5. Deliberate gaps already recorded elsewhere
 
 Not repeated here, to keep one list per item:
 
