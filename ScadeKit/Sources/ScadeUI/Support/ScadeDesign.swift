@@ -94,19 +94,6 @@ nonisolated enum ScadeDesign {
     /// side: below this the name starts truncating on ordinary titles.
     static let minimumCardWidth: Double = 300
 
-    /// The widest a two-line list row is drawn, however wide the window gets.
-    ///
-    /// A row is read as one unit, and past a certain width it stops being one:
-    /// the name is at one end of the screen and its average at the other, with
-    /// a hand's breadth of nothing between them. Capping keeps the pair within
-    /// a glance of each other, and the leftover space reads as a margin rather
-    /// than as a hole in the middle of the row.
-    ///
-    /// Doesn't apply to a row with something to put in the middle — the
-    /// dashboard's, whose grade chips fill it — which is why `cardRow` takes
-    /// this as an argument and defaults to no cap at all.
-    static let maximumRowWidth: Double = 900
-
     /// The most columns a card grid will use, however wide the window gets.
     ///
     /// Past three, tiles are narrow enough that the eye scans a field of

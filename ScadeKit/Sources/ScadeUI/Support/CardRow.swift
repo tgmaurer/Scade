@@ -19,13 +19,6 @@ struct CardRow: ViewModifier {
     /// whole card up promises a click that does nothing.
     let highlightsOnHover: Bool
 
-    /// The widest the card may be drawn, whatever the window does.
-    ///
-    /// `.infinity` — the default — lets it fill, which is right for a row
-    /// that has something to put in the middle. See
-    /// `ScadeDesign.maximumRowWidth` for when it isn't.
-    let maximumWidth: Double
-
     @State private var isHovering = false
 
     func body(content: Content) -> some View {
@@ -35,12 +28,6 @@ struct CardRow: ViewModifier {
             // `groupedListStyle`. `CardRowSurface` insets the card behind it
             // by the same amount, so the two edges stay parallel.
             .padding(.horizontal, ScadeDesign.contentMargin)
-            // Capped and then pushed to the leading edge, so the card lines
-            // up with the window's title rather than drifting to the middle
-            // as the window grows. The cap is applied *outside* the padding
-            // so it bounds the card, margins included, at every width.
-            .frame(maxWidth: maximumWidth + 2 * ScadeDesign.contentMargin, alignment: .leading)
-            .frame(maxWidth: .infinity, alignment: .leading)
             // Without this only the text is hoverable, so the highlight
             // flickers as the pointer crosses the gaps between columns.
             .contentShape(.rect)
@@ -54,11 +41,7 @@ struct CardRow: ViewModifier {
             .listRowSeparator(.hidden)
             .listSectionSeparator(.hidden)
             .listRowBackground(
-                CardRowSurface(
-                    position: position,
-                    isHovering: isHovering,
-                    maximumWidth: maximumWidth
-                )
+                CardRowSurface(position: position, isHovering: isHovering)
             )
         #else
         content

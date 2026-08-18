@@ -2,6 +2,15 @@ import ScadeKit
 import SwiftUI
 
 /// The subjects list (SPEC §4).
+///
+/// Forks the way the educations list does: a grid of tiles on macOS, a `List`
+/// on iOS. A phone has room for one column either way, and a list is what a
+/// phone's swipe-to-delete and disclosure chevron belong to.
+///
+/// The §2.5 questions that decide grid-versus-list answer "list" here — there
+/// is a scanning task and there is an average column worth aligning — and the
+/// grid was chosen anyway, deliberately. See that section for the trade
+/// accepted.
 struct SubjectListScreen: View {
     @Environment(\.repositories) private var repositories
     @State private var model = SubjectListModel()
@@ -10,48 +19,7 @@ struct SubjectListScreen: View {
     var body: some View {
         @Bindable var model = model
 
-        List {
-            ForEach(model.visibleRows.enumerated(), id: \.element.id) { index, row in
-                NavigationLink(value: row.subject) {
-                    SubjectRowView(row: row)
-                        .padding(.vertical, ScadeDesign.rowVerticalPadding)
-                }
-                // macOS draws a link row's pressed state as an accent fill
-                // across the *whole* row, while the card behind it is inset by
-                // the window margin — so pressing a row lit two indigo strips
-                // either side of the card and nothing under it. `.plain` gives
-                // up that fill; the card's own hover is the feedback, and it
-                // is the right width by construction.
-                //
-                // macOS only: iOS's link row draws no such fill, and it does
-                // draw the disclosure chevron, which is worth keeping.
-                #if os(macOS)
-                .buttonStyle(.plain)
-                #endif
-                .swipeActions(edge: .trailing) {
-                    Button("Delete", systemImage: "trash", role: .destructive) {
-                        model.pendingDeletion = row
-                    }
-                }
-                // Right-click is how a Mac deletes a row; swipe is the iOS
-                // gesture above. Same choice as the educations grid.
-                .contextMenu {
-                    Button("Delete", systemImage: "trash", role: .destructive) {
-                        model.pendingDeletion = row
-                    }
-                }
-                // One card for the whole list rather than one per row: these
-                // are rows of a list, not objects that stand alone, and iOS's
-                // own `.insetGrouped` treats a single long section exactly
-                // this way. The card is what replaces the system separators —
-                // see §2.5.
-                .cardRow(
-                    CardRowPosition(index: index, count: model.visibleRows.count),
-                    maximumWidth: ScadeDesign.maximumRowWidth
-                )
-            }
-        }
-        .groupedListStyle()
+        rows
         .navigationTitle("Subjects")
         .searchable(text: $model.searchText, prompt: "Search subjects")
         .overlay {
@@ -103,6 +71,48 @@ struct SubjectListScreen: View {
         .task {
             await model.observe(repositories)
         }
+    }
+
+    /// macOS: a grid of tiles. iOS: a `List`, with the system's separator
+    /// between rows taken away — a card and a rule are two answers to the
+    /// same question (§2.5).
+    @ViewBuilder
+    private var rows: some View {
+        #if os(macOS)
+        CardGrid(items: model.visibleRows) { row in
+            NavigationLink(value: row.subject) {
+                SubjectRowView(row: row)
+                    // Inside the link, so the whole tile is the click target
+                    // rather than the text within it.
+                    .cardTile()
+            }
+            // Also what takes away the accent fill macOS drew across a
+            // pressed list row — it spanned the full row while the card was
+            // inset, so pressing lit two strips either side of the card. A
+            // plain button in a grid has no such presentation to give up.
+            .buttonStyle(.plain)
+            .contextMenu {
+                Button("Delete", systemImage: "trash", role: .destructive) {
+                    model.pendingDeletion = row
+                }
+            }
+        }
+        #else
+        List {
+            ForEach(model.visibleRows) { row in
+                NavigationLink(value: row.subject) {
+                    SubjectRowView(row: row)
+                        .padding(.vertical, ScadeDesign.rowVerticalPadding)
+                }
+                .listRowSeparator(.hidden)
+                .swipeActions(edge: .trailing) {
+                    Button("Delete", systemImage: "trash", role: .destructive) {
+                        model.pendingDeletion = row
+                    }
+                }
+            }
+        }
+        #endif
     }
 
     private func startCreating() {

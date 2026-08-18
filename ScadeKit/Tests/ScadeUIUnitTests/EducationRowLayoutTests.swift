@@ -127,43 +127,6 @@ struct EducationRowLayoutTests {
 
     // MARK: - Bottom alignment
 
-    /// Whether anything is drawn in the bottom eighth of the rendered row.
-    ///
-    /// `ImageRenderer` draws SwiftUI content on transparency, so "is there
-    /// ink here" is just "is any pixel in this band non-transparent". Reading
-    /// pixels is a blunt instrument, but it's the only way to ask where in a
-    /// frame the content ended up — a rendered image has no view tree left to
-    /// query, and the height assertions above can't see a thing about
-    /// position.
-    private func bottomBandIsInked(name: String, width: Double, height: Double) throws -> Bool {
-        let renderer = ImageRenderer(
-            content: EducationRowView(row: row(name: name)).frame(width: width, height: height)
-        )
-        let image = try #require(renderer.cgImage)
-
-        let bandTop = image.height - image.height / 8
-        var pixels = [UInt8](repeating: 0, count: image.width * image.height * 4)
-
-        let context = try #require(
-            CGContext(
-                data: &pixels,
-                width: image.width,
-                height: image.height,
-                bitsPerComponent: 8,
-                bytesPerRow: image.width * 4,
-                space: CGColorSpaceCreateDeviceRGB(),
-                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-            )
-        )
-        context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
-
-        return (bandTop..<image.height).contains { y in
-            (0..<image.width).contains { x in
-                pixels[(y * image.width + x) * 4 + 3] > 0
-            }
-        }
-    }
-
     /// Given more height than it needs, the row spreads rather than sitting at
     /// the top of it.
     ///
@@ -172,9 +135,15 @@ struct EducationRowLayoutTests {
     /// counts and status have to reach the bottom of that height rather than
     /// trailing off wherever their own text ran out.
     @Test func theRowReachesTheBottomOfATallerFrameThanItNeeds() throws {
-        let natural = try height(name: "EFZ", width: narrowest)
+        let natural = try height(institution: "ETH", width: narrowest)
 
-        #expect(try bottomBandIsInked(name: "EFZ", width: narrowest, height: natural * 2))
+        #expect(
+            try RenderedInk.reachesBottom(
+                of: EducationRowView(row: row(institution: "ETH")),
+                width: narrowest,
+                height: natural * 2
+            )
+        )
     }
 }
 #endif

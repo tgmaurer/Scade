@@ -75,9 +75,15 @@ says which section owns the fix.
 - [ ] **Hover on the three flat lists** is still whatever macOS gives a
       full-row `NavigationLink`. Deliberately left until those screens are
       restyled rather than guessed at against a layout that's about to
-      change. §2.8. *Educations and subjects done — both answer the pointer
-      the way a card row does, which each got by being restyled onto one.
-      Grades outstanding.*
+      change. §2.8. *Educations and subjects done — both are grids of tiles
+      now, and a tile answers the pointer itself. Grades outstanding.*
+- [x] ~~**A pressed row lit up outside its own card.**~~ macOS draws a link
+      row's pressed state as an accent fill across the whole row, while the
+      card behind it is inset by the window margin — so pressing lit two
+      accent strips either side of the card and nothing under it. Any full-row
+      `NavigationLink` on a card has this; the two grids avoid it by
+      construction, since a plain button in a grid has no such presentation to
+      give up. §2.8.
 - [x] ~~**The subjects list spent four lines saying two lines' worth.**~~ The
       institution was printed in full on every row — it belongs to the
       education, not the subject, and repeating "gibb, Gewerblich Industrielle
@@ -446,15 +452,12 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   The distinction that matters is **one card of many rows** versus **many
   cards of one row each**. The first is a list with a surface under it; the
   second is a grid, and needs the cardinality above to earn it.
-- **A row is capped in width; a tile is not** (`ScadeDesign.maximumRowWidth`).
-  Past about 900pt a row stops being read as one thing: the name is at one end
-  of the screen and its average at the other, with nothing in between. Capping
-  keeps the pair within a glance and turns the leftover into a margin instead
-  of a hole. Leading-aligned, not centred, so the card stays lined up with the
-  window title rather than drifting rightwards as the window grows. A row with
-  something to put in the middle — the dashboard's, whose grade chips fill it
-  — is exempt, which is why the cap is an argument to `cardRow` and defaults
-  to off.
+- **A row is capped in width; a tile is not.** Past about 900pt a row stops
+  being read as one thing: the name is at one end of the screen and its
+  average at the other, with nothing in between. *No screen currently needs
+  this — subjects, the one that did, became a grid instead, and the plumbing
+  was removed with it rather than left inert. Kept as a note because the next
+  long list to stay a list will meet the same wall.*
 - **What goes hard right is the number, and only the number.** Everything else
   on a line follows the text before it. Pinning secondary metadata to the
   trailing edge as well leaves a word at each end of a wide row and a void
@@ -513,12 +516,26 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
      one institution against an average at another isn't a comparison anyone
      makes, so there's nothing to line up.
 
-  Educations answer "no" and "no" — a few objects you pick between. Subjects
-  and grades answer "yes" and "yes" — many records you scan and compare. That
-  the old app used cards for all three is not evidence: it used cards for
+  Educations answer "no" and "no" — a few objects you pick between. That the
+  old app used cards everywhere is not evidence either way: it used cards for
   everything, which is a template applied uniformly rather than a decision
   made per screen, and CLAUDE.md limits that reference to content and
   priority, "never for density or layout".
+
+  **Subjects answer "yes" and "yes", and use the grid anyway** (decided
+  2026-08-11, on preference, after seeing both built). Recorded as an
+  override rather than rewritten into a rule the outcome would fit, because
+  the reasoning still stands and the cost is real: with dozens of subjects the
+  averages no longer form one column, and finding the low one means reading
+  rather than glancing. Two things make the cost smaller than it first looks —
+  a uniform grid still aligns the tiles' top-right corners, so three columns
+  give three average sub-columns rather than none; and the semester filter
+  usually narrows the screen to a handful, which is the regime where the
+  scanning argument never bites anyway.
+
+  **Grades are not settled by this.** They answer "yes" and "yes" far more
+  emphatically — hundreds of records whose value *is* the row — so the
+  override doesn't carry over by precedent. Decide it on its own screen.
 
   And the tile here is not
   GradeMaster's card (`gm-educations-list.png`): no stroked outline, no
