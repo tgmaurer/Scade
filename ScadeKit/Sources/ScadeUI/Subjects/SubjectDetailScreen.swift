@@ -34,6 +34,10 @@ struct SubjectDetailScreen: View {
                                     ),
                                     showsContext: false
                                 )
+                                // The row view carries no padding of its own
+                                // — a card tile supplies it on the grades
+                                // grid, and a list row has to supply its own.
+                                .padding(.vertical, ScadeDesign.rowVerticalPadding)
                             }
                         }
                     }

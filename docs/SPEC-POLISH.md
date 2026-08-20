@@ -67,16 +67,24 @@ says which section owns the fix.
 - [ ] **Detail screens are the rawest part of the app.** Every field is the
       same size, and the layout is a stack of ruled rows. They need the §2.4
       ladder and the §2.5 card treatment, which so far only Home has.
-- [ ] **The grade list needs separation** — group it into date sections
-      rather than presenting one undifferentiated run of rows. §2.4.
+- [x] ~~**The grade list needs separation**~~ — it was one undifferentiated
+      run of rows, and it's now a grid of tiles, so each grade is its own
+      object on its own surface. *Date sections were the fix proposed here
+      and are **not** what was built:* sectioning by date requires the list
+      to be sorted by date, and it is sorted `id desc` like the other two
+      top-level lists (SPEC §3.6). That's a sort-order change, which this
+      phase commits to not making — so it stays open as
+      [SPEC-BACKLOG](SPEC-BACKLOG.md) §4, where it is now the only half of
+      this finding still outstanding. §2.5.
 - [ ] **Detail screens should link to their parents** — grade → subject →
       education. The data is already on screen as text; it should be
       navigable. §2.4.
-- [ ] **Hover on the three flat lists** is still whatever macOS gives a
-      full-row `NavigationLink`. Deliberately left until those screens are
-      restyled rather than guessed at against a layout that's about to
-      change. §2.8. *Educations and subjects done — both are grids of tiles
-      now, and a tile answers the pointer itself. Grades outstanding.*
+- [x] ~~**Hover on the three flat lists** is still whatever macOS gives a
+      full-row `NavigationLink`.~~ Deliberately left until those screens were
+      restyled rather than guessed at against a layout that was about to
+      change — and the restyle settled it without a decision to make: all
+      three are grids of tiles now, and a tile answers the pointer itself.
+      §2.8.
 - [x] ~~**A pressed row lit up outside its own card.**~~ macOS draws a link
       row's pressed state as an accent fill across the whole row, while the
       card behind it is inset by the window margin — so pressing lit two
@@ -371,7 +379,15 @@ entity, what the eye should land on first:
 - Subject row: name + semester dominant; parent education secondary; average
   trailing.
 - Grade row: value dominant (it's the point of the row); date and
-  description secondary; weight tertiary.
+  description secondary; weight tertiary. **On the grade *tile* the value
+  takes the trailing anchor instead of leading** (amended 2026-08-20). The
+  three grids share one grammar — what the record is on the left, its number
+  on the right — and a value that led would be the only number in the app
+  that didn't sit where the eye has learnt to find it. Dominance is carried
+  instead by being the sole number on the tile and the only field that turns
+  red. The one case where it still leads is the case §2.4 was written for:
+  a grade with nothing to name it, under its own subject and saved without a
+  description, where the value really is all there is.
 
 Hierarchy comes from **size and weight before it comes from colour or rules**.
 A settled ladder, applied everywhere:
@@ -533,9 +549,45 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   usually narrows the screen to a handful, which is the regime where the
   scanning argument never bites anyway.
 
-  **Grades are not settled by this.** They answer "yes" and "yes" far more
-  emphatically — hundreds of records whose value *is* the row — so the
-  override doesn't carry over by precedent. Decide it on its own screen.
+  **Grades were not settled by that, and got the grid too** (decided
+  2026-08-20, on preference, after the subjects grid was seen working). The
+  two questions answer "yes" and "yes" here more emphatically than anywhere
+  else in the app — hundreds of records whose value *is* the record — so this
+  is a second override, taken on its own screen rather than inherited from
+  the first. What that buys and what it costs:
+
+  - **The cost is real and larger than on subjects.** With hundreds of
+    grades, no filter that narrows the screen to a handful the way the
+    semester filter narrows subjects, and the value as the whole point of the
+    record, this is precisely the case the scanning argument describes. Three
+    average sub-columns instead of one is a weaker consolation at three
+    hundred records than at thirty.
+  - **What it buys is separation, which grades needed more than the other
+    two.** A grade is the only record with no name — the §0.1 finding was
+    that the list read as one undifferentiated run — and a run of unnamed
+    rows is where a card earns the most. A tile makes each grade a thing;
+    rows made them a page of numbers.
+  - **It is not a substitute for date sections.** Those remain the better
+    answer to the same finding and remain blocked on a sort order (§0.1,
+    [SPEC-BACKLOG](SPEC-BACKLOG.md) §4). A grid and sections are compatible —
+    `LazyVGrid` takes `Section` — so this doesn't foreclose them.
+
+  **A grade tile is headed by the most specific thing that names it.** The
+  other two records have a name field; a grade has an optional description,
+  and plenty are saved without one. So the heading is the description, or
+  failing that the subject — which then drops off the context line, so
+  neither parent is ever printed twice. Under a subject, where the screen
+  already says which subject it is, an undescribed grade has nothing to head
+  it and the value leads instead of anchoring the right of an empty line.
+
+  **Two unbounded fields on one line share the squeeze; they don't take
+  turns.** The education tile could pin its years with `.fixedSize()` because
+  four digits are four digits. A grade's context line is a subject name
+  beside an education name, both capped at 255 characters, and giving either
+  priority let it crowd the other out — the separator `Text` between them
+  wrapped, and a long subject name made the tile a line taller with both
+  names correctly held to one line each. The bound belongs on the line, not
+  on the fields in it.
 
   And the tile here is not
   GradeMaster's card (`gm-educations-list.png`): no stroked outline, no

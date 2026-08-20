@@ -3,17 +3,20 @@ import SwiftUI
 /// A grid of card tiles that answers the width it's given (SPEC-POLISH §2.5,
 /// §2.6).
 ///
-/// For a collection short enough to be taken in at once. A single column of
-/// educations in a wide window is the "content stranded in a wide window"
-/// finding in §0.1 at its plainest: there are a handful of them, each a
-/// substantial object, and nothing to scroll past to reach the rest — so the
-/// window is mostly empty and the list is still not all visible on a small
-/// one.
+/// Written for a collection short enough to be taken in at once. A single
+/// column of educations in a wide window is the "content stranded in a wide
+/// window" finding in §0.1 at its plainest: there are a handful of them, each
+/// a substantial object, and nothing to scroll past to reach the rest — so
+/// the window is mostly empty and the list is still not all visible on a
+/// small one.
 ///
-/// **This is not the treatment for the long lists.** Subjects run to dozens
-/// and grades to hundreds; those are read down a column, and a grid would
-/// turn scanning into searching. The grid is earned by cardinality, not by
-/// the screen being a list — see the §2.5 amendment.
+/// **All three macOS list screens use it now, and only educations were
+/// argued into it.** Subjects and then grades took it as deliberate
+/// overrides of the §2.5 test, on preference, each recorded there with what
+/// it costs — a grid of hundreds of grades is the case that test warns
+/// about. Read that section before extending this to a fourth screen: the
+/// rule is still cardinality, and three exceptions in a row is what a rule
+/// quietly becoming a habit looks like.
 struct CardGrid<Item: Identifiable, Content: View>: View {
     let items: [Item]
     @ViewBuilder let content: (Item) -> Content

@@ -147,6 +147,10 @@ commits to changing no sort order, which is why this is here and not there.
   written down: date sections (SPEC-POLISH §0.1, §2.4). Dates *are* comparable
   across parents, so grades may section cleanly while subjects don't. Whatever
   is decided here should explain why the two differ, if they do.
+- All three lists became grids of tiles on macOS in the meantime
+  (2026-08-20), which answers the *separation* half of the grades finding but
+  not this one. It doesn't foreclose sections either — `LazyVGrid` takes
+  `Section`, so a dated grid is buildable the day the sort order is settled.
 
 Not scheduled.
 

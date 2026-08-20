@@ -43,6 +43,28 @@ enum PreviewData {
         )
     }
 
+    static func gradeItem(
+        id: Int64 = 1,
+        value: Double = 5.5,
+        weight: Double = 1.0,
+        details: String? = "Schlussprüfung",
+        subjectName: String = "Analysis"
+    ) -> GradeListItem {
+        let grade = Grade(
+            id: id,
+            subjectId: 1,
+            value: value,
+            weight: weight,
+            description: details,
+            date: .today()
+        )
+
+        var subject = Subject(educationId: 1, name: subjectName, semester: 2)
+        subject.id = 1
+
+        return GradeListItem(grade: grade, subject: subject, education: education())
+    }
+
     static func educationRow(
         id: Int64 = 1,
         average: Double?,
