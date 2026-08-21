@@ -21,6 +21,15 @@ struct GradeListScreen: View {
 
         rows
         .navigationTitle("Grades")
+        // How many are on screen, not how many exist: it follows the search
+        // and the filters, because the number is only useful as an answer to
+        // "what am I looking at". Nothing is claimed before the first
+        // snapshot lands — see `hasLoaded`.
+        .navigationSubtitle(
+            model.hasLoaded
+                ? "^[\(model.visibleRows.count) grade](inflect: true)"
+                : ""
+        )
         .searchable(text: $model.searchText, prompt: "Search grades")
         .overlay {
             // Not until the first snapshot has arrived: see
