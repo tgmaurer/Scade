@@ -123,6 +123,35 @@ says which section owns the fix.
       The weight read "100%" on every row, which is the absence of weighting
       announcing itself — `WeightLabel.isMeaningful` now decides, the rule
       `GradeChip` already had. §2.4, §2.5.
+- [x] ~~**Home clipped its own rows.**~~ Two symptoms, one cause. Filtering to
+      one semester adds a line to the summary card, and the row kept its old
+      height, so the new line was cut in half. Launching on a **non-Retina
+      display** gave *every* row roughly half the height it needed, clipping
+      each one mid-word — and dragging the window to a Retina display and
+      back fixed it, which is what a stale cached height looks like from the
+      outside. **A macOS `List` decides a row's height once and does not
+      re-measure it.** Both reproduced on demand (2026-08-21, second display
+      at 1×) and both gone with Home rebuilt as `ScrollView` + `DetailSection`
+      — the same cards the detail screens are made of. Nothing in the app is
+      a `List` on macOS now except the sidebar. §2.5.
+- [x] ~~**A typed space was invisible in a form field.**~~ macOS's grouped
+      `Form` anchors a labelled field's text to its *trailing* edge, and a
+      trailing space has no mark of its own and doesn't move the anchor — so
+      the row is pixel-for-pixel identical before and after the keystroke,
+      and the space reads as dropped until the next character lands and the
+      whole string jumps left by two. Typing "Modul 4" showed `Modul`,
+      `Modul`, `Modul 4`. Free text now reads from the left
+      (`FormTextField`); the numeric fields keep the trailing alignment,
+      which is the point of them. §2.4.
+- [x] ~~**Switching section flashed the empty state.**~~ An observation is
+      asynchronous, so each screen was briefly on screen with empty arrays in
+      it and "Nothing to Track Yet" drawn over them. Every list model now
+      says whether its first snapshot has arrived. §2.7.
+- [x] ~~**Settings was a sidebar row.**~~ Its own window on macOS now, on
+      `⌘,` and in the app menu. §1.1, §2.2.
+- [x] ~~**The window was called "Subjects", with nothing to say whose.**~~
+      "Scade – Subjects" at a section root; the bare record name on a detail
+      screen. §2.2.
 - [x] ~~**The educations list wasted a wide window and separated nothing.**~~
       One column of plain text in a window three columns wide, with the
       system's own row separator drawn between records in place of any
@@ -184,22 +213,21 @@ of how the views look.
 
 | Shortcut | Action |
 |---|---|
-| `⌘1`–`⌘5` | Select tab (Home, Educations, Subjects, Grades, Settings) |
-| `⌘,` | Settings — the platform convention; on macOS this should open a real Settings scene, not select the sidebar row |
+| `⌘1`–`⌘4` | Select tab (Home, Educations, Subjects, Grades) |
+| `⌘,` | Settings — **done**: a real `Settings` scene on macOS (2026-08-21) |
 | `⌘[` / `⌘]` | Back / forward in the detail stack |
 | `⌘F` | Focus the search field on the current list |
 
 These bind to the `TabView` selection from §2.2, not to a sidebar — the
-shortcuts are unchanged, the thing they set isn't. `⌘5` exists only where
-Settings does; on iPhone there is no fifth tab and no hardware keyboard to
-press it with.
+shortcuts are unchanged, the thing they set isn't. There is no `⌘5`: Settings
+is not a section on any platform any more (§2.2).
 
-`⌘,` is the one that needs a decision rather than an implementation: SPEC §4
-puts Settings in the sidebar, and macOS convention puts it in a separate
-window. Options are (a) keep the sidebar row and let `⌘,` select it,
-(b) move to a `Settings` scene on macOS and keep the sidebar row on iOS.
-(b) is more native and more work. §2.2 already removes Settings from the tab
-bar on iPhone, which makes (b) the smaller step than it was.
+`⌘,` needed a decision rather than an implementation, and **(b) was taken**:
+a `Settings` scene on macOS, no sidebar row anywhere. The argument that
+settled it is that `⌘,` is not the app's to define — the system routes it to
+a `Settings` scene, so an app without one leaves the standard shortcut
+answering nothing at all. A sidebar row can't be reached by it, however the
+row is labelled.
 
 ### 1.2 Records
 
@@ -300,10 +328,20 @@ removes the handle, which is what settled it.
 
 Tabs, in order: **Home, Educations, Subjects, Grades.**
 
-**Settings is a section only on macOS.** A tab slot is permanent real estate
-and Settings is visited rarely; everywhere else it belongs behind a toolbar
-button on Home, opening as a sheet. SPEC §4's "Settings in the sidebar" is
-honoured where a sidebar exists, which turns out to be macOS alone.
+**Settings is not a section on any platform.** On macOS it is a window of its
+own, opened from the app menu or with `⌘,` — where every Mac app keeps it, and
+where the system looks for it whether or not the app agrees. Everywhere else
+it is a toolbar button on Home, opening as a sheet: a tab slot is permanent
+real estate and Settings is visited rarely.
+
+*Changed 2026-08-21.* It was a sidebar row on macOS until then, on the reading
+that SPEC §4's "Settings in the sidebar" should be honoured where a sidebar
+exists. Two things were wrong with that. A fifth permanent slot went to the
+screen visited least, and choosing it swapped the whole detail column for a
+form — a *modal* errand rendered as a place you navigate to. And `⌘,` cannot
+be pointed at a sidebar row: the system binds it to a `Settings` scene, so
+the app was leaving the one shortcut every Mac user tries doing nothing.
+SPEC §4 is superseded here by the platform convention.
 
 iPad was expected to keep it, on the assumption that `.sidebarAdaptable` would
 give iPad a sidebar. **It doesn't.** iPadOS renders a top tab bar, and five
@@ -312,6 +350,28 @@ paginates, and Settings lands on a second page — present in the accessibility
 tree, not reachable by tapping.
 `defaultAdaptableTabBarPlacement(.sidebar)` does not override this; it was
 tried and had no observable effect. Four tabs fit, so four tabs it is.
+
+**Sidebar rows keep the icon in front of the word, and get some height.**
+Stacking icon over label is the *tab bar* idiom — an iPhone's bottom bar, an
+iPad's top one — and a sidebar is a list: Finder, Mail, Notes, Music and
+Reminders all run the icon leading. Both were rendered and compared
+(2026-08-21); the stacked one reads as an iPad app that got resized. The
+rows do carry 6pt more above and below than the system's default, which is
+tuned for a sidebar with a dozen entries and disclosure groups in it. This
+one has four.
+
+**The window's title carries the app's name; the toolbar's doesn't.** A
+window at a section root is "Scade – Educations", because the Window menu, a
+window tab, Mission Control and `⌘\`` all list it beside other apps' windows,
+where "Educations" on its own says nothing about whose. A pushed detail
+screen keeps the bare record name — "Scade – Informatiker EFZ" over a card
+that says *Informatiker EFZ* in bold is the app's name interrupting the one
+thing on screen that isn't already obvious.
+
+These are one string on macOS: `navigationTitle` names the window *and* draws
+the toolbar's title, and no API separates them. The window's copy is
+rewritten after the fact, by observing it — see `windowTitlePrefix`, which
+records why writing it once does not hold.
 
 #### Recorded alternative — "Library"
 
@@ -576,13 +636,20 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   second is a grid, and needs the cardinality above to earn it.
 
   **A detail screen is a document, and stops being a `List` altogether**
-  (decided 2026-08-21, building the education detail). Home stays one — its
-  quick-add is a swipe on iPhone and `.swipeActions` is `List`-only, which is
-  what put it there. A detail screen has none of that: nothing to swipe,
-  nothing to select, nothing to reorder. It is a `ScrollView` of cards, drawn
-  by `DetailSection` and `DetailCardRow` from the same `CardRowSurface` the
-  `List` rows use, so there is one card in the app and not two that nearly
-  match.
+  (decided 2026-08-21, building the education detail). A detail screen has
+  nothing to swipe, nothing to select and nothing to reorder. It is a
+  `ScrollView` of cards, drawn by `DetailSection` and `DetailCardRow` from the
+  same `CardRowSurface` the `List` rows use, so there is one card in the app
+  and not two that nearly match.
+
+  **Home followed, later the same day — and there it was a bug fix.** Home was
+  the one screen keeping a `List` on macOS, because its quick-add is a swipe
+  on iPhone and `.swipeActions` is `List`-only. That reason holds *on iPhone*,
+  and it bought nothing on a Mac, where the same `List` was clipping every row
+  it drew (§0.1). So Home forks: a `List` on iOS for its swipes, the same
+  `ScrollView` of cards as everywhere else on macOS. **Nothing in the app is a
+  `List` on macOS now except the sidebar**, which is one — `List(selection:)`
+  is how a `NavigationSplitView` learns its detail column should change.
 
   Three things follow, and the third is what forced it:
 
@@ -776,6 +843,13 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   toggle; fix what's broken, don't design for it.
 
 ### 2.7 Motion
+
+**Nothing at all, while there is nothing to say.** Every screen observes its
+data, so every screen is on screen for a frame with empty arrays in it — and
+an empty state that reads those as "there is nothing here" flashes a false
+answer on every section switch. The empty states wait for the first snapshot
+(`hasLoaded`) rather than being animated in more gently; the fix for a wrong
+frame is not to fade it.
 
 No animation is deliberate right now. Additions should be limited to
 transitions that explain a change — a row leaving on delete, a value updating
