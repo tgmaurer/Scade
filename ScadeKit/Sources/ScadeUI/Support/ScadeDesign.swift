@@ -176,12 +176,6 @@ nonisolated enum ScadeDesign {
     /// one doesn't: five fixed rows of a word each.
     static let sidebarWidth: Double = 150
 
-    /// Added above and below each sidebar row's label.
-    ///
-    /// The system's own row height is tuned for a sidebar with a dozen
-    /// entries and disclosure groups in it. This one has four, so the rows
-    /// can afford to breathe — see `SidebarShell` for what was tried instead.
-    static let sidebarRowPadding: Double = 6
 
     /// How wide the macOS Settings window is.
     ///

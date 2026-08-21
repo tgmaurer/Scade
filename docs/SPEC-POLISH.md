@@ -150,8 +150,12 @@ says which section owns the fix.
 - [x] ~~**Settings was a sidebar row.**~~ Its own window on macOS now, on
       `⌘,` and in the app menu. §1.1, §2.2.
 - [x] ~~**The window was called "Subjects", with nothing to say whose.**~~
-      "Scade – Subjects" at a section root; the bare record name on a detail
-      screen. §2.2.
+      Built as "Scade – Subjects" at a section root, then **reverted the same
+      day**: the app switcher shows the icon, so the name is the one thing
+      already answered, and on macOS the window's title *is* the toolbar's —
+      one string, no API separating them — so the prefix was paid for twice
+      on screen to solve a problem that wasn't there. Closed as won't-do, not
+      as done. §2.2.
 - [x] ~~**The educations list wasted a wide window and separated nothing.**~~
       One column of plain text in a window three columns wide, with the
       system's own row separator drawn between records in place of any
@@ -351,27 +355,26 @@ tree, not reachable by tapping.
 `defaultAdaptableTabBarPlacement(.sidebar)` does not override this; it was
 tried and had no observable effect. Four tabs fit, so four tabs it is.
 
-**Sidebar rows keep the icon in front of the word, and get some height.**
-Stacking icon over label is the *tab bar* idiom — an iPhone's bottom bar, an
-iPad's top one — and a sidebar is a list: Finder, Mail, Notes, Music and
-Reminders all run the icon leading. Both were rendered and compared
-(2026-08-21); the stacked one reads as an iPad app that got resized. The
-rows do carry 6pt more above and below than the system's default, which is
-tuned for a sidebar with a dozen entries and disclosure groups in it. This
-one has four.
+**Sidebar rows are the system's, in every respect.** Icon in front of the
+word, at the system's row height. Three arrangements were rendered and
+compared (2026-08-21): stacked icon-over-label reads as an iPad app that got
+resized — stacking is the *tab bar* idiom, and a sidebar is a list, which is
+why Finder, Mail, Notes, Music and Reminders all run the icon leading. Rows
+6pt taller than standard were tried too and look unbalanced: four larger
+rows in a sidebar that stays narrow draw attention to their own size.
 
-**The window's title carries the app's name; the toolbar's doesn't.** A
-window at a section root is "Scade – Educations", because the Window menu, a
-window tab, Mission Control and `⌘\`` all list it beside other apps' windows,
-where "Educations" on its own says nothing about whose. A pushed detail
-screen keeps the bare record name — "Scade – Informatiker EFZ" over a card
-that says *Informatiker EFZ* in bold is the app's name interrupting the one
-thing on screen that isn't already obvious.
+The empty space under four rows is not a problem to solve. A sidebar is a
+list of places, and every Mac app with few sections leaves the rest of the
+column empty.
 
-These are one string on macOS: `navigationTitle` names the window *and* draws
-the toolbar's title, and no API separates them. The window's copy is
-rewritten after the fact, by observing it — see `windowTitlePrefix`, which
-records why writing it once does not hold.
+**The window's title is the section's name, with nothing in front of it.**
+"Scade – Educations" was built and reverted the same day. Two reasons, and
+the second is the one that matters: an app switcher shows the icon, so
+whose window it is was never the unanswered question; and on macOS the
+window's title *is* the toolbar's — `navigationTitle` sets both and no API
+separates them — so the prefix appeared twice on screen to answer it. A
+detail screen would have read "Scade – Informatiker EFZ" above a card
+saying *Informatiker EFZ* in bold.
 
 #### Recorded alternative — "Library"
 
