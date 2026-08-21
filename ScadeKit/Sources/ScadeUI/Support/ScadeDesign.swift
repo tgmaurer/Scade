@@ -128,6 +128,13 @@ nonisolated enum ScadeDesign {
     /// different place on every row.
     static let subjectColumnWidth: Double = 160
 
+    /// The label column in front of a form's free-text field.
+    ///
+    /// macOS's grouped `Form` splits a labelled row roughly in half, which
+    /// starts a name in the middle of the sheet with a stretch of nothing in
+    /// front of it. A label column puts the text where a form's text belongs:
+    /// just after the word naming it, and in the same place on every row.
+    static let formLabelWidth: Double = 96
 
     /// Inside a grade chip, to the left and right of its value.
     static let chipPadding: Double = 8
