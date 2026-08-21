@@ -28,6 +28,12 @@ struct SectionStack<Content: View>: View {
                     navigable(GradeDetailScreen(grade: $0))
                 }
                 .environment(\.navigate, navigator)
+                // Only at the root, which is why it lives here rather than in
+                // the shell: this is where the path is known. See
+                // `windowTitlePrefix`.
+                #if os(macOS)
+                .windowTitlePrefix(path.isEmpty ? "Scade" : nil)
+                #endif
         }
     }
 
