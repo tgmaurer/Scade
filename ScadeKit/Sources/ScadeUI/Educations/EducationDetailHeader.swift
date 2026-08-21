@@ -102,7 +102,11 @@ struct EducationDetailHeader: View {
             .font(ScadeDesign.rowMeta)
             .foregroundStyle(.secondary)
         }
-        .padding(.vertical, ScadeDesign.iconTextSpacing)
+        // No padding of its own. `DetailSectionText` supplies the card's,
+        // evenly on all four sides; the vertical padding that used to be here
+        // was a `List` row's breathing room, and once the screen stopped
+        // being a `List` it only stacked on top of the card's — 18 above and
+        // below against 14 at the sides.
         // Every fact on this card is one you might want out of the app — an
         // institution's full name into a form, a date into a calendar, the
         // average into a message. Safe to enable here and not on the subject
