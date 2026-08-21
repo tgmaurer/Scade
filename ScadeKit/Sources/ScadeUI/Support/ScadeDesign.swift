@@ -109,6 +109,15 @@ nonisolated enum ScadeDesign {
     /// Breathing room above and below a list row's content.
     static let rowVerticalPadding: Double = 6
 
+    /// Breathing room above and below a card row's content.
+    ///
+    /// More than `rowVerticalPadding`, because a card row is on its own: a
+    /// `List` row adds a few points of its own around whatever it's given,
+    /// and a card doesn't. Matched to what the dashboard's rows measured
+    /// while they were still `List` rows — losing those points is what made
+    /// them look cramped the moment Home stopped being one.
+    static let cardRowVerticalPadding: Double = 10
+
     /// Gap between the distinct parts of a row — name, content, trailing
     /// value. Wider than stack spacing, because these are separate columns
     /// rather than one phrase.
@@ -118,6 +127,7 @@ nonisolated enum ScadeDesign {
     /// grades that follow it line up down the screen instead of starting at a
     /// different place on every row.
     static let subjectColumnWidth: Double = 160
+
 
     /// Inside a grade chip, to the left and right of its value.
     static let chipPadding: Double = 8
@@ -130,6 +140,7 @@ nonisolated enum ScadeDesign {
     /// How far a card's internal divider is held back from its edges, so it
     /// reads as a line *within* the card rather than a cut across it.
     static let cardDividerInset: Double = 12
+
 
     // MARK: - Pointer
     //
