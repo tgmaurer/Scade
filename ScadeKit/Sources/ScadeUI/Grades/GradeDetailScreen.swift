@@ -14,30 +14,26 @@ struct GradeDetailScreen: View {
     var body: some View {
         @Bindable var model = model
 
-        ScrollView {
-            VStack(alignment: .leading, spacing: ScadeDesign.contentMargin) {
-                if let item = model.item {
-                    DetailSection {
-                        DetailSectionText {
-                            GradeDetailHeader(item: item)
-                        }
+        DetailScroll {
+            if let item = model.item {
+                DetailSection {
+                    DetailSectionText {
+                        GradeDetailHeader(item: item)
                     }
+                }
 
-                    if let details = item.grade.description, details.isEmpty == false {
-                        // A card of its own, in full — the one place the
-                        // whole description lives. Every list and grid holds
-                        // it to a line (§2.4).
-                        DetailSection(title: "Description") {
-                            DetailSectionText {
-                                Text(details)
-                                    .textSelection(.enabled)
-                            }
+                if let details = item.grade.description, details.isEmpty == false {
+                    // A card of its own, in full — the one place the whole
+                    // description lives. Every list and grid holds it to a
+                    // line (§2.4).
+                    DetailSection(title: "Description") {
+                        DetailSectionText {
+                            Text(details)
+                                .textSelection(.enabled)
                         }
                     }
                 }
             }
-            // On the content, not the scroll view — see `CardGrid`.
-            .padding(ScadeDesign.contentMargin)
         }
         // The most specific thing that names it, the same rule the grades
         // list heads a tile with: what the grade was for, or failing that

@@ -15,19 +15,12 @@ struct EducationDetailScreen: View {
     var body: some View {
         @Bindable var model = model
 
-        ScrollView {
-            VStack(alignment: .leading, spacing: ScadeDesign.contentMargin) {
-                if let summary = model.summary {
-                    EducationSummarySection(summary: summary, average: model.average)
+        DetailScroll {
+            if let summary = model.summary {
+                educationSummarySection(summary: summary, average: model.average)
 
-                    subjects(of: summary)
-                }
+                subjects(of: summary)
             }
-            // On the content, not the scroll view: padding the scroll view
-            // shrinks its frame and takes the scroller with it, leaving the
-            // scrollbar short of the window edge (`CardGrid` has the same
-            // note).
-            .padding(ScadeDesign.contentMargin)
         }
         .accessibilityIdentifier(AccessibilityID.Education.detail)
         .navigationTitle(model.summary?.education.name ?? education.name)

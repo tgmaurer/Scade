@@ -15,16 +15,12 @@ struct SubjectDetailScreen: View {
     var body: some View {
         @Bindable var model = model
 
-        ScrollView {
-            VStack(alignment: .leading, spacing: ScadeDesign.contentMargin) {
-                if let summary = model.summary {
-                    SubjectSummarySection(summary: summary, average: model.average)
+        DetailScroll {
+            if let summary = model.summary {
+                subjectSummarySection(summary: summary, average: model.average)
 
-                    grades(of: summary)
-                }
+                grades(of: summary)
             }
-            // On the content, not the scroll view — see `CardGrid`.
-            .padding(ScadeDesign.contentMargin)
         }
         .navigationTitle(model.summary?.subject.name ?? subject.name)
         .accessibilityIdentifier(AccessibilityID.Subject.detail)

@@ -113,21 +113,16 @@ struct HomeScreen: View {
     @ViewBuilder
     private var content: some View {
         #if os(macOS)
-        ScrollView {
-            VStack(alignment: .leading, spacing: ScadeDesign.contentMargin) {
-                if let education = model.selectedEducation {
-                    DetailSection {
-                        DetailSectionText {
-                            summary(of: education)
-                        }
+        DetailScroll {
+            if let education = model.selectedEducation {
+                DetailSection {
+                    DetailSectionText {
+                        summary(of: education)
                     }
-
-                    semesterCards
                 }
             }
-            // On the content, not the scroll view — see `CardGrid` for what
-            // padding the scroll view costs.
-            .padding(ScadeDesign.contentMargin)
+
+            semesterCards
         }
         #else
         List {
@@ -147,7 +142,27 @@ struct HomeScreen: View {
         #endif
     }
 
+    /// One card per semester.
+    ///
+    /// The macOS branch spells the `Section` out here rather than wrapping it
+    /// in a view of its own, and that isn't a style choice: `DetailScroll`
+    /// pins section headers, and a `LazyVStack` pins only a `Section` it can
+    /// see — one hidden inside a custom `View` is invisible to it and doesn't
+    /// pin. The rows *inside* the section are a view, because only the
+    /// outermost layer is subject to this.
+    @ViewBuilder
     private var semesterCards: some View {
+        #if os(macOS)
+        ForEach(model.semesters) { semester in
+            DetailSection(title: semester.title) {
+                HomeSemesterRows(
+                    semester: semester,
+                    showsGrades: showsGrades,
+                    onAddGrade: startAddingGrade
+                )
+            }
+        }
+        #else
         ForEach(model.semesters) { semester in
             HomeSemesterSection(
                 semester: semester,
@@ -155,6 +170,7 @@ struct HomeScreen: View {
                 onAddGrade: startAddingGrade
             )
         }
+        #endif
     }
 
     private func summary(of education: Education) -> some View {
