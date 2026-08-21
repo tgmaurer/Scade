@@ -88,7 +88,7 @@ struct SubjectDetailScreen: View {
     /// exists to drop.
     @ViewBuilder
     private func grades(of summary: SubjectSummary) -> some View {
-        DetailSection {
+        DetailSection(title: "Grades") {
             if summary.grades.isEmpty {
                 DetailSectionText {
                     Text("No grades yet.")

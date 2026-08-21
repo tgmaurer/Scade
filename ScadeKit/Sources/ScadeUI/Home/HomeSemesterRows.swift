@@ -33,7 +33,7 @@ struct HomeSemesterRows: View {
 
 #Preview {
     DetailScroll {
-        DetailSection {
+        DetailSection(title: "Semester 3") {
             HomeSemesterRows(
                 semester: HomeSemester(
                     semester: 3,

@@ -187,10 +187,9 @@ says which section owns the fix.
       below. The grid tiles keep the single measure they always had. *Two
       earlier attempts were reverted: 14pt squared on all four sides, then
       20pt at the sides, which is too much.* §2.5.
-- [x] ~~**Section titles are gone.**~~ "Semester 4", "Description",
-      "Subjects", "Grades" — all removed, and with them the pinning that had
-      just been restored. What separates one card from the next is the gap
-      between them. §2.5.
+- [x] ~~**Section titles stopped sticking.**~~ They stay above their card
+      and scroll with it. The pinning restored a few commits earlier is out
+      again, and so is the background it needed. §2.5.
 - [x] ~~**The educations list wasted a wide window and separated nothing.**~~
       One column of plain text in a window three columns wide, with the
       system's own row separator drawn between records in place of any
@@ -712,11 +711,11 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   all — which keeps the margin in one place whether a card is first, last or
   alone.
 
-  *Sticky headers were built and then removed with the titles.* What they
-  cost, recorded in case they ever come back: pinning is a `LazyVStack`
-  feature, and **a lazy stack pins only a `Section` it can see** — one
-  wrapped inside a custom `View` is invisible to it and silently doesn't
-  pin, which is how the first attempt looked finished and did nothing.
+  *Sticky headers were built and then removed.* What they cost, recorded in
+  case they ever come back: pinning is a `LazyVStack` feature, and **a lazy
+  stack pins only a `Section` it can see** — one wrapped inside a custom
+  `View` is invisible to it and silently doesn't pin, which is how the first
+  attempt looked finished and did nothing.
 
   **A card's sides are padded a little more than its top and bottom, on
   purpose.** 16pt at the sides; 14 above and below a block of text, 8 above
@@ -727,14 +726,13 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   starts and ends where the text does. Grid tiles are the exception and keep
   one measure all round.
 
-  **A card has no title.** "Semester 4" over the dashboard's cards,
-  "Description" and "Subjects" over the detail screens' — all removed. A
-  label in the gap above a card is a thin line of small grey text belonging
-  to neither the card above nor the one below; the gap alone separates them
-  better than the gap plus a label did. **Nothing pins**, either: pinning
-  existed to keep those labels in view, and there is nothing left to keep.
-  *The cost is on the dashboard, where the semester a card belongs to is no
-  longer written anywhere on it.*
+  **A card's title sits above it and stays there.** "Semester 4" over the
+  dashboard's cards, "Description" and "Subjects" over the detail screens'.
+  **Nothing pins.** Sticky headers were built here and taken back out: a
+  title that outlives the card it names has to paint an opaque background to
+  stay legible, and that background draws a band across the rows passing
+  under it. Without pinning the title needs no background at all, which is
+  the version that looks like a heading rather than a stripe.
 
   Three things follow, and the third is what forced it:
 

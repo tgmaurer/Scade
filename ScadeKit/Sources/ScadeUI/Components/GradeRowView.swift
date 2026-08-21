@@ -234,7 +234,7 @@ struct GradeRowView: View {
 }
 
 #Preview("Rows under a subject") {
-    DetailSection {
+    DetailSection(title: "Grades") {
         DetailCardRow(position: .first) {
             GradeRowView(
                 item: PreviewData.gradeItem(id: 1, value: 5.5, weight: 0.5, details: "Schlussprüfung"),

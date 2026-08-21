@@ -67,7 +67,7 @@ struct EducationSubjectRowView: View {
 }
 
 #Preview {
-    DetailSection {
+    DetailSection(title: "Subjects") {
         DetailCardRow(position: .first) {
             EducationSubjectRowView(
                 subjectGrades: SubjectGrades(

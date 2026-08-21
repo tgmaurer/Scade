@@ -84,7 +84,7 @@ struct EducationDetailScreen: View {
     /// the first kind.
     @ViewBuilder
     private func subjects(of summary: EducationSummary) -> some View {
-        DetailSection {
+        DetailSection(title: "Subjects") {
             if summary.subjects.isEmpty {
                 DetailSectionText {
                     Text("No subjects yet.")

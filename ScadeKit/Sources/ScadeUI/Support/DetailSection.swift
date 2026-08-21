@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// One card on a detail screen (SPEC-POLISH §2.5).
+/// One titled card on a detail screen (SPEC-POLISH §2.5).
 ///
 /// **A detail screen is a document, not a list**, and this is what it's built
 /// from instead of `List` rows. Three things follow from the distinction, and
@@ -22,12 +22,38 @@ import SwiftUI
 /// platforms get the same one instead of iOS getting the system's and macOS
 /// assembling a lookalike.
 ///
-/// **It carries no title.** A card had a label above it for a while; it was
-/// removed. What separates one card from the next is the gap between them.
+/// **The title sits above the card and stays there.** It doesn't pin, it
+/// doesn't scroll with anything but the card it names, and it needs no
+/// background of its own because nothing ever passes underneath it. Sticky
+/// headers were built here once and taken back out.
 struct DetailSection<Content: View>: View {
+    /// The header above the card. Cards that need no title omit it — the
+    /// identity card is the record itself, not a labelled part of it.
+    var title: LocalizedStringKey?
+
     @ViewBuilder let content: Content
 
     var body: some View {
+        VStack(alignment: .leading, spacing: ScadeDesign.iconTextSpacing) {
+            if let title {
+                Text(title)
+                    .font(ScadeDesign.rowSecondary)
+                    .bold()
+                    .foregroundStyle(.secondary)
+                    // Lined up with the content inside the card below, not
+                    // with the card's edge.
+                    .padding(.horizontal, ScadeDesign.contentMargin + ScadeDesign.cardContentPadding)
+            }
+
+            card
+        }
+        // The gap to whatever comes next, carried here rather than as the
+        // enclosing stack's spacing so the last card ends clear of the window
+        // edge without the stack needing to know how many there are.
+        .padding(.bottom, ScadeDesign.contentMargin)
+    }
+
+    private var card: some View {
         VStack(spacing: 0) {
             content
         }
@@ -37,10 +63,6 @@ struct DetailSection<Content: View>: View {
                 .fill(.background.secondary)
         )
         .padding(.horizontal, ScadeDesign.contentMargin)
-        // The gap to whatever comes next, carried here rather than as the
-        // enclosing stack's spacing so the last card ends clear of the window
-        // edge without the stack needing to know how many there are.
-        .padding(.bottom, ScadeDesign.contentMargin)
     }
 }
 

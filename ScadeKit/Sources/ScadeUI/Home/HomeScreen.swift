@@ -154,7 +154,7 @@ struct HomeScreen: View {
     private var semesterCards: some View {
         #if os(macOS)
         ForEach(model.semesters) { semester in
-            DetailSection {
+            DetailSection(title: semester.title) {
                 HomeSemesterRows(
                     semester: semester,
                     showsGrades: showsGrades,

@@ -24,7 +24,7 @@ func educationSummarySection(summary: EducationSummary, average: Double?) -> som
         // A card of its own rather than a last paragraph of the one above. A
         // description runs to 2500 characters, which would swamp the identity
         // it was meant to qualify.
-        DetailSection {
+        DetailSection(title: "Description") {
             DetailSectionText {
                 Text(details)
                     // The longest free text the app holds, and the one most

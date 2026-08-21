@@ -26,7 +26,7 @@ struct GradeDetailScreen: View {
                     // A card of its own, in full — the one place the whole
                     // description lives. Every list and grid holds it to a
                     // line (§2.4).
-                    DetailSection {
+                    DetailSection(title: "Description") {
                         DetailSectionText {
                             Text(details)
                                 .textSelection(.enabled)
