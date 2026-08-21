@@ -65,7 +65,6 @@ struct HomeSummaryHeader: View {
                 .foregroundStyle(.secondary)
             }
         }
-        .padding(.vertical, ScadeDesign.iconTextSpacing)
     }
 }
 

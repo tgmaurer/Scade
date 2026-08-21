@@ -39,11 +39,14 @@ struct HomeSubjectRow: View {
                 .font(ScadeDesign.value)
                 .bold()
         }
-        .padding(.vertical, ScadeDesign.rowVerticalPadding)
         // A subject with no grades has no chips to give the row its height, so
-        // it would sit shorter than its neighbours. The floor is derived from
-        // the chip height for that reason — see `ScadeDesign.subjectRowHeight`.
-        .frame(minHeight: ScadeDesign.subjectRowHeight)
+        // it would sit shorter than its neighbours. A chip is the tallest
+        // thing the row can hold, so that's the floor.
+        //
+        // The breathing room around it belongs to whatever the row sits in —
+        // `DetailCardRow` on macOS, the list row on iOS — the same way every
+        // other row in the app leaves its padding to its container.
+        .frame(minHeight: ScadeDesign.chipHeight)
     }
 }
 

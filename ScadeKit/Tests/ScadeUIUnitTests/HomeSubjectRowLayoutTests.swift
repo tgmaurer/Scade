@@ -78,7 +78,7 @@ struct HomeSubjectRowLayoutTests {
     /// a ceiling catches the whole family.
     @Test(arguments: [740.0, 900.0, 1200.0])
     func rowStaysOneLineHigh(width: Double) throws {
-        let ceiling = ScadeDesign.subjectRowHeight * 1.5
+        let ceiling = ScadeDesign.chipHeight * 2
 
         #expect(try height(of: withGrades, width: width) < ceiling)
         #expect(try height(of: withoutGrades, width: width) < ceiling)

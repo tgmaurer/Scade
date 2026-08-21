@@ -127,16 +127,6 @@ nonisolated enum ScadeDesign {
     /// height below can be derived from it instead of guessed to match.
     static let chipHeight: Double = 22
 
-    /// The height every dashboard subject row gets, with or without grades in
-    /// it — a row of chips is taller than a bare line of text, and rows of two
-    /// different heights in one card read as two different kinds of row.
-    ///
-    /// Derived, because the two numbers have to agree: a floor that the chips
-    /// exceed is not a floor, which is exactly how the rows drifted apart
-    /// before. Chips are the tallest content, so the row is a chip plus its
-    /// breathing room, and the empty rows are lifted to meet it.
-    static var subjectRowHeight: Double { chipHeight + 2 * rowVerticalPadding }
-
     /// How far a card's internal divider is held back from its edges, so it
     /// reads as a line *within* the card rather than a cut across it.
     static let cardDividerInset: Double = 12
@@ -185,6 +175,7 @@ nonisolated enum ScadeDesign {
     /// also removes the resize handle. Widening it would show nothing a narrow
     /// one doesn't: five fixed rows of a word each.
     static let sidebarWidth: Double = 150
+
 
     /// The narrowest the macOS window may become.
     ///

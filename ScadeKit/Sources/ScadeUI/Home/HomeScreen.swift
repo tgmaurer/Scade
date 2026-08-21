@@ -14,32 +14,7 @@ struct HomeScreen: View {
     var body: some View {
         @Bindable var model = model
 
-        List {
-            if let education = model.selectedEducation {
-                Section {
-                    HomeSummaryHeader(
-                        education: education,
-                        average: model.average,
-                        subjectCount: model.subjects.count,
-                        gradeCount: model.gradeCount,
-                        semester: model.semester
-                    )
-                    // The card is figures, not a way through to anything.
-                    // Its one control is the education's name (§2.8).
-                    .cardRow(.only, highlightsOnHover: false)
-                }
-                .cardSection()
-
-                ForEach(model.semesters) { semester in
-                    HomeSemesterSection(
-                        semester: semester,
-                        showsGrades: showsGrades,
-                        onAddGrade: startAddingGrade
-                    )
-                }
-            }
-        }
-        .groupedListStyle()
+        content
         .navigationTitle("Home")
         .overlay {
             HomeEmptyState(
@@ -79,14 +54,15 @@ struct HomeScreen: View {
                     )
             }
 
-            // Where Settings has no section of its own — everywhere but
-            // macOS — this is the way in (SPEC-POLISH §2.2).
-            if AppSection.showsSettingsSection == false {
-                ToolbarItem {
-                    Button("Settings", systemImage: "gearshape", action: showSettings)
-                        .accessibilityIdentifier(AccessibilityID.Settings.open)
-                }
+            // Where there's no menu bar to keep Settings in, this is the way
+            // in (SPEC-POLISH §2.2). macOS opens its own window from the app
+            // menu instead — see `SettingsWindow`.
+            #if !os(macOS)
+            ToolbarItem {
+                Button("Settings", systemImage: "gearshape", action: showSettings)
+                    .accessibilityIdentifier(AccessibilityID.Settings.open)
             }
+            #endif
         }
         .sheet(isPresented: $isShowingSettings) {
             SettingsSheet()
@@ -111,6 +87,80 @@ struct HomeScreen: View {
         .task(id: model.selectedEducationId) {
             await model.observe(repositories)
         }
+    }
+
+    /// macOS: a document of cards. iOS: a `List`, for its swipe actions.
+    ///
+    /// **macOS is deliberately not a `List` any more**, and this is a bug fix
+    /// rather than a preference. A macOS `List` decides a row's height once
+    /// and does not re-measure it, which showed up here twice:
+    ///
+    /// - Filtering to one semester adds a line to the summary card, and the
+    ///   row it sat in kept its old height, so the new line was cut in half.
+    /// - Launching on a non-Retina display gave *every* row roughly half the
+    ///   height it needed, clipping each one mid-word. Dragging the window to
+    ///   a Retina display and back fixed it, which is what a stale cached
+    ///   height looks like from the outside.
+    ///
+    /// Neither is reachable from a `ScrollView`: a `VStack` measures its
+    /// content on every layout pass. The cards are the same `DetailSection`
+    /// and `DetailCardRow` the detail screens are built from, so this also
+    /// leaves one card in the app rather than a `List` lookalike beside it.
+    @ViewBuilder
+    private var content: some View {
+        #if os(macOS)
+        ScrollView {
+            VStack(alignment: .leading, spacing: ScadeDesign.contentMargin) {
+                if let education = model.selectedEducation {
+                    DetailSection {
+                        DetailSectionText {
+                            summary(of: education)
+                        }
+                    }
+
+                    semesterCards
+                }
+            }
+            // On the content, not the scroll view — see `CardGrid` for what
+            // padding the scroll view costs.
+            .padding(ScadeDesign.contentMargin)
+        }
+        #else
+        List {
+            if let education = model.selectedEducation {
+                Section {
+                    summary(of: education)
+                        // The card is figures, not a way through to anything.
+                        // Its one control is the education's name (§2.8).
+                        .cardRow(.only, highlightsOnHover: false)
+                }
+                .cardSection()
+
+                semesterCards
+            }
+        }
+        .groupedListStyle()
+        #endif
+    }
+
+    private var semesterCards: some View {
+        ForEach(model.semesters) { semester in
+            HomeSemesterSection(
+                semester: semester,
+                showsGrades: showsGrades,
+                onAddGrade: startAddingGrade
+            )
+        }
+    }
+
+    private func summary(of education: Education) -> some View {
+        HomeSummaryHeader(
+            education: education,
+            average: model.average,
+            subjectCount: model.subjects.count,
+            gradeCount: model.gradeCount,
+            semester: model.semester
+        )
     }
 
     /// §4: a subject's grades are listed under it only in a regular width.

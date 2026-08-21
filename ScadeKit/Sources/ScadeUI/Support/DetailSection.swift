@@ -24,7 +24,7 @@ import SwiftUI
 struct DetailSection<Content: View>: View {
     /// The header above the card. Cards that need no title omit it — the
     /// identity card is the record itself, not a labelled part of it.
-    var title: String?
+    var title: LocalizedStringKey?
 
     @ViewBuilder let content: Content
 
