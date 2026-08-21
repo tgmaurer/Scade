@@ -34,13 +34,13 @@ import SwiftUI
 /// the stack above or the content would scroll visibly through the gaps
 /// either side of it.
 func DetailSection<Content: View>(
-    /// The header at the top of the card. Cards that need no title omit it —
-    /// the identity card is the record itself, not a labelled part of it.
+    /// The header above the card. Cards that need no title omit it — the
+    /// identity card is the record itself, not a labelled part of it.
     title: LocalizedStringKey? = nil,
     @ViewBuilder content: () -> Content
 ) -> some View {
     Section {
-        DetailCard(isTitled: title != nil, content: content)
+        DetailCard(content: content)
     } header: {
         DetailSectionHeader(title: title)
     }
@@ -48,11 +48,6 @@ func DetailSection<Content: View>(
 
 /// The rounded surface a section's rows sit on.
 struct DetailCard<Content: View>: View {
-    /// Whether a header sits directly above. Its card is the same card, so
-    /// this one gives up its top corners rather than starting a second shape
-    /// a hairline below the first.
-    var isTitled = false
-
     @ViewBuilder let content: Content
 
     var body: some View {
@@ -60,36 +55,19 @@ struct DetailCard<Content: View>: View {
             content
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(shape.fill(.background.secondary))
+        .background(
+            RoundedRectangle(cornerRadius: ScadeDesign.cardCornerRadius)
+                .fill(.background.secondary)
+        )
         .padding(.horizontal, ScadeDesign.contentMargin)
         // The gap to whatever comes next. Carried here rather than as the
         // stack's spacing, for the same reason as the margin.
         .padding(.bottom, ScadeDesign.contentMargin)
     }
-
-    private var shape: UnevenRoundedRectangle {
-        UnevenRoundedRectangle(
-            topLeadingRadius: isTitled ? 0 : ScadeDesign.cardCornerRadius,
-            bottomLeadingRadius: ScadeDesign.cardCornerRadius,
-            bottomTrailingRadius: ScadeDesign.cardCornerRadius,
-            topTrailingRadius: isTitled ? 0 : ScadeDesign.cardCornerRadius
-        )
-    }
 }
 
-/// A section's title — the top of its card, and pinned there while the rows
-/// below scroll past underneath.
-///
-/// **It sits on the card rather than above it**, which is the second attempt.
-/// A label floating in the gap between two cards belongs to neither, and at
-/// 1× a line of small secondary text with space above and below reads as a
-/// stripe rather than as a heading. On the card it is unambiguously the
-/// heading *of that card*, it has a divider under it doing the work the gap
-/// was failing to do, and when it pins, what stays behind is the card's own
-/// top edge instead of an opaque band cutting across the rows.
-///
-/// It borrows `CardRowSurface` for all of that, so the shape, the fill, the
-/// divider and the window margin are the ones every other card row uses.
+/// A section's title, drawn above its card and pinned while the card scrolls
+/// past underneath.
 struct DetailSectionHeader: View {
     let title: LocalizedStringKey?
 
@@ -100,15 +78,13 @@ struct DetailSectionHeader: View {
                 .bold()
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                // Lined up with the content inside the card below, not with
+                // the card's edge.
                 .padding(.horizontal, ScadeDesign.contentMargin + ScadeDesign.cardTilePadding)
-                .padding(.vertical, ScadeDesign.cardTilePadding)
-                .background(
-                    CardRowSurface(
-                        position: .first,
-                        isHovering: false,
-                        margin: ScadeDesign.contentMargin
-                    )
-                )
+                .padding(.bottom, ScadeDesign.iconTextSpacing)
+                // Opaque, and full width: while it's pinned, rows pass
+                // underneath it.
+                .background(.background)
         }
     }
 }

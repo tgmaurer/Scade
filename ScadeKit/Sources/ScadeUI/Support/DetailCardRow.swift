@@ -22,10 +22,8 @@ struct DetailCardRow<Content: View>: View {
             // case that proves it — the same view is a card tile on the
             // grades grid, a `List` row on a phone, and a row of this card,
             // and all three want different room.
-            // Square: the same measure on all four sides, so a row reads as
-            // sitting *inside* the card rather than squeezed between its top
-            // and bottom edges.
-            .padding(ScadeDesign.cardTilePadding)
+            .padding(.horizontal, ScadeDesign.cardTilePadding)
+            .padding(.vertical, ScadeDesign.cardRowVerticalPadding)
             .background(
                 CardRowSurface(position: position, isHovering: isHovering, margin: 0)
             )

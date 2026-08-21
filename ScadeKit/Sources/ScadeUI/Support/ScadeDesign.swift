@@ -109,6 +109,14 @@ nonisolated enum ScadeDesign {
     /// Breathing room above and below a list row's content.
     static let rowVerticalPadding: Double = 6
 
+    /// Breathing room above and below a card row's content.
+    ///
+    /// More than `rowVerticalPadding`, because a card row is on its own: a
+    /// `List` row adds a few points of its own around whatever it's given,
+    /// and a card doesn't. Matched to what the dashboard's rows measured
+    /// while they were still `List` rows — losing those points is what made
+    /// them look cramped the moment Home stopped being one.
+    static let cardRowVerticalPadding: Double = 10
 
     /// Gap between the distinct parts of a row — name, content, trailing
     /// value. Wider than stack spacing, because these are separate columns
