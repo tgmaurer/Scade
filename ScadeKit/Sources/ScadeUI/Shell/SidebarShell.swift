@@ -37,18 +37,7 @@ struct SidebarShell: View {
             // the row's content, not the insets around it, so the margins
             // were dead — and brought a hover state macOS doesn't put there.
             List(AppSection.allCases, selection: $section) { item in
-                // Icon beside the label, not above it. Stacking them is the
-                // *tab bar* idiom — an iPhone's bottom bar, an iPad's top one
-                // — and a sidebar is a list: Finder, Mail, Notes, Music and
-                // Reminders all run the icon in front of the word. Rendered
-                // both ways to be sure, and the stacked one reads as an iPad
-                // app that got resized (SPEC-POLISH §2.2).
-                //
-                // Taller than the default, though. Four rows is a short list
-                // and the sidebar's width is fixed, so the room is there, and
-                // a row that's easier to hit is worth having.
                 Label(item.title, systemImage: item.systemImage)
-                    .padding(.vertical, ScadeDesign.sidebarRowPadding)
                     .accessibilityIdentifier(AccessibilityID.section(item))
                     .tag(item)
             }
