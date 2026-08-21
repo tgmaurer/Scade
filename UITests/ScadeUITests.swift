@@ -55,6 +55,7 @@ final class ScadeUITests: XCTestCase {
 
         static let newGrade = Control("grade.new", "New Grade")
         static let gradeValue = "grade.form.value"
+        static let gradeDescription = "grade.form.description"
 
         static let settingsSection = Control("section.settings", "Settings")
         static let openSettings = Control("settings.open", "Settings")
@@ -152,6 +153,31 @@ final class ScadeUITests: XCTestCase {
         )
     }
 
+    /// §3.4, amended: a grade needs a description, and saying so is the
+    /// form's job rather than the database's.
+    ///
+    /// The mirror of the education test above, on the field that changed. It
+    /// also pins the direction of the change: this passing while
+    /// `testAGradeShowsUpInTheSubjectAverage` still passes means the rule
+    /// rejects the empty case without rejecting the ordinary one.
+    func testSavingAGradeWithoutADescriptionShowsAnErrorAndKeepsTheFormOpen() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Nameless Course")
+
+        openSection(ID.subjectsSection)
+        createSubject(named: "Nameless Subject")
+
+        openSection(ID.gradesSection)
+        tap(ID.newGrade)
+        replaceText("5", in: app.textFields[ID.gradeValue])
+        tap(ID.save)
+
+        XCTAssertTrue(
+            app.buttons[ID.save.identifier].exists,
+            "The form should stay open rather than saving a grade with nothing to call it."
+        )
+    }
+
     /// The one test that reaches all the way through: a grade entered in the
     /// UI should show up as that subject's average, which means the form, the
     /// repositories and `GradeCalculator` are genuinely wired together.
@@ -165,6 +191,9 @@ final class ScadeUITests: XCTestCase {
         openSection(ID.gradesSection)
         tap(ID.newGrade)
         replaceText("5", in: app.textFields[ID.gradeValue])
+        // Required since §3.4 was amended: a grade has no name field, so this
+        // is the only thing that says what the number was for.
+        type("Midterm", into: app.textFields[ID.gradeDescription])
         tap(ID.save)
 
         openSection(ID.subjectsSection)

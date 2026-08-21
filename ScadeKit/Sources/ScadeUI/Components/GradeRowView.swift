@@ -14,11 +14,16 @@ import SwiftUI
 /// whole grid row — when it happened and what it counted for.
 ///
 /// **What names a grade is not a field but a fallback.** An education and a
-/// subject each have a name; a grade has an optional description, and a great
-/// many are saved without one. So the heading is the most specific thing
-/// available: the description, or failing that the subject it belongs to. The
-/// context line drops whichever of the two the heading took, so neither is
-/// ever printed twice.
+/// subject each have a name; a grade has a description, and until SPEC §3.4
+/// was amended on 2026-08-21 it was optional, so a great many were saved
+/// without one. So the heading is the most specific thing available: the
+/// description, or failing that the subject it belongs to. The context line
+/// drops whichever of the two the heading took, so neither is ever printed
+/// twice.
+///
+/// The fallback stays now that new grades must carry a description, because
+/// the ones already saved without one are not migrated — the rule changed,
+/// the rows didn't.
 ///
 /// Where nothing at all names the grade — no description, and the subject
 /// already known from the screen around it — the heading goes and the value

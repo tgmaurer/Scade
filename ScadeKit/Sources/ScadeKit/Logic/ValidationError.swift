@@ -7,6 +7,16 @@ import Foundation
 public enum ValidationError: Error, Hashable, Sendable {
     case nameRequired
     case nameTooLong(maximum: Int)
+
+    /// A grade saved without a description.
+    ///
+    /// Only grades require one. An education and a subject each have a name;
+    /// a grade has no name field at all, so its description is the only thing
+    /// that can say what it *was* — and without it a grade is a number and a
+    /// date, indistinguishable from the one beside it in the same subject on
+    /// the same day (SPEC §3.4, amended 2026-08-21).
+    case descriptionRequired
+
     case descriptionTooLong(maximum: Int)
 
     /// An education's total semester count is below 1.
@@ -34,7 +44,7 @@ public enum ValidationError: Error, Hashable, Sendable {
     public var field: ValidationField {
         switch self {
         case .nameRequired, .nameTooLong: .name
-        case .descriptionTooLong: .description
+        case .descriptionRequired, .descriptionTooLong: .description
         case .semestersOutOfRange: .semesters
         case .endDateBeforeStartDate: .endDate
         case .semesterOutOfRange: .semester

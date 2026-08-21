@@ -55,10 +55,14 @@ struct GradeFormScreen: View {
                     }
                 }
 
+                // Required, unlike an education's or a subject's: those
+                // have a name and a grade does not, so this is the only
+                // thing that can say what the number was for (§3.4).
                 Section("Description") {
                     TextField("Description", text: $model.details, axis: .vertical)
                         .lineLimit(3...)
                         .labelsHidden()
+                        .accessibilityIdentifier(AccessibilityID.Grade.description)
                     FieldErrorLabel(model.message(for: .description))
                 }
             }

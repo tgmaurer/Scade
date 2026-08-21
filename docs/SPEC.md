@@ -173,7 +173,22 @@ never from an object graph that might be partially loaded.
   0-minimum was dead/unreachable code, not an intentional design choice).
   Weight >0. Subject required. **Date within parent education's
   [startDate, endDate]**: same recommendation as above — inline validation
-  error instead of silent clamping.
+  error instead of silent clamping. **Description required, ≤2500**
+  (amended 2026-08-21; it was optional, matching Education and Subject).
+
+  Those two have a *name*; a grade has no name field at all, so its
+  description is the only thing that can say what the number was for.
+  Without one a grade is a value and a date — indistinguishable from the
+  grade beside it in the same subject on the same day, and with nothing for
+  a list row or a detail screen to call it. Whitespace-only counts as empty,
+  the same rule `name` follows.
+
+  **Validation only; the column stays nullable.** Grades already saved
+  without a description remain valid at rest and are not migrated or
+  backfilled — a `NOT NULL` column would need a value invented for every one
+  of them, which is a data decision and not a rule change. They display
+  through the fallback in `GradeRowView` and are asked for a description the
+  first time they're edited.
 - Completion state: only settable via edit, never at creation (both
   Education and Subject are always born "in progress") — preserved as-is,
   it's a reasonable rule.
