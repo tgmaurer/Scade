@@ -57,7 +57,6 @@ final class ScadeUITests: XCTestCase {
         static let gradeValue = "grade.form.value"
         static let gradeDetail = "grade.detail"
 
-        static let settingsSection = Control("section.settings", "Settings")
         static let openSettings = Control("settings.open", "Settings")
         static let deleteAll = Control("settings.deleteAll", "Delete All Data")
         static let confirmDeleteAll = Control("settings.deleteAll.confirm", "Delete Everything")
@@ -549,22 +548,28 @@ final class ScadeUITests: XCTestCase {
         target.tap()
     }
 
-    /// Opens Settings, which each platform offers differently: a sidebar row
-    /// on macOS, and everywhere else a button on Home, because Settings has no
-    /// section of its own there. See `AppSection.showsSettingsSection`.
+    /// Opens Settings, which each platform offers differently: its own window
+    /// on macOS, opened the way every Mac app opens one, and everywhere else a
+    /// button on Home, because there's no menu bar to keep it in. See
+    /// `AppSection`.
+    ///
+    /// ⌘, rather than walking the app menu, because the shortcut is the part
+    /// that would silently stop working: it's wired by the system to the
+    /// `Settings` scene, so an app without one answers it with nothing at all.
     private func openSettings() {
         #if os(macOS)
-        openSection(ID.settingsSection)
+        app.typeKey(",", modifierFlags: .command)
         #else
         openSection(ID.homeSection)
         tap(ID.openSettings)
         #endif
     }
 
-    /// Dismisses the Settings sheet, where there was one to dismiss. On macOS
-    /// Settings is a section rather than a sheet, so there's nothing to close.
+    /// Closes Settings — a window on macOS, a sheet everywhere else.
     private func closeSettings() {
-        #if os(iOS)
+        #if os(macOS)
+        app.typeKey("w", modifierFlags: .command)
+        #else
         let done = app.buttons["Done"]
         XCTAssertTrue(done.waitForExistence(timeout: 5), "The Settings sheet should have a Done button.")
         done.tap()

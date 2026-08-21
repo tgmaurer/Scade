@@ -11,45 +11,34 @@ enum AppSection: String, CaseIterable, Identifiable, Hashable, Sendable {
     case educations
     case subjects
     case grades
-    case settings
 
     var id: Self { self }
 
-    /// The sections the shell offers, in order. `settings` earns a row only
-    /// where `showsSettingsSection` says so.
-    static var visibleCases: [AppSection] {
-        showsSettingsSection ? allCases : allCases.filter { $0 != .settings }
-    }
-
-    /// Whether Settings is one of the shell's sections.
+    /// **Settings is not one of these, on any platform.**
     ///
-    /// Only where the shell is a real sidebar, which is macOS alone. A tab
-    /// slot is permanent real estate and Settings is visited rarely, so
-    /// elsewhere it lives behind a button on Home (SPEC-POLISH §2.2), and
-    /// SPEC §4's "Settings in the sidebar" is honoured where a sidebar exists.
+    /// On macOS it's a window of its own, opened from the app menu or with
+    /// ⌘, — where every Mac app keeps it, and where the system will look for
+    /// it whether or not the app agrees. A sidebar row for it was a fifth
+    /// permanent slot spent on the screen visited least, and it swapped the
+    /// whole detail column for a form.
     ///
-    /// iPad was expected to keep it, on the assumption that
-    /// `.sidebarAdaptable` would give it a sidebar. It doesn't: iPadOS renders
-    /// a top tab bar, and five tabs plus its sidebar toggle don't fit an
-    /// 11-inch portrait window — the bar paginates and Settings lands on a
-    /// second page, present in the accessibility tree but not reachable by
-    /// tapping. `defaultAdaptableTabBarPlacement(.sidebar)` doesn't override
-    /// this. Four tabs fit, so four tabs it is.
-    static var showsSettingsSection: Bool {
-        #if os(macOS)
-        true
-        #else
-        false
-        #endif
-    }
+    /// Everywhere else it's a button on Home, for the same reason a tab would
+    /// be wrong (SPEC-POLISH §2.2). iOS has no menu bar to put it in.
+    ///
+    /// SPEC §4's "Settings in the sidebar" is superseded by the platform
+    /// convention; see SPEC-POLISH §2.2.
 
-    var title: LocalizedStringKey {
+    var title: LocalizedStringKey { LocalizedStringKey(name) }
+
+    /// The same word as `title`, as a plain `String`.
+    ///
+    /// Both forms come off one list so they can't drift.
+    var name: String {
         switch self {
         case .home: "Home"
         case .educations: "Educations"
         case .subjects: "Subjects"
         case .grades: "Grades"
-        case .settings: "Settings"
         }
     }
 
@@ -59,7 +48,6 @@ enum AppSection: String, CaseIterable, Identifiable, Hashable, Sendable {
         case .educations: "graduationcap"
         case .subjects: "books.vertical"
         case .grades: "list.number"
-        case .settings: "gearshape"
         }
     }
 }

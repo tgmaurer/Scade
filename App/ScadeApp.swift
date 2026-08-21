@@ -46,5 +46,13 @@ struct ScadeApp: App {
         WindowGroup {
             RootView(repositories: repositories)
         }
+
+        // macOS only, and the reason Settings has no sidebar row: this is
+        // what puts "Scade ▸ Settings…" in the app menu and answers ⌘,.
+        #if os(macOS)
+        Settings {
+            SettingsWindow(repositories: repositories)
+        }
+        #endif
     }
 }

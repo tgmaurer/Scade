@@ -17,8 +17,6 @@ struct SectionScreen: View {
             SubjectListScreen()
         case .grades:
             GradeListScreen()
-        case .settings:
-            SettingsScreen()
         }
     }
 }

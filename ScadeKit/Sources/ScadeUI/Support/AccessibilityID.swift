@@ -63,8 +63,8 @@ enum AccessibilityID {
     }
 
     enum Settings {
-        /// The way in where Settings has no section of its own — everywhere
-        /// but macOS. See `AppSection.showsSettingsSection`.
+        /// The way in where there's no menu bar to keep Settings in —
+        /// everywhere but macOS. See `AppSection`.
         static let open = "settings.open"
         static let deleteAll = "settings.deleteAll"
         static let confirmDeleteAll = "settings.deleteAll.confirm"

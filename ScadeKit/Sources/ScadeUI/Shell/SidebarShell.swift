@@ -36,7 +36,7 @@ struct SidebarShell: View {
             // Those rows cost the full-row click target too — a button fills
             // the row's content, not the insets around it, so the margins
             // were dead — and brought a hover state macOS doesn't put there.
-            List(AppSection.visibleCases, selection: $section) { item in
+            List(AppSection.allCases, selection: $section) { item in
                 Label(item.title, systemImage: item.systemImage)
                     .accessibilityIdentifier(AccessibilityID.section(item))
                     .tag(item)

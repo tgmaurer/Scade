@@ -177,6 +177,21 @@ nonisolated enum ScadeDesign {
     static let sidebarWidth: Double = 150
 
 
+    /// How wide the macOS Settings window is.
+    ///
+    /// Fixed, like the sidebar: the form is read top to bottom and lays out
+    /// no differently when it's wider, so dragging its edge would achieve
+    /// nothing. Wide enough for the longest answer in the About section to
+    /// hold a sensible line length.
+    static let settingsWindowWidth: Double = 460
+
+    /// The least height the Settings window opens at.
+    ///
+    /// A floor rather than a size: Appearance, Backup and Data fit inside it,
+    /// and the About section — four questions and their answers — is longer
+    /// than any settings window should be, so it scrolls.
+    static let settingsWindowHeight: Double = 560
+
     /// The narrowest the macOS window may become.
     ///
     /// A floor rather than a responsive layout: below this the dashboard's

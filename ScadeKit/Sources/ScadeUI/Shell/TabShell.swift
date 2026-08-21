@@ -9,7 +9,7 @@ import SwiftUI
 /// does (SPEC-POLISH §2.2).
 ///
 /// Settings has no tab here; Home's toolbar carries it. See
-/// `AppSection.showsSettingsSection`.
+/// `AppSection`.
 struct TabShell: View {
     /// Owned here, not passed in: each shell selects in the type its own
     /// control uses — a `TabView` in a non-optional, a `List` in an optional —
