@@ -181,6 +181,16 @@ says which section owns the fix.
       top-level lists carry the count as a navigation subtitle, following the
       search and the filters rather than the database — the number is only
       useful as an answer to "what am I looking at". §2.4.
+- [x] ~~**The section label read as a stripe.**~~ It floated in the gap
+      between two cards, belonging to neither, and at 1× a line of small
+      secondary text with space above and below is a smear rather than a
+      heading. It's the top of its card now, with a divider under it — see
+      §2.5.
+- [x] ~~**A card row's padding wasn't square.**~~ 14pt left and right against
+      10pt top and bottom, measured off a screenshot. The same measure on all
+      four sides now, which reads as a row sitting *inside* the card rather
+      than squeezed between its edges — and takes a dashboard row from 42pt
+      to 50pt. §2.5.
 - [x] ~~**The educations list wasted a wide window and separated nothing.**~~
       One column of plain text in a window three columns wide, with the
       system's own row separator drawn between records in place of any
@@ -716,6 +726,21 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
     them all. A pinned header has to paint the full width of the scroll view,
     and a header inset by the window margin leaves the content scrolling
     visibly through the gaps either side of it.
+
+  **The title is the top of the card, not a label above it.** It was the
+  label above it first, and that was wrong twice over: floating in the gap
+  between two cards it belongs to neither, and to hold its ground while
+  pinned it needed an opaque background, which drew a band straight across
+  the rows passing under it. On the card it heads the thing it names, a
+  divider does the separating the gap was failing to do, and what stays put
+  while you scroll is the card's own top edge. It's drawn by `CardRowSurface`
+  at `.first`, so the shape, the fill, the divider and the margin are the
+  ones every other row uses.
+
+  **A card's padding is square.** The same measure on all four sides —
+  `cardTilePadding`, whether the content is a row, a tile or a paragraph. A
+  row with more padding at the sides than above and below reads as squeezed
+  between the card's edges rather than sitting inside it.
 
   Three things follow, and the third is what forced it:
 
