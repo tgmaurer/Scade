@@ -16,8 +16,7 @@ struct CardTile: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .padding(.horizontal, ScadeDesign.cardContentPadding)
-            .padding(.vertical, ScadeDesign.cardTilePadding)
+            .padding(ScadeDesign.cardTilePadding)
             // Fills its grid cell. A row of tiles is as tall as the tallest
             // one in it, and without this a shorter tile draws its card at
             // its own height and floats in the space left over.

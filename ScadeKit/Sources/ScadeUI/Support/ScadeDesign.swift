@@ -83,12 +83,11 @@ nonisolated enum ScadeDesign {
 
     /// How far a card holds its content off its left and right edges.
     ///
-    /// Wider than `cardTilePadding`, which stays what it is above and below:
-    /// a card is much wider than it is tall, so the same measure on all four
-    /// sides doesn't *look* the same — the sides read as tight while the top
-    /// and bottom read as generous. This is the number that makes them look
-    /// alike, not the number that makes them equal.
-    static let cardContentPadding: Double = 20
+    /// A little wider than the row padding above and below it, and no more
+    /// than that: 20 was tried and is too much. A card is much wider than it
+    /// is tall, so the sides need a touch more than the top and bottom to
+    /// look like the same amount of room — but only a touch.
+    static let cardContentPadding: Double = 16
 
     /// Between tiles in a card grid, across and down.
     ///
@@ -122,10 +121,8 @@ nonisolated enum ScadeDesign {
     ///
     /// More than `rowVerticalPadding`, because a card row is on its own: a
     /// `List` row adds a few points of its own around whatever it's given,
-    /// and a card doesn't. Matched to what the dashboard's rows measured
-    /// while they were still `List` rows — losing those points is what made
-    /// them look cramped the moment Home stopped being one.
-    static let cardRowVerticalPadding: Double = 10
+    /// and a card doesn't.
+    static let cardRowVerticalPadding: Double = 8
 
     /// Gap between the distinct parts of a row — name, content, trailing
     /// value. Wider than stack spacing, because these are separate columns

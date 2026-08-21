@@ -183,10 +183,14 @@ says which section owns the fix.
       useful as an answer to "what am I looking at". §2.4.
 - [x] ~~**Cards were tight at the sides.**~~ Content sat 14pt from a card's
       left and right edges, which reads as cramped next to the room above and
-      below it. 20pt now, at the sides only — see §2.5 for why the two
-      measures shouldn't match. *A first attempt squared them instead, at
-      14pt all round, and also moved the section title onto the card; both
-      were reverted.*
+      below it. 16pt now, at the sides only, and the rows lost 2pt above and
+      below. The grid tiles keep the single measure they always had. *Two
+      earlier attempts were reverted: 14pt squared on all four sides, then
+      20pt at the sides, which is too much.* §2.5.
+- [x] ~~**Section titles are gone.**~~ "Semester 4", "Description",
+      "Subjects", "Grades" — all removed, and with them the pinning that had
+      just been restored. What separates one card from the next is the gap
+      between them. §2.5.
 - [x] ~~**The educations list wasted a wide window and separated nothing.**~~
       One column of plain text in a window three columns wide, with the
       system's own row separator drawn between records in place of any
@@ -704,32 +708,33 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   `List` on macOS now except the sidebar**, which is one — `List(selection:)`
   is how a `NavigationSplitView` learns its detail column should change.
 
-  **Section headers stick, and that dictates the shape of everything above
-  them.** A `List` pins its section headers for a reason: "Semester 4"
-  scrolling away leaves the rows it labels unlabelled. Replacing a `List` lost
-  that, and getting it back costs more than a modifier:
+  **Each card carries its own margins**, rather than the stack padding them
+  all — which keeps the margin in one place whether a card is first, last or
+  alone.
 
-  - The scroll view is a `LazyVStack(pinnedViews: .sectionHeaders)`
-    (`DetailScroll`). Pinning is a lazy-stack feature; a plain `VStack` has
-    no such thing.
-  - **A lazy stack pins only a `Section` it can see.** A `Section` wrapped
-    inside a custom `View` is invisible to it and silently doesn't pin —
-    built that way first, and nothing stuck. So `DetailSection` is a
-    *function* returning a `Section`, and anything assembling sections is a
-    `@ViewBuilder` too, never a `View` struct. Only the outermost layer is
-    subject to this; the rows inside a section are ordinary views.
-  - **Each section carries its own margins**, rather than the stack padding
-    them all. A pinned header has to paint the full width of the scroll view,
-    and a header inset by the window margin leaves the content scrolling
-    visibly through the gaps either side of it.
+  *Sticky headers were built and then removed with the titles.* What they
+  cost, recorded in case they ever come back: pinning is a `LazyVStack`
+  feature, and **a lazy stack pins only a `Section` it can see** — one
+  wrapped inside a custom `View` is invisible to it and silently doesn't
+  pin, which is how the first attempt looked finished and did nothing.
 
-  **A card's sides are padded more than its top and bottom, on purpose.**
-  20pt at the sides, 14 above and below a tile's content, 10 above and below
-  a row's. A card is far wider than it is tall, so the same measure on all
-  four sides doesn't *look* the same — the sides read as tight while the top
-  and bottom read as generous. Equal numbers were tried and reverted; these
-  are the numbers that look alike. The internal divider is inset to match the
-  content, so the line starts and ends where the text does.
+  **A card's sides are padded a little more than its top and bottom, on
+  purpose.** 16pt at the sides; 14 above and below a block of text, 8 above
+  and below a row. A card is far wider than it is tall, so the same measure
+  on all four sides doesn't *look* the same — but the difference is a touch,
+  not a step: equal-at-14 and 20-at-the-sides were both tried and both
+  reverted. The internal divider is inset to match the content, so the line
+  starts and ends where the text does. Grid tiles are the exception and keep
+  one measure all round.
+
+  **A card has no title.** "Semester 4" over the dashboard's cards,
+  "Description" and "Subjects" over the detail screens' — all removed. A
+  label in the gap above a card is a thin line of small grey text belonging
+  to neither the card above nor the one below; the gap alone separates them
+  better than the gap plus a label did. **Nothing pins**, either: pinning
+  existed to keep those labels in view, and there is nothing left to keep.
+  *The cost is on the dashboard, where the semester a card belongs to is no
+  longer written anywhere on it.*
 
   Three things follow, and the third is what forced it:
 
