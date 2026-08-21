@@ -156,6 +156,31 @@ says which section owns the fix.
       one string, no API separating them — so the prefix was paid for twice
       on screen to solve a problem that wasn't there. Closed as won't-do, not
       as done. §2.2.
+- [x] ~~**Card rows lost height when Home stopped being a `List`.**~~ A
+      `List` row adds a few points of its own around whatever it's given and
+      a card row doesn't, so moving the padding out to the container took 8pt
+      off every dashboard row. `cardRowVerticalPadding` puts it back, and the
+      detail screens — built as cards from the start, so short by the same
+      amount all along — get it too.
+- [x] ~~**Section headers stopped sticking.**~~ A regression from the same
+      change: a `List` pins its section headers and a `VStack` has nothing to
+      pin. `DetailScroll` is a `LazyVStack(pinnedViews: .sectionHeaders)`, and
+      making it work forced a shape on everything above it — see §2.5.
+- [x] ~~**A form's free text began in the middle of the sheet.**~~ Fixing the
+      invisible space moved the text from the trailing edge to the leading
+      edge of a field that `LabeledContent` had already placed halfway across
+      the row, so a name started in the middle with nothing in front of it.
+      A label column puts it back where a form's text belongs: just after the
+      word naming it, in the same place on every row. §2.4.
+- [x] ~~**A whole-number field accepted letters.**~~ `TextField(value:format:)`
+      lets anything be typed and simply fails to parse it, so "abc" sat in a
+      semester field looking like an answer until the form was saved and
+      reverted it. `IntegerField` drops everything but ASCII digits as they
+      arrive, so there is no invalid state to explain.
+- [x] ~~**A list didn't say how many things were in it.**~~ The three
+      top-level lists carry the count as a navigation subtitle, following the
+      search and the filters rather than the database — the number is only
+      useful as an answer to "what am I looking at". §2.4.
 - [x] ~~**The educations list wasted a wide window and separated nothing.**~~
       One column of plain text in a window three columns wide, with the
       system's own row separator drawn between records in place of any
@@ -406,7 +431,7 @@ dead weight on a phone, revisit this then, with usage as evidence.
   copies is how a detail screen goes missing on one tab only.
 - Tab selection is shell state. Keep it to *which tab*, per the state rule in
   §1.4 — it must not become a second copy of screen state.
-- `⌘1`–`⌘5` in §1.1 now map to tab selection rather than sidebar selection.
+- `⌘1`–`⌘4` in §1.1 now map to tab selection rather than sidebar selection.
   Same shortcuts, different binding.
 - Accessibility identifiers do **not** survive uniformly, which matters
   because `ScadeUITests` drives the shell. macOS draws sidebar rows in AppKit
@@ -456,6 +481,25 @@ progress through the education, since `semester X of Y` is already in the
 model.
 
 ### 2.4 Hierarchy in rows
+
+**A list says how many things are in it.** The three top-level lists carry
+the count as a navigation subtitle — "128 grades" under "Grades". It follows
+the search field and the filter menus rather than the database, because the
+number is only useful as an answer to *what am I looking at*; a total that
+ignores the filter answers a question nobody asked. Nothing is claimed before
+the first snapshot arrives (§2.7).
+
+**A form's free text reads from the left, its numbers from the right.**
+macOS's grouped `Form` right-aligns a labelled field's content, which is
+correct for a figure and wrong for a name — and on a name it hides a typed
+space entirely (§0.1). Free text gets a label column and leading alignment
+(`FormTextField`); numbers keep `LabeledContent` and the trailing edge, which
+is the whole point of a column of figures.
+
+**A field that takes a whole number takes nothing else.** Not "accepts and
+then rejects": `IntegerField` drops everything but ASCII digits as they
+arrive, so the field never holds a value the form will later refuse.
+
 
 Each list row currently gives near-equal weight to every field. Decide, per
 entity, what the eye should land on first:
@@ -653,6 +697,25 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   `ScrollView` of cards as everywhere else on macOS. **Nothing in the app is a
   `List` on macOS now except the sidebar**, which is one — `List(selection:)`
   is how a `NavigationSplitView` learns its detail column should change.
+
+  **Section headers stick, and that dictates the shape of everything above
+  them.** A `List` pins its section headers for a reason: "Semester 4"
+  scrolling away leaves the rows it labels unlabelled. Replacing a `List` lost
+  that, and getting it back costs more than a modifier:
+
+  - The scroll view is a `LazyVStack(pinnedViews: .sectionHeaders)`
+    (`DetailScroll`). Pinning is a lazy-stack feature; a plain `VStack` has
+    no such thing.
+  - **A lazy stack pins only a `Section` it can see.** A `Section` wrapped
+    inside a custom `View` is invisible to it and silently doesn't pin —
+    built that way first, and nothing stuck. So `DetailSection` is a
+    *function* returning a `Section`, and anything assembling sections is a
+    `@ViewBuilder` too, never a `View` struct. Only the outermost layer is
+    subject to this; the rows inside a section are ordinary views.
+  - **Each section carries its own margins**, rather than the stack padding
+    them all. A pinned header has to paint the full width of the scroll view,
+    and a header inset by the window margin leaves the content scrolling
+    visibly through the gaps either side of it.
 
   Three things follow, and the third is what forced it:
 
