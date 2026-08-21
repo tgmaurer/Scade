@@ -15,14 +15,20 @@ struct EducationDetailScreen: View {
     var body: some View {
         @Bindable var model = model
 
-        List {
-            if let summary = model.summary {
-                EducationSummarySection(summary: summary, average: model.average)
+        ScrollView {
+            VStack(alignment: .leading, spacing: ScadeDesign.contentMargin) {
+                if let summary = model.summary {
+                    EducationSummarySection(summary: summary, average: model.average)
 
-                subjects(of: summary)
+                    subjects(of: summary)
+                }
             }
+            // On the content, not the scroll view: padding the scroll view
+            // shrinks its frame and takes the scroller with it, leaving the
+            // scrollbar short of the window edge (`CardGrid` has the same
+            // note).
+            .padding(ScadeDesign.contentMargin)
         }
-        .groupedListStyle()
         .accessibilityIdentifier(AccessibilityID.Education.detail)
         .navigationTitle(model.summary?.education.name ?? education.name)
         .toolbar {
@@ -85,30 +91,27 @@ struct EducationDetailScreen: View {
     /// the first kind.
     @ViewBuilder
     private func subjects(of summary: EducationSummary) -> some View {
-        Section {
+        DetailSection(title: "Subjects") {
             if summary.subjects.isEmpty {
-                Text("No subjects yet.")
-                    .foregroundStyle(.secondary)
-                    .cardRow(.only, highlightsOnHover: false)
+                DetailSectionText {
+                    Text("No subjects yet.")
+                        .foregroundStyle(.secondary)
+                }
             } else {
                 ForEach(summary.subjects.enumerated(), id: \.element.id) { index, subjectGrades in
-                    NavigationLink(value: subjectGrades.subject) {
-                        EducationSubjectRowView(
-                            subjectGrades: subjectGrades,
-                            average: GradeCalculator.subjectAverage(of: subjectGrades)
-                        )
+                    DetailCardRow(
+                        position: CardRowPosition(index: index, count: summary.subjects.count)
+                    ) {
+                        CardRowLink(destination: subjectGrades.subject) {
+                            EducationSubjectRowView(
+                                subjectGrades: subjectGrades,
+                                average: GradeCalculator.subjectAverage(of: subjectGrades)
+                            )
+                        }
                     }
-                    .cardRow(CardRowPosition(index: index, count: summary.subjects.count))
                 }
             }
-        } header: {
-            Text("Subjects")
-                .font(ScadeDesign.rowSecondary)
-                .bold()
-                .textCase(nil)
-                .cardSectionHeader()
         }
-        .cardSection()
     }
 
     private func startEditing() {

@@ -23,14 +23,7 @@ struct CardRow: ViewModifier {
 
     func body(content: Content) -> some View {
         #if os(macOS)
-        content
-            // The window margin, applied here rather than to the list — see
-            // `groupedListStyle`. `CardRowSurface` insets the card behind it
-            // by the same amount, so the two edges stay parallel.
-            .padding(.horizontal, ScadeDesign.contentMargin)
-            // Without this only the text is hoverable, so the highlight
-            // flickers as the pointer crosses the gaps between columns.
-            .contentShape(.rect)
+        hoverable(content)
             .onHover { isHovering = highlightsOnHover && $0 }
             // Every system separator is off, and the card draws its own
             // instead. The list's are the "too many horizontal lines" problem
@@ -48,5 +41,29 @@ struct CardRow: ViewModifier {
             .listRowSeparator(position.hasRowBelow ? .visible : .hidden)
             .listSectionSeparator(.hidden)
         #endif
+    }
+
+    /// The row, at the window margin, and hit-testable as a whole *only*
+    /// where it answers the pointer.
+    ///
+    /// The margin is applied here rather than to the list — see
+    /// `groupedListStyle`. `CardRowSurface` insets the card behind it by the
+    /// same amount, so the two edges stay parallel.
+    ///
+    /// `contentShape` is what stops the hover highlight flickering as the
+    /// pointer crosses the gaps between columns. It is a hit-test shape as
+    /// well, though, so on a card that doesn't hover it buys nothing and
+    /// costs the drag that selects text — which is what left
+    /// `.textSelection(.enabled)` on the education detail's header card
+    /// doing nothing at all.
+    @ViewBuilder
+    private func hoverable(_ content: Content) -> some View {
+        let inset = content.padding(.horizontal, ScadeDesign.contentMargin)
+
+        if highlightsOnHover {
+            inset.contentShape(.rect)
+        } else {
+            inset
+        }
     }
 }

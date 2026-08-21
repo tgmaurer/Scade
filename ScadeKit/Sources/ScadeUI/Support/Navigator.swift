@@ -11,9 +11,13 @@ import SwiftUI
 /// row survives it; several do not.
 ///
 /// So those controls are `Button`s, which a `List` leaves alone, and this is
-/// how a button reaches the stack it sits in. The three flat lists still use
-/// `NavigationLink` — there the whole row is the link, which is the case
-/// `List` handles well.
+/// how a button reaches the stack it sits in. The three flat list screens use
+/// `NavigationLink` inside their grids, where a tile *is* the link and no
+/// `List` is involved; a card row on a detail screen goes through here as
+/// well, for the reason `CardRowLink` records.
+///
+/// **A pushed screen has to be handed this explicitly** — it does not inherit
+/// it. See `SectionStack.navigable`.
 ///
 /// Destinations are still registered with `navigationDestination(for:)` and
 /// still matched by type, so nothing about how a screen is reached changes.

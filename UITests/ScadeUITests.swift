@@ -228,6 +228,46 @@ final class ScadeUITests: XCTestCase {
         )
     }
 
+    /// A subject opens from the education that holds it — a push *from* a
+    /// pushed screen, which is a different thing from a push from a root.
+    ///
+    /// What it catches: `Navigator` did not reach a pushed screen at all.
+    /// Every earlier caller was on Home, which is a stack's *root*; from a
+    /// detail screen the button ran its action and pushed nothing, because
+    /// `navigate` was still the do-nothing default. `SectionStack` now hands
+    /// each destination its own — verified by removing that and watching this
+    /// fail.
+    ///
+    /// What it does not catch, said plainly: the row could go back to being a
+    /// `NavigationLink` and this would still pass. That change navigates
+    /// perfectly well and merely looks wrong — macOS draws a link row's
+    /// pressed state across the whole row, which on an inset card lights a
+    /// strip either side of it (`CardRowLink`). No test in this suite sees
+    /// colour.
+    func testTappingASubjectOnItsEducationOpensIt() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Parent Course")
+
+        openSection(ID.subjectsSection)
+        createSubject(named: "Nested Subject")
+
+        openSection(ID.educationsSection)
+        rowMentioning("Parent Course").tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.educationDetail)
+                .firstMatch
+                .waitForExistence(timeout: 5)
+        )
+
+        rowMentioning("Nested Subject").tap()
+
+        XCTAssertTrue(
+            subjectDetail.waitForExistence(timeout: 5),
+            "Clicking a subject on its education should open the subject."
+        )
+    }
+
     /// Switching section works from inside a section, not just at its root.
     ///
     /// A `NavigationStack`'s path outlives a change of its root, so the macOS

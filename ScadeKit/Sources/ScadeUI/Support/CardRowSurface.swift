@@ -10,6 +10,14 @@ struct CardRowSurface: View {
     let position: CardRowPosition
     let isHovering: Bool
 
+    /// How far the card is held off the edges of whatever draws it.
+    ///
+    /// A `List` row background spans the full width of the list, so there the
+    /// margin has to live here — see below. A detail screen lays its cards out
+    /// itself and pads the stack, so it passes zero and the two don't apply
+    /// twice.
+    var margin: Double = ScadeDesign.contentMargin
+
     var body: some View {
         shape
             .fill(.background.secondary)
@@ -22,7 +30,7 @@ struct CardRowSurface: View {
             // A row background spans the full width of the list, and the list
             // is no longer inset — so the card would run into the window edge
             // without this. Matches the row content's own margin.
-            .padding(.horizontal, ScadeDesign.contentMargin)
+            .padding(.horizontal, margin)
             .animation(.easeOut(duration: ScadeDesign.hoverDuration), value: isHovering)
     }
 

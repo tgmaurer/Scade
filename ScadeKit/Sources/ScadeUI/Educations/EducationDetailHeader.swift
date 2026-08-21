@@ -103,6 +103,15 @@ struct EducationDetailHeader: View {
             .foregroundStyle(.secondary)
         }
         .padding(.vertical, ScadeDesign.iconTextSpacing)
+        // Every fact on this card is one you might want out of the app — an
+        // institution's full name into a form, a date into a calendar, the
+        // average into a message. Safe to enable here and not on the subject
+        // rows below: this card is inert, while a row is a link, and a drag
+        // that selects text is a drag that doesn't open anything (§2.8).
+        //
+        // Only works because the screen is no longer a `List` — see
+        // `DetailSection`.
+        .textSelection(.enabled)
     }}
 
 #Preview {

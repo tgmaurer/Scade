@@ -19,39 +19,36 @@ struct EducationSummarySection: View {
     }
 
     var body: some View {
-        Section {
-            EducationDetailHeader(summary: summary, average: average)
-                // Figures, not a way through to anything — nothing on this
-                // card is clickable, so nothing on it should light up (§2.8).
-                .cardRow(.only, highlightsOnHover: false)
+        DetailSection {
+            DetailSectionText {
+                EducationDetailHeader(summary: summary, average: average)
+            }
         }
-        .cardSection()
 
         if let details {
             // A card of its own rather than a last paragraph of the one
             // above. A description runs to 2500 characters, which would
             // swamp the identity it was meant to qualify.
-            Section {
-                Text(details)
-                    .cardRow(.only, highlightsOnHover: false)
-            } header: {
-                Text("Description")
-                    .font(ScadeDesign.rowSecondary)
-                    .bold()
-                    .textCase(nil)
-                    .cardSectionHeader()
+            DetailSection(title: "Description") {
+                DetailSectionText {
+                    Text(details)
+                        // The longest free text the app holds, and the one
+                        // most likely to be wanted elsewhere.
+                        .textSelection(.enabled)
+                }
             }
-            .cardSection()
         }
     }
 }
 
 #Preview {
-    List {
-        EducationSummarySection(
-            summary: EducationSummary(education: PreviewData.education(), subjects: []),
-            average: 5.25
-        )
+    ScrollView {
+        VStack(alignment: .leading, spacing: ScadeDesign.contentMargin) {
+            EducationSummarySection(
+                summary: EducationSummary(education: PreviewData.education(), subjects: []),
+                average: 5.25
+            )
+        }
+        .padding(ScadeDesign.contentMargin)
     }
-    .groupedListStyle()
 }

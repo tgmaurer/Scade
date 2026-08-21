@@ -72,7 +72,10 @@ says which section owns the fix.
       same size, and the layout is a stack of ruled rows. They need the §2.4
       ladder and the §2.5 card treatment, which so far only Home has.
       *Education detail done (2026-08-21) — see §2.4's "a detail screen is
-      not a table of its fields". Subject and grade detail outstanding.*
+      not a table of its fields" and §2.5's "a detail screen is a document".
+      Subject and grade detail outstanding, and both inherit the same
+      structure: `ScrollView` + `DetailSection`, selectable identity card,
+      `CardRowLink` for any row that navigates.*
 - [x] ~~**The grade list needs separation**~~ — it was one undifferentiated
       run of rows, and it's now a grid of tiles, so each grade is its own
       object on its own surface. *Date sections were the fix proposed here
@@ -95,9 +98,20 @@ says which section owns the fix.
       row's pressed state as an accent fill across the whole row, while the
       card behind it is inset by the window margin — so pressing lit two
       accent strips either side of the card and nothing under it. Any full-row
-      `NavigationLink` on a card has this; the two grids avoid it by
-      construction, since a plain button in a grid has no such presentation to
-      give up. §2.8.
+      `NavigationLink` on a card has this; the grids avoid it by construction,
+      since a plain button in a grid has no such presentation to give up.
+      §2.8.
+
+      *Struck through too early (2026-08-11), and it came back on the
+      education detail: "the grids avoid it" was true and "it is fixed" was
+      not, because a card of link rows was still reachable — a detail
+      screen's sub-list is exactly that. Two things were also **wrong** in
+      the note as first written: `.buttonStyle(.plain)` does not take the
+      fill away (it belongs to the row, not to the label inside it), and the
+      earlier subjects-list "fix" that claimed it did was never doing
+      anything — the grid is what fixed that screen. The fill is now avoided
+      the only way that works: the row is a `Button`, not a link
+      (`CardRowLink`).*
 - [x] ~~**The subjects list spent four lines saying two lines' worth.**~~ The
       institution was printed in full on every row — it belongs to the
       education, not the subject, and repeating "gibb, Gewerblich Industrielle
@@ -509,6 +523,32 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   The distinction that matters is **one card of many rows** versus **many
   cards of one row each**. The first is a list with a surface under it; the
   second is a grid, and needs the cardinality above to earn it.
+
+  **A detail screen is a document, and stops being a `List` altogether**
+  (decided 2026-08-21, building the education detail). Home stays one — its
+  quick-add is a swipe on iPhone and `.swipeActions` is `List`-only, which is
+  what put it there. A detail screen has none of that: nothing to swipe,
+  nothing to select, nothing to reorder. It is a `ScrollView` of cards, drawn
+  by `DetailSection` and `DetailCardRow` from the same `CardRowSurface` the
+  `List` rows use, so there is one card in the app and not two that nearly
+  match.
+
+  Three things follow, and the third is what forced it:
+
+  - The window margin moves back to where it belongs. `groupedListStyle`
+    exists to work around a `List` refusing `contentMargins`; a `ScrollView`
+    takes padding on its content and keeps its scroller on the window edge.
+  - The pressed-fill bug cannot occur, because there is no row presentation
+    to inherit — the same reason the grids escaped it.
+  - **A macOS `List` swallows the drag that selects text.** Every `Text` in
+    one is inert however `.textSelection(.enabled)` is applied — on the
+    `Text`, on the row, and on the list itself; all three were tried and
+    measured, and a `contentShape` on the row was ruled out as the cause
+    first. A detail screen is exactly where selecting text matters: an
+    institution's full name, a date, an average, a description worth pasting
+    elsewhere. **The identity card and the description are selectable; the
+    subject rows are not** — a row is a link, and a drag that selects text is
+    a drag that doesn't open anything.
 
   **A detail screen's sub-list is the first kind, and the grids don't reach
   it** (decided 2026-08-21). All three top-level screens are grids now, so
