@@ -14,57 +14,36 @@ struct GradeDetailScreen: View {
     var body: some View {
         @Bindable var model = model
 
-        List {
-            if let item = model.item {
-                Section {
-                    LabeledContent("Grade") {
-                        GradeValueLabel(item.grade.value)
+        ScrollView {
+            VStack(alignment: .leading, spacing: ScadeDesign.contentMargin) {
+                if let item = model.item {
+                    DetailSection {
+                        DetailSectionText {
+                            GradeDetailHeader(item: item)
+                        }
                     }
 
-                    LabeledContent("Weight") {
-                        WeightLabel(item.grade.weight)
-                    }
-
-                    LabeledContent("Date") {
-                        Text(
-                            item.grade.date.startOfDay(),
-                            format: .dateTime.day().month().year()
-                        )
-                    }
-                }
-
-                Section("Subject") {
-                    LabeledContent("Name", value: item.subject.name)
-
-                    LabeledContent("Semester") {
-                        Text("\(item.subject.semester.formatted(.number.grouping(.never))) of \(item.education.semesters.formatted(.number.grouping(.never)))")
-                    }
-
-                    LabeledContent("Status") {
-                        CompletionBadge(isCompleted: item.subject.completed)
-                    }
-                }
-
-                Section("Education") {
-                    LabeledContent("Name", value: item.education.name)
-
-                    if let institution = item.education.institution, institution.isEmpty == false {
-                        LabeledContent("Institution", value: institution)
-                    }
-
-                    LabeledContent("Status") {
-                        CompletionBadge(isCompleted: item.education.completed)
-                    }
-                }
-
-                if let details = item.grade.description, details.isEmpty == false {
-                    Section("Description") {
-                        Text(details)
+                    if let details = item.grade.description, details.isEmpty == false {
+                        // A card of its own, in full — the one place the
+                        // whole description lives. Every list and grid holds
+                        // it to a line (§2.4).
+                        DetailSection(title: "Description") {
+                            DetailSectionText {
+                                Text(details)
+                                    .textSelection(.enabled)
+                            }
+                        }
                     }
                 }
             }
+            // On the content, not the scroll view — see `CardGrid`.
+            .padding(ScadeDesign.contentMargin)
         }
-        .navigationTitle("Grade")
+        // The most specific thing that names it, the same rule the grades
+        // list heads a tile with: what the grade was for, or failing that
+        // the day it happened. It read "Grade" on every one of them.
+        .navigationTitle(title)
+        .accessibilityIdentifier(AccessibilityID.Grade.detail)
         .toolbar {
             ToolbarItem {
                 Button("Edit", systemImage: "pencil", action: startEditing)
@@ -102,6 +81,15 @@ struct GradeDetailScreen: View {
                 dismiss()
             }
         }
+    }
+
+    private var title: String {
+        if let details = model.item?.grade.description, details.isEmpty == false {
+            return details
+        }
+
+        let date = model.item?.grade.date ?? grade.date
+        return date.startOfDay().formatted(.dateTime.day().month().year())
     }
 
     private func startEditing() {

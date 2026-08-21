@@ -55,6 +55,7 @@ final class ScadeUITests: XCTestCase {
 
         static let newGrade = Control("grade.new", "New Grade")
         static let gradeValue = "grade.form.value"
+        static let gradeDetail = "grade.detail"
 
         static let settingsSection = Control("section.settings", "Settings")
         static let openSettings = Control("settings.open", "Settings")
@@ -292,6 +293,66 @@ final class ScadeUITests: XCTestCase {
         )
         link.tap()
 
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.educationDetail)
+                .firstMatch
+                .waitForExistence(timeout: 5),
+            "The education link should open the education."
+        )
+    }
+
+    /// A grade links back up to both of its parents (§0.1, "detail screens
+    /// should link to their parents").
+    ///
+    /// The bottom of the chain and so the screen with the most to link back
+    /// to. Both are `DetailButton`s pushing through `Navigator`, from a
+    /// screen that is itself pushed — the case that did nothing at all until
+    /// `SectionStack` started handing pushed screens their own navigator.
+    func testAGradeLinksToItsSubjectAndItsEducation() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Chain Course")
+
+        openSection(ID.subjectsSection)
+        createSubject(named: "Chain Subject")
+
+        openSection(ID.gradesSection)
+        tap(ID.newGrade)
+        replaceText("5", in: app.textFields[ID.gradeValue])
+        tap(ID.save)
+
+        rowMentioning("5.00").tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.gradeDetail)
+                .firstMatch
+                .waitForExistence(timeout: 5),
+            "Clicking a grade should open it."
+        )
+
+        let subjectLink = app.buttons["Chain Subject"]
+        XCTAssertTrue(subjectLink.waitForExistence(timeout: 5))
+        subjectLink.tap()
+        XCTAssertTrue(
+            subjectDetail.waitForExistence(timeout: 5),
+            "The subject link should open the subject."
+        )
+        // Belt and braces: the grade's own screen has to be gone. Asserting
+        // only that the subject's screen appeared once passed with the link
+        // doing nothing at all, which is worse than having no test.
+        XCTAssertFalse(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.gradeDetail)
+                .firstMatch
+                .exists,
+            "The subject link should have pushed a screen, not stayed put."
+        )
+
+        goBack()
+
+        let educationLink = app.buttons["Chain Course"]
+        XCTAssertTrue(educationLink.waitForExistence(timeout: 5))
+        educationLink.tap()
         XCTAssertTrue(
             app.descendants(matching: .any)
                 .matching(identifier: ID.educationDetail)

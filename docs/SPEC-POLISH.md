@@ -68,14 +68,13 @@ says which section owns the fix.
       is where it finally bites: a card as wide as the window puts a subject
       name at one end and its average at the other. Undecided — it reaches
       Home too, which is already approved as it stands.*
-- [ ] **Detail screens are the rawest part of the app.** Every field is the
-      same size, and the layout is a stack of ruled rows. They need the §2.4
-      ladder and the §2.5 card treatment, which so far only Home has.
-      *Education and subject detail done (2026-08-21) — see §2.4's "a detail
-      screen is not a table of its fields" and §2.5's "a detail screen is a
-      document". Grade detail outstanding, and inherits the same structure:
-      `ScrollView` + `DetailSection`, selectable identity card, `CardRowLink`
-      for any row that navigates, `DetailButton` for each parent.*
+- [x] ~~**Detail screens are the rawest part of the app.** Every field is the
+      same size, and the layout is a stack of ruled rows.~~ All three rebuilt
+      2026-08-21 on one structure: `ScrollView` + `DetailSection`, a
+      selectable identity card carrying the §2.4 ladder, `CardRowLink` for
+      any row that navigates, and a `DetailButton` for each parent. See
+      §2.4's "a detail screen is not a table of its fields" and §2.5's "a
+      detail screen is a document".
 - [x] ~~**The grade list needs separation**~~ — it was one undifferentiated
       run of rows, and it's now a grid of tiles, so each grade is its own
       object on its own surface. *Date sections were the fix proposed here
@@ -85,13 +84,13 @@ says which section owns the fix.
       phase commits to not making — so it stays open as
       [SPEC-BACKLOG](SPEC-BACKLOG.md) §4, where it is now the only half of
       this finding still outstanding. §2.5.
-- [ ] **Detail screens should link to their parents** — grade → subject →
+- [x] ~~**Detail screens should link to their parents** — grade → subject →
       education. The data is already on screen as text; it should be
-      navigable. §2.4. *Subject → education done (2026-08-21), as a
-      `DetailButton` on the identity card. Grade → subject/education waits
-      for the grade detail. This was impossible until the `Navigator` fix in
-      the commit before it: a pushed screen never received one, so the button
-      would have run its action and gone nowhere.*
+      navigable.~~ Done 2026-08-21, as `DetailButton`s on each identity card.
+      The whole chain is navigable now, and the grade — being the bottom of
+      it — links to both. This was impossible until the `Navigator` fix
+      earlier the same day: a pushed screen never received one, so the button
+      would have run its action and gone nowhere. §2.4.
 - [x] ~~**Hover on the three flat lists** is still whatever macOS gives a
       full-row `NavigationLink`.~~ Deliberately left until those screens were
       restyled rather than guessed at against a layout that was about to
@@ -475,6 +474,22 @@ identity. The rule that replaces them:
   wide as the window, and the same pin leaves a word at each end with a void
   between them — which is the rule in §2.5 about only the number going hard
   right, in the case that shows why it exists.
+
+**What heads a detail card is the field the record cannot be without.** An
+education and a subject have a name, so that is the heading and the
+navigation title repeats it. A grade has neither a name nor a required
+description, so its card is headed by the **date** — the one field every
+grade has, which cannot grow and cannot be missing, and which the row under a
+subject leads with too, so the record reads the same way in both places. Its
+navigation title is the more specific thing where there is one: the
+description, or failing that the date. It read "Grade" on every grade in the
+app.
+
+**Only what the screen is about.** The grade detail listed its subject's
+completion state and its education's institution — nine labelled rows across
+three sections, most of them facts about *other* records, each one press away
+on the record that owns it. A detail screen shows what the record is and
+links to the rest.
 
 **The parent record's own name is repeated from the navigation title, on
 purpose.** macOS draws that title small and in chrome, where it reads as the
