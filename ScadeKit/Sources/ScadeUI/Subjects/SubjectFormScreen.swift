@@ -18,8 +18,11 @@ struct SubjectFormScreen: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Name", text: $model.name)
-                        .accessibilityIdentifier(AccessibilityID.Subject.name)
+                    FormTextField(
+                        title: "Name",
+                        text: $model.name,
+                        identifier: AccessibilityID.Subject.name
+                    )
                     FieldErrorLabel(model.message(for: .name))
 
                     if model.mode.locksEducation {

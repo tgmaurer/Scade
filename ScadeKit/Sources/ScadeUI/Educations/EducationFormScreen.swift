@@ -18,12 +18,18 @@ struct EducationFormScreen: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Name", text: $model.name)
-                        .accessibilityIdentifier(AccessibilityID.Education.name)
+                    FormTextField(
+                        title: "Name",
+                        text: $model.name,
+                        identifier: AccessibilityID.Education.name
+                    )
                     FieldErrorLabel(model.message(for: .name))
 
-                    TextField("Institution", text: $model.institution)
-                        .accessibilityIdentifier(AccessibilityID.Education.institution)
+                    FormTextField(
+                        title: "Institution",
+                        text: $model.institution,
+                        identifier: AccessibilityID.Education.institution
+                    )
                 }
 
                 Section {
