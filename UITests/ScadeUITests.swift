@@ -268,6 +268,39 @@ final class ScadeUITests: XCTestCase {
         )
     }
 
+    /// A subject links back up to the education that holds it (§0.1,
+    /// "detail screens should link to their parents").
+    ///
+    /// The link is a `DetailButton`, which navigates through `Navigator`
+    /// rather than a `NavigationLink` — the same mechanism as a card row, and
+    /// the same one that pushed nothing at all until `SectionStack` started
+    /// handing pushed screens their own navigator.
+    func testTheEducationLinkOnASubjectOpensIt() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Linkable Course")
+
+        openSection(ID.subjectsSection)
+        createSubject(named: "Linking Subject")
+
+        rowMentioning("Linking Subject").tap()
+        XCTAssertTrue(subjectDetail.waitForExistence(timeout: 5))
+
+        let link = app.buttons["Linkable Course"]
+        XCTAssertTrue(
+            link.waitForExistence(timeout: 5),
+            "The subject detail should name its education as a button."
+        )
+        link.tap()
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.educationDetail)
+                .firstMatch
+                .waitForExistence(timeout: 5),
+            "The education link should open the education."
+        )
+    }
+
     /// Switching section works from inside a section, not just at its root.
     ///
     /// A `NavigationStack`'s path outlives a change of its root, so the macOS

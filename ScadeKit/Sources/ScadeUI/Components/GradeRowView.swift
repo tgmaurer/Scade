@@ -21,9 +21,12 @@ import SwiftUI
 /// ever printed twice.
 ///
 /// Where nothing at all names the grade — no description, and the subject
-/// already known from the screen around it — the value takes the lead instead
-/// of anchoring the right of an otherwise empty line. That's §2.4's "value
-/// dominant" in the one case where the value really is all there is.
+/// already known from the screen around it — the heading goes and the value
+/// drops onto the date line, still anchored right. It used to *lead* that
+/// line instead, which read well on a tile standing by itself and badly the
+/// moment these were stacked in a column on the subject detail: three values
+/// hard left, one hard right, and no column at all. The number keeps its edge
+/// whatever else the row has (§2.5).
 ///
 /// Carries no padding of its own — `cardTile` supplies it on macOS, the list
 /// row on iOS, and those two want different room.
@@ -97,9 +100,9 @@ struct GradeRowView: View {
         // Zero spacing; the `Spacer` below carries the gap itself, and stack
         // spacing either side of it would apply twice.
         VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: ScadeDesign.iconTextSpacing) {
-                HStack(alignment: .firstTextBaseline, spacing: ScadeDesign.rowSpacing) {
-                    if let heading {
+            if let heading {
+                VStack(alignment: .leading, spacing: ScadeDesign.iconTextSpacing) {
+                    HStack(alignment: .firstTextBaseline, spacing: ScadeDesign.rowSpacing) {
                         Text(heading)
                             .font(ScadeDesign.rowTitle)
                             // Two lines, like the names on the other two
@@ -111,39 +114,66 @@ struct GradeRowView: View {
                             .lineLimit(2)
 
                         Spacer(minLength: 0)
+
+                        value
                     }
 
-                    GradeValueLabel(item.grade.value)
-                        .font(ScadeDesign.value)
-                        .bold()
+                    contextLine
+                        .font(ScadeDesign.rowSecondary)
+                        .foregroundStyle(.secondary)
                 }
 
-                contextLine
-                    .font(ScadeDesign.rowSecondary)
-                    .foregroundStyle(.secondary)
+                // Takes whatever height the tallest tile in the row leaves
+                // over, so this block lands at the bottom of every tile
+                // rather than trailing off wherever its own text ran out.
+                // `minLength` is the gap where there's nothing spare — the
+                // iOS list row, and the tallest tile in any grid row.
+                Spacer(minLength: ScadeDesign.rowSpacing)
+
+                meta
+            } else {
+                // Nothing names this grade, so there is no heading line to
+                // put the value on and no second line worth leaving empty:
+                // the whole row is the date, the weight, and the number.
+                meta
             }
+        }
+    }
 
-            // Takes whatever height the tallest tile in the row leaves over,
-            // so this block lands at the bottom of every tile rather than
-            // trailing off wherever its own text ran out. `minLength` is the
-            // gap where there's nothing spare — the iOS list row, the rows
-            // under a subject, and the tallest tile in any grid row.
-            Spacer(minLength: ScadeDesign.rowSpacing)
+    private var value: some View {
+        GradeValueLabel(item.grade.value)
+            .font(ScadeDesign.value)
+            .bold()
+    }
 
-            HStack(alignment: .firstTextBaseline, spacing: ScadeDesign.rowSpacing) {
+    /// When it happened and what it counted for — and the value too, where
+    /// there was no heading line to carry it.
+    ///
+    /// The weight sits in the phrase rather than pinned opposite the date.
+    /// §2.5: only the number goes hard right. It was pinned, which is
+    /// invisible on a 300pt tile and leaves a word at each end of a row on a
+    /// detail card as wide as the window.
+    private var meta: some View {
+        HStack(alignment: .firstTextBaseline, spacing: ScadeDesign.rowSpacing) {
+            HStack(spacing: 0) {
                 Text(item.grade.date.startOfDay(), format: .dateTime.day().month().year())
-
-                Spacer(minLength: 0)
 
                 // Only when it isn't the default — see
                 // `WeightLabel.isMeaningful`. A list where every row read
                 // "100%" was the absence of weighting announcing itself.
                 if WeightLabel.isMeaningful(item.grade.weight) {
+                    Text(" · ")
                     WeightLabel(item.grade.weight)
                 }
             }
             .font(ScadeDesign.rowMeta)
             .foregroundStyle(.secondary)
+
+            Spacer(minLength: 0)
+
+            if heading == nil {
+                value
+            }
         }
     }
 }

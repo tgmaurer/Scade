@@ -17,7 +17,13 @@ struct DetailCardRow<Content: View>: View {
     var body: some View {
         content
             .frame(maxWidth: .infinity, alignment: .leading)
+            // Both, and here rather than in each row view: a row's content
+            // knows what it says, not what it sits in. `GradeRowView` is the
+            // case that proves it — the same view is a card tile on the
+            // grades grid, a `List` row on a phone, and a row of this card,
+            // and all three want different room.
             .padding(.horizontal, ScadeDesign.cardTilePadding)
+            .padding(.vertical, ScadeDesign.rowVerticalPadding)
             .background(
                 CardRowSurface(position: position, isHovering: isHovering, margin: 0)
             )

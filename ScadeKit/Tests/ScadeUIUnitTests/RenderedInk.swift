@@ -22,6 +22,26 @@ enum RenderedInk {
         height: Double,
         divisor: Int = 8
     ) throws -> Bool {
+        try hasInk(
+            of: content,
+            width: width,
+            height: height,
+            in: CGRect(x: 0, y: 1 - 1 / Double(divisor), width: 1, height: 1 / Double(divisor))
+        )
+    }
+
+    /// Whether anything is drawn inside a region of the render, given as
+    /// fractions of its width and height with the origin at the top left.
+    ///
+    /// Answers "where did this end up", which a height cannot: a value pinned
+    /// to the trailing edge and one sitting at the leading edge make a row of
+    /// exactly the same size.
+    static func hasInk(
+        of content: some View,
+        width: Double,
+        height: Double,
+        in region: CGRect
+    ) throws -> Bool {
         let renderer = ImageRenderer(content: content.frame(width: width, height: height))
         let image = try #require(renderer.cgImage)
 
@@ -45,10 +65,13 @@ enum RenderedInk {
             in: CGRect(x: 0, y: 0, width: Double(pixelWidth), height: Double(pixelHeight))
         )
 
-        let bandTop: Int = pixelHeight - pixelHeight / divisor
+        let left = max(0, Int(region.minX * Double(pixelWidth)))
+        let right = min(pixelWidth, Int(region.maxX * Double(pixelWidth)))
+        let top = max(0, Int(region.minY * Double(pixelHeight)))
+        let bottom = min(pixelHeight, Int(region.maxY * Double(pixelHeight)))
 
-        for y in bandTop..<pixelHeight {
-            for x in 0..<pixelWidth where pixels[(y * pixelWidth + x) * 4 + 3] > 0 {
+        for y in top..<bottom {
+            for x in left..<right where pixels[(y * pixelWidth + x) * 4 + 3] > 0 {
                 return true
             }
         }

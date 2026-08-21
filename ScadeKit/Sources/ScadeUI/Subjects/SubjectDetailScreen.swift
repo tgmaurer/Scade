@@ -15,34 +15,16 @@ struct SubjectDetailScreen: View {
     var body: some View {
         @Bindable var model = model
 
-        List {
-            if let summary = model.summary {
-                SubjectSummarySection(summary: summary, average: model.average)
+        ScrollView {
+            VStack(alignment: .leading, spacing: ScadeDesign.contentMargin) {
+                if let summary = model.summary {
+                    SubjectSummarySection(summary: summary, average: model.average)
 
-                Section("Grades") {
-                    if summary.grades.isEmpty {
-                        Text("No grades yet.")
-                            .foregroundStyle(.secondary)
-                    } else {
-                        ForEach(summary.grades) { grade in
-                            NavigationLink(value: grade) {
-                                GradeRowView(
-                                    item: GradeListItem(
-                                        grade: grade,
-                                        subject: summary.subject,
-                                        education: summary.education
-                                    ),
-                                    showsContext: false
-                                )
-                                // The row view carries no padding of its own
-                                // — a card tile supplies it on the grades
-                                // grid, and a list row has to supply its own.
-                                .padding(.vertical, ScadeDesign.rowVerticalPadding)
-                            }
-                        }
-                    }
+                    grades(of: summary)
                 }
             }
+            // On the content, not the scroll view — see `CardGrid`.
+            .padding(ScadeDesign.contentMargin)
         }
         .navigationTitle(model.summary?.subject.name ?? subject.name)
         .accessibilityIdentifier(AccessibilityID.Subject.detail)
@@ -93,6 +75,46 @@ struct SubjectDetailScreen: View {
         .onChange(of: model.wasDeleted) {
             if model.wasDeleted {
                 dismiss()
+            }
+        }
+    }
+
+    /// The subject's grades, as one card of many rows.
+    ///
+    /// A list, like the education detail's subjects and for the same reason:
+    /// this is one record's contents, read down a column while the header
+    /// above it stays in view. The top-level Grades screen is a grid, which
+    /// §2.5 records as an override taken on that screen alone — it does not
+    /// follow a grade wherever a grade appears.
+    ///
+    /// The rows show no parent: the screen around them already says which
+    /// subject and which education this is, which is what `showsContext`
+    /// exists to drop.
+    @ViewBuilder
+    private func grades(of summary: SubjectSummary) -> some View {
+        DetailSection(title: "Grades") {
+            if summary.grades.isEmpty {
+                DetailSectionText {
+                    Text("No grades yet.")
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                ForEach(summary.grades.enumerated(), id: \.element.id) { index, grade in
+                    DetailCardRow(
+                        position: CardRowPosition(index: index, count: summary.grades.count)
+                    ) {
+                        CardRowLink(destination: grade) {
+                            GradeRowView(
+                                item: GradeListItem(
+                                    grade: grade,
+                                    subject: summary.subject,
+                                    education: summary.education
+                                ),
+                                showsContext: false
+                            )
+                        }
+                    }
+                }
             }
         }
     }

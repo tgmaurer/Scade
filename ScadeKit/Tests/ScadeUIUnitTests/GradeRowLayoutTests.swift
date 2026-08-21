@@ -153,13 +153,37 @@ struct GradeRowLayoutTests {
         #expect(without < withContext)
     }
 
-    /// A grade with neither a description nor a context to name it still
-    /// renders: the value takes the lead rather than anchoring the right of
-    /// an empty line.
-    @Test func aGradeWithNothingToNameItStillRenders() throws {
+    /// A grade with neither a description nor a context to name it is one
+    /// line: the date and the value, with nothing above them.
+    @Test func aGradeWithNothingToNameItIsOneLine() throws {
         let bare = PreviewData.gradeItem(details: nil)
+        let named = PreviewData.gradeItem(details: "Schlussprüfung")
 
-        #expect(try height(bare, width: narrowest, showsContext: false) > 0)
+        #expect(
+            try height(bare, width: narrowest, showsContext: false)
+                < height(named, width: narrowest, showsContext: false)
+        )
+    }
+
+    /// And its value still sits at the trailing edge.
+    ///
+    /// The one thing a height cannot see, and the thing that was wrong: the
+    /// value used to *lead* that line, which reads fine on a tile standing
+    /// alone and badly in a column of grades under one subject — some values
+    /// hard left, some hard right, no column to run the eye down.
+    @Test func theValueKeepsTheTrailingEdgeWithNothingToNameIt() throws {
+        let bare = GradeRowView(item: PreviewData.gradeItem(details: nil), showsContext: false)
+        let natural = try height(PreviewData.gradeItem(details: nil), width: narrowest, showsContext: false)
+
+        #expect(
+            try RenderedInk.hasInk(
+                of: bare,
+                width: narrowest,
+                height: natural,
+                in: CGRect(x: 0.75, y: 0, width: 0.25, height: 1)
+            ),
+            "The value should be drawn in the trailing quarter of the row."
+        )
     }
 
     // MARK: - Bottom alignment

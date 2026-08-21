@@ -71,11 +71,11 @@ says which section owns the fix.
 - [ ] **Detail screens are the rawest part of the app.** Every field is the
       same size, and the layout is a stack of ruled rows. They need the §2.4
       ladder and the §2.5 card treatment, which so far only Home has.
-      *Education detail done (2026-08-21) — see §2.4's "a detail screen is
-      not a table of its fields" and §2.5's "a detail screen is a document".
-      Subject and grade detail outstanding, and both inherit the same
-      structure: `ScrollView` + `DetailSection`, selectable identity card,
-      `CardRowLink` for any row that navigates.*
+      *Education and subject detail done (2026-08-21) — see §2.4's "a detail
+      screen is not a table of its fields" and §2.5's "a detail screen is a
+      document". Grade detail outstanding, and inherits the same structure:
+      `ScrollView` + `DetailSection`, selectable identity card, `CardRowLink`
+      for any row that navigates, `DetailButton` for each parent.*
 - [x] ~~**The grade list needs separation**~~ — it was one undifferentiated
       run of rows, and it's now a grid of tiles, so each grade is its own
       object on its own surface. *Date sections were the fix proposed here
@@ -87,7 +87,11 @@ says which section owns the fix.
       this finding still outstanding. §2.5.
 - [ ] **Detail screens should link to their parents** — grade → subject →
       education. The data is already on screen as text; it should be
-      navigable. §2.4.
+      navigable. §2.4. *Subject → education done (2026-08-21), as a
+      `DetailButton` on the identity card. Grade → subject/education waits
+      for the grade detail. This was impossible until the `Navigator` fix in
+      the commit before it: a pushed screen never received one, so the button
+      would have run its action and gone nowhere.*
 - [x] ~~**Hover on the three flat lists** is still whatever macOS gives a
       full-row `NavigationLink`.~~ Deliberately left until those screens were
       restyled rather than guessed at against a layout that was about to
@@ -476,6 +480,15 @@ identity. The rule that replaces them:
 purpose.** macOS draws that title small and in chrome, where it reads as the
 window's label rather than the record's, and the institution and dates below
 need something to hang from.
+
+**A number keeps its edge whether or not the row has a name.** A grade under
+its subject often has no description to head it, and the value used to take
+the leading edge in that case — which reads well on a tile standing alone and
+badly the moment those rows are stacked in a column: some values hard left,
+some hard right, and no column to run the eye down. The value drops onto the
+date line instead, still at the trailing edge, and the row is one line rather
+than one line and an empty one. This is `.monospacedDigit()`'s argument again:
+what a column of numbers is *for* is comparing them without reading them.
 
 ### 2.5 Surfaces and separators
 

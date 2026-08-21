@@ -8,6 +8,9 @@ import SwiftUI
 /// to the right of each — the same "four lines saying two lines' worth" that
 /// §0.1 recorded against the subjects list.
 ///
+/// Carries no padding of its own — `DetailCardRow` supplies it, the same
+/// way `cardTile` does on the grids.
+///
 /// It also read "Semester 4 of 8" and "100%" on every row. The total is one
 /// fact about the education and it's in the header above; a weight of 1 is
 /// the absence of weighting announcing itself (`WeightLabel.isMeaningful`).
@@ -60,32 +63,33 @@ struct EducationSubjectRowView: View {
             .font(ScadeDesign.rowSecondary)
             .foregroundStyle(.secondary)
         }
-        .padding(.vertical, ScadeDesign.rowVerticalPadding)
     }
 }
 
 #Preview {
-    List {
-        EducationSubjectRowView(
-            subjectGrades: SubjectGrades(
-                subject: Subject(educationId: 1, name: "Analysis", semester: 2, weight: 1.5),
-                grades: [
-                    Grade(subjectId: 1, value: 5.5, date: .today()),
-                    Grade(subjectId: 1, value: 3.75, date: .today()),
-                ]
-            ),
-            average: 4.625
-        )
-        .cardRow(.first)
+    DetailSection(title: "Subjects") {
+        DetailCardRow(position: .first) {
+            EducationSubjectRowView(
+                subjectGrades: SubjectGrades(
+                    subject: Subject(educationId: 1, name: "Analysis", semester: 2, weight: 1.5),
+                    grades: [
+                        Grade(subjectId: 1, value: 5.5, date: .today()),
+                        Grade(subjectId: 1, value: 3.75, date: .today()),
+                    ]
+                ),
+                average: 4.625
+            )
+        }
 
-        EducationSubjectRowView(
-            subjectGrades: SubjectGrades(
-                subject: Subject(educationId: 1, name: "Datenbanken", semester: 3),
-                grades: []
-            ),
-            average: nil
-        )
-        .cardRow(.last)
+        DetailCardRow(position: .last) {
+            EducationSubjectRowView(
+                subjectGrades: SubjectGrades(
+                    subject: Subject(educationId: 1, name: "Datenbanken", semester: 3),
+                    grades: []
+                ),
+                average: nil
+            )
+        }
     }
-    .groupedListStyle()
+    .padding(ScadeDesign.contentMargin)
 }
