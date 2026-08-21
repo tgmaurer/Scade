@@ -63,14 +63,11 @@ enum Fixture {
         )
     }
 
-    /// A grade defaults to *having* a description, unlike the other two
-    /// fixtures: §3.4 requires one, so `nil` here would make every "this
-    /// grade is valid" assertion fail for a reason it wasn't testing.
     static func grade(
         subjectId: Int64,
         value: Double = 5.0,
         weight: Double = 1.0,
-        description: String? = "Schlussprüfung",
+        description: String? = nil,
         date: CalendarDate = .iso("2025-01-15")
     ) -> Grade {
         Grade(

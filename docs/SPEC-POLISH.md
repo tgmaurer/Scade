@@ -481,6 +481,29 @@ purpose.** macOS draws that title small and in chrome, where it reads as the
 window's label rather than the record's, and the institution and dates below
 need something to hang from.
 
+**How much of a description to show, and what to show when there is none**
+(decided 2026-08-21). A grade's description is optional and runs to 2500
+characters, so every place it appears needs an answer:
+
+- **One line wherever it appears in a list or a grid**, tail-truncated, with
+  a tooltip carrying the rest. One and not two, which is what the education
+  and subject tiles give their *names*: a name identifies a record and has to
+  be read whole, a description is a note. It also keeps every grade tile the
+  same height, which a grid wants.
+- **Full on the grade's own screen**, in a card of its own, selectable —
+  the same treatment the education and subject descriptions get.
+- **Nothing at all where there is none.** Not a hyphen, not an en-dash. That
+  is the old app's `Label: value` table idiom, where every cell has to be
+  filled; once the labels are gone (above) there is no cell, and a column of
+  dashes is louder than the nothing it reports. Rows are one line or two, and
+  varying row height is ordinary — a column of placeholders is not.
+- **Which means the row must not be built around it.** Under one subject the
+  date leads and the description hangs beneath as the note; on the grades
+  list, where the question is *which grade is this*, the description heads
+  the tile and falls back to the subject name. Heading both with the optional
+  field is what made a column of grades ragged — the date landed on the first
+  line for some rows and the second for others.
+
 **A number keeps its edge whether or not the row has a name.** A grade under
 its subject often has no description to head it, and the value used to take
 the leading edge in that case — which reads well on a tile standing alone and

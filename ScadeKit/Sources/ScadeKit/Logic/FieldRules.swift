@@ -24,23 +24,19 @@ enum FieldRules {
         return []
     }
 
-    /// At most `ValidationLimits.maximumDescriptionLength` characters, and
-    /// required where the record has nothing else to call itself.
+    /// Optional, and at most `ValidationLimits.maximumDescriptionLength`
+    /// characters.
     ///
-    /// `isRequired` is only true for a grade. An education and a subject have
-    /// a name, so a description there is genuinely an extra; a grade has no
-    /// name field, so this is the only thing that can say what it was for.
-    /// Whitespace-only counts as empty, the same rule `name` uses.
-    static func description(_ value: String?, isRequired: Bool = false) -> [ValidationError] {
-        let trimmed = (value ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+    /// Optional on a grade too, which was briefly not the case — see
+    /// [SPEC-BACKLOG](../../../docs/SPEC-BACKLOG.md) for why it was made
+    /// required and why that was undone.
+    static func description(_ value: String?) -> [ValidationError] {
+        guard let value else { return [] }
 
-        if trimmed.isEmpty {
-            return isRequired ? [.descriptionRequired] : []
-        }
-        if trimmed.count > ValidationLimits.maximumDescriptionLength {
-            return [.descriptionTooLong(maximum: ValidationLimits.maximumDescriptionLength)]
-        }
-        return []
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.count > ValidationLimits.maximumDescriptionLength else { return [] }
+
+        return [.descriptionTooLong(maximum: ValidationLimits.maximumDescriptionLength)]
     }
 
     /// Strictly positive — matching the `CHECK (weight > 0)` constraint on

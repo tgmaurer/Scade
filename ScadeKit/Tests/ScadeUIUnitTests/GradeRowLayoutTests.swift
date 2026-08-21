@@ -34,30 +34,31 @@ struct GradeRowLayoutTests {
 
     // MARK: - The heading
 
-    /// The description heads the tile, and wraps once before it stops.
-    @Test func aDescriptionLongerThanTwoLinesIsNoTallerThanTwoLines() throws {
-        let twoLines = PreviewData.gradeItem(details: String(repeating: "Wide ", count: 12))
+    /// The description heads the tile and is held to a single line.
+    ///
+    /// One, where the education and subject tiles give their *names* two. A
+    /// description is a note rather than a name: it runs to 2500 characters,
+    /// it is often absent, and on a grid every extra line is paid for by
+    /// every tile in the row.
+    @Test func aDescriptionIsHeldToOneLine() throws {
+        let short = PreviewData.gradeItem(details: "Vortrag")
+        let wordy = PreviewData.gradeItem(details: String(repeating: "Wide ", count: 12))
         let far = PreviewData.gradeItem(
             details: String(repeating: "a", count: ValidationLimits.maximumDescriptionLength)
         )
 
-        #expect(try height(far, width: narrowest) == height(twoLines, width: narrowest))
-    }
-
-    /// A short description still gets one line, so the bound isn't a floor.
-    @Test func aShortDescriptionStaysOneLine() throws {
-        let twoLines = PreviewData.gradeItem(details: String(repeating: "Wide ", count: 12))
-
-        #expect(try height(plain, width: narrowest) < height(twoLines, width: narrowest))
+        #expect(try height(wordy, width: narrowest) == height(short, width: narrowest))
+        #expect(try height(far, width: narrowest) == height(short, width: narrowest))
     }
 
     /// The fallback, stated directly.
     ///
-    /// Asserted on the property rather than on a render, because a render
-    /// can't see it: "Schlussprüfung" and "Analysis" are both one line at the
-    /// same size, so every height in this suite is identical whichever heads
-    /// the tile. Measured that way, dropping the fallback altogether looked
-    /// like a passing test.
+    /// Asserted on the property and not on a render, because a render cannot
+    /// see it: "Schlussprüfung" and "Analysis" are both one line at the same
+    /// size, so every height in this suite is identical whichever heads the
+    /// tile. Measured that way, dropping the fallback altogether looked like
+    /// a passing test — and now that the heading is bounded to one line,
+    /// there is no long-name trick left to catch it either.
     @Test func theSubjectHeadsATileThatHasNoDescriptionOfItsOwn() {
         let described = GradeRowView(item: PreviewData.gradeItem(details: "Schlussprüfung"))
         #expect(described.heading == "Schlussprüfung")
@@ -81,20 +82,6 @@ struct GradeRowLayoutTests {
         let bare = GradeRowView(item: PreviewData.gradeItem(details: nil), showsContext: false)
 
         #expect(bare.heading == nil)
-    }
-
-    /// Which is also visible in the layout: with the subject in the heading
-    /// slot, a long subject name is what makes an undescribed tile grow.
-    /// Without the fallback the name appears nowhere and the height doesn't
-    /// move.
-    @Test func aLongSubjectNameGrowsATileThatHasNoDescription() throws {
-        let long = PreviewData.gradeItem(
-            details: nil,
-            subjectName: String(repeating: "Wide ", count: 12)
-        )
-        let short = PreviewData.gradeItem(details: nil)
-
-        #expect(try height(long, width: narrowest) > height(short, width: narrowest))
     }
 
     /// And the fallback costs no height of its own: promoting the subject
@@ -153,8 +140,8 @@ struct GradeRowLayoutTests {
         #expect(without < withContext)
     }
 
-    /// A grade with neither a description nor a context to name it is one
-    /// line: the date and the value, with nothing above them.
+    /// Under its subject a grade with no description is one line: the date
+    /// and the value, with nothing under them.
     @Test func aGradeWithNothingToNameItIsOneLine() throws {
         let bare = PreviewData.gradeItem(details: nil)
         let named = PreviewData.gradeItem(details: "Schlussprüfung")
@@ -184,6 +171,29 @@ struct GradeRowLayoutTests {
             ),
             "The value should be drawn in the trailing quarter of the row."
         )
+    }
+
+    /// Under its subject the description is a note beneath the date, held to
+    /// one line however long it runs.
+    ///
+    /// The pair of assertions is the point: a description costs exactly one
+    /// line, and costs exactly one line whatever is in it. Rows are one line
+    /// or two, never three, so a column of them keeps its rhythm.
+    @Test func aDescriptionUnderASubjectCostsExactlyOneLine() throws {
+        let bare = try height(PreviewData.gradeItem(details: nil), width: 600, showsContext: false)
+        let short = try height(
+            PreviewData.gradeItem(details: "Vortrag"), width: 600, showsContext: false
+        )
+        let far = try height(
+            PreviewData.gradeItem(
+                details: String(repeating: "a", count: ValidationLimits.maximumDescriptionLength)
+            ),
+            width: 600,
+            showsContext: false
+        )
+
+        #expect(short > bare)
+        #expect(far == short)
     }
 
     // MARK: - Bottom alignment

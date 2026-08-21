@@ -14,8 +14,7 @@ public enum GradeValidator {
     public static func validate(_ grade: Grade, in education: Education) -> [ValidationError] {
         var errors: [ValidationError] = []
 
-        // Required here and nowhere else — see `FieldRules.description`.
-        errors += FieldRules.description(grade.description, isRequired: true)
+        errors += FieldRules.description(grade.description)
         errors += FieldRules.weight(grade.weight)
 
         // 1–6, full stop. The old app's form carried a `Min=0` bound that

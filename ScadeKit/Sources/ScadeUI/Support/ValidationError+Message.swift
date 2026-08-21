@@ -13,8 +13,6 @@ extension ValidationError {
             "Enter a name."
         case .nameTooLong(let maximum):
             "Keep the name to \(maximum) characters or fewer."
-        case .descriptionRequired:
-            "Say what this grade was for."
         case .descriptionTooLong(let maximum):
             "Keep the description to \(maximum) characters or fewer."
         case .semestersOutOfRange(let minimum):

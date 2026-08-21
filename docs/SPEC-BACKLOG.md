@@ -154,7 +154,41 @@ commits to changing no sort order, which is why this is here and not there.
 
 Not scheduled.
 
-## 5. Deliberate gaps already recorded elsewhere
+## 5. A required description on a grade — tried and reverted
+
+Built on 2026-08-21 and undone the next day. Recorded rather than deleted,
+because the motivation was real and will come back.
+
+**Why it was wanted.** A grade has no name field. An education and a subject
+each have one, so their description is genuinely an extra; a grade's is the
+only thing that can say what the number was for. Without it the grade detail
+was titled "Grade", and a column of grades under one subject read as two
+different kinds of row — some with a description heading them, some without.
+
+**Why it was undone.** The rule could not do the job it was adopted for:
+
+- **It doesn't fix existing data.** The change was validation-only — a
+  `NOT NULL` column would mean inventing a description for every grade
+  already saved without one, which is a data decision and not a rule change.
+  So the grades that were ragged stayed ragged, permanently. The rule only
+  prevented *new* ones, which was not the complaint.
+- **It was a data rule for a layout problem, and the layout problem has a
+  layout fix.** The raggedness was never "some rows have text": it was that
+  the *date* sat on the first line for some rows and the second for others.
+  Making the date lead and the description follow it fixes the appearance for
+  every grade, old and new. That is what was built instead — see SPEC-POLISH
+  §2.4.
+- **Quick-add is the app's most frequent action** (SPEC §4) and this put a
+  mandatory text field in it.
+- It left a population that was valid at rest but unsavable on edit without
+  inventing text for something recorded a year ago.
+
+**If it comes back**, it should come back on its own argument — *a
+description is worth having six months later* — and not on appearance, and it
+should come with a decision about backfilling the existing rows, without
+which it does not achieve what it looks like it achieves.
+
+## 6. Deliberate gaps already recorded elsewhere
 
 Not repeated here, to keep one list per item:
 

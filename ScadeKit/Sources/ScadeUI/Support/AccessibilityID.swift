@@ -59,7 +59,6 @@ enum AccessibilityID {
     enum Grade {
         static let new = "grade.new"
         static let value = "grade.form.value"
-        static let description = "grade.form.description"
     }
 
     enum Settings {

@@ -328,30 +328,11 @@ struct GradeValidatorTests {
         )
     }
 
-    /// §3.4, amended 2026-08-21: a grade's description is required, where an
-    /// education's and a subject's are not.
-    ///
-    /// Those two have a name. A grade has no name field at all, so without a
-    /// description it is a number and a date — indistinguishable from the
-    /// grade beside it in the same subject on the same day, and with nothing
-    /// for a list row or a detail screen to call it.
-    @Test("Requires a description", arguments: [nil, "", "   ", "\n\t"])
-    func requiresADescription(description: String?) {
+    @Test("Accepts a grade with no description at all")
+    func acceptsNoDescription() {
         #expect(
-            GradeValidator.validate(
-                Fixture.grade(subjectId: 1, description: description),
-                in: education
-            ) == [.descriptionRequired]
-        )
-    }
-
-    @Test("Accepts a grade that has one")
-    func acceptsADescription() {
-        #expect(
-            GradeValidator.validate(
-                Fixture.grade(subjectId: 1, description: "Schlussprüfung"),
-                in: education
-            ).isEmpty
+            GradeValidator.validate(Fixture.grade(subjectId: 1, description: nil), in: education)
+                .isEmpty
         )
     }
 
