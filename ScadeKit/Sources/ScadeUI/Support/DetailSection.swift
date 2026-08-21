@@ -75,6 +75,7 @@ struct DetailSectionText<Content: View>: View {
         content
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, ScadeDesign.cardContentPadding)
-            .padding(.vertical, ScadeDesign.cardTilePadding)
+            .padding(.top, ScadeDesign.cardTextTopPadding)
+            .padding(.bottom, ScadeDesign.cardTextBottomPadding)
     }
 }

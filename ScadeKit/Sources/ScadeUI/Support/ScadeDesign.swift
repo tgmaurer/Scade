@@ -89,6 +89,16 @@ nonisolated enum ScadeDesign {
     /// look like the same amount of room — but only a touch.
     static let cardContentPadding: Double = 16
 
+    /// Above a block of text inside a card, and below it.
+    ///
+    /// Less at the top than the bottom, which is an optical correction rather
+    /// than a slip. A card's first line is the biggest type on it, and a
+    /// large font carries slack above its cap height — with 14pt all round,
+    /// the space above the title measured 18 and the space below the last
+    /// line measured 14. These two put both at about 13.
+    static let cardTextTopPadding: Double = 10
+    static let cardTextBottomPadding: Double = 12
+
     /// Between tiles in a card grid, across and down.
     ///
     /// Deliberately smaller than `contentMargin`: the gap that separates two

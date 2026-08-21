@@ -25,9 +25,14 @@ struct SubjectListScreen: View {
         // and the filters, because the number is only useful as an answer to
         // "what am I looking at". Nothing is claimed before the first
         // snapshot lands — see `hasLoaded`.
+        //
+        // "items", not the record's own name: the title above it already
+        // says what they are, and macOS puts title and subtitle together in
+        // the Window menu and the app switcher, where "Grades — 13 grades"
+        // says "grades" twice.
         .navigationSubtitle(
             model.hasLoaded
-                ? "^[\(model.visibleRows.count) subject](inflect: true)"
+                ? "^[\(model.visibleRows.count) item](inflect: true)"
                 : ""
         )
         .searchable(text: $model.searchText, prompt: "Search subjects")

@@ -492,11 +492,17 @@ model.
 ### 2.4 Hierarchy in rows
 
 **A list says how many things are in it.** The three top-level lists carry
-the count as a navigation subtitle — "128 grades" under "Grades". It follows
+the count as a navigation subtitle — "13 items" under "Grades". It follows
 the search field and the filter menus rather than the database, because the
 number is only useful as an answer to *what am I looking at*; a total that
 ignores the filter answers a question nobody asked. Nothing is claimed before
 the first snapshot arrives (§2.7).
+
+**"items", not the record's own name.** The title above it already says what
+they are, and macOS joins title and subtitle wherever it lists a window — the
+Window menu, the app switcher, Mission Control — so "13 grades" read "Grades
+– 13 grades" there. The bare number was the other candidate and loses out
+away from the window, where "Grades – 13" could be a version or a filter.
 
 **A form's free text reads from the left, its numbers from the right.**
 macOS's grouped `Form` right-aligns a labelled field's content, which is
@@ -718,8 +724,11 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   attempt looked finished and did nothing.
 
   **A card's sides are padded a little more than its top and bottom, on
-  purpose.** 16pt at the sides; 14 above and below a block of text, 8 above
-  and below a row. A card is far wider than it is tall, so the same measure
+  purpose.** 16pt at the sides; 10 above and 12 below a block of text, 8
+  above and below a row. The block of text is short at the top on purpose:
+  a card's first line is the biggest type on it, and a large font carries
+  slack above its cap height — 14pt all round measured 18 above the title
+  against 14 below the last line. A card is far wider than it is tall, so the same measure
   on all four sides doesn't *look* the same — but the difference is a touch,
   not a step: equal-at-14 and 20-at-the-sides were both tried and both
   reverted. The internal divider is inset to match the content, so the line
