@@ -37,13 +37,11 @@ struct SubjectFormScreen: View {
                 }
 
                 Section {
-                    LabeledContent("Semester") {
-                        TextField("Semester", value: $model.semester, format: .number)
-                            .numberPadKeyboard()
-                            .multilineTextAlignment(.trailing)
-                            .labelsHidden()
-                            .accessibilityIdentifier(AccessibilityID.Subject.semester)
-                    }
+                    IntegerField(
+                        title: "Semester",
+                        value: $model.semester,
+                        identifier: AccessibilityID.Subject.semester
+                    )
                     FieldErrorLabel(model.message(for: .semester))
 
                     if let education = model.selectedEducation {

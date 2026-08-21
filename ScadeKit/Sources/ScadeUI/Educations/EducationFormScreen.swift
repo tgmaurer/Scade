@@ -45,13 +45,11 @@ struct EducationFormScreen: View {
                     )
                     FieldErrorLabel(model.message(for: .endDate))
 
-                    LabeledContent("Semesters") {
-                        TextField("Semesters", value: $model.semesters, format: .number)
-                            .numberPadKeyboard()
-                            .multilineTextAlignment(.trailing)
-                            .labelsHidden()
-                            .accessibilityIdentifier(AccessibilityID.Education.semesters)
-                    }
+                    IntegerField(
+                        title: "Semesters",
+                        value: $model.semesters,
+                        identifier: AccessibilityID.Education.semesters
+                    )
                     FieldErrorLabel(model.message(for: .semesters))
                 }
 
