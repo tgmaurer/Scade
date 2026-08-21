@@ -17,15 +17,19 @@ struct HomeScreen: View {
         content
         .navigationTitle("Home")
         .overlay {
-            HomeEmptyState(
-                hasEducations: model.educations.isEmpty == false,
-                hasSubjects: model.subjects.isEmpty == false,
-                isFilteringSemester: model.semester != nil,
-                canAddSubject: model.canAddSubject,
-                onCreateEducation: startCreatingEducation,
-                onCreateSubject: startAddingSubject,
-                onClearFilter: { model.semester = nil }
-            )
+            // Not until the first snapshot has arrived: see
+            // `hasLoaded`.
+            if model.hasLoaded {
+                HomeEmptyState(
+                    hasEducations: model.educations.isEmpty == false,
+                    hasSubjects: model.subjects.isEmpty == false,
+                    isFilteringSemester: model.semester != nil,
+                    canAddSubject: model.canAddSubject,
+                    onCreateEducation: startCreatingEducation,
+                    onCreateSubject: startAddingSubject,
+                    onClearFilter: { model.semester = nil }
+                )
+            }
         }
         .toolbar {
             ToolbarItem {

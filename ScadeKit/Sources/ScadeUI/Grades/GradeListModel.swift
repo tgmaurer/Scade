@@ -4,6 +4,15 @@ import SwiftUI
 /// Backs the grades list.
 @Observable
 final class GradeListModel {
+    /// Whether the first snapshot has arrived.
+    ///
+    /// An observation is asynchronous, so a screen is briefly on screen with
+    /// nothing in it — and the empty state would flash "nothing here yet"
+    /// every time you switched sections, before the data it was wrong about
+    /// arrived a frame later. Nothing at all is the honest thing to draw
+    /// while there is nothing to say (SPEC-POLISH §2.7).
+    private(set) var hasLoaded = false
+
     private(set) var rows: [GradeListItem] = []
     /// §4 disables grade creation, with a reason, when nothing can hold one.
     private(set) var hasInProgressSubject = false
@@ -56,6 +65,8 @@ final class GradeListModel {
     }
 
     private func apply(_ data: GradeListData) {
+        hasLoaded = true
+
         rows = data.items
         hasAnySubject = data.subjects.isEmpty == false
         hasInProgressSubject = data.subjects.contains { $0.completed == false }

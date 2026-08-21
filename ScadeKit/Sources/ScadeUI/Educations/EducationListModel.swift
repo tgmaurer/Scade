@@ -5,6 +5,15 @@ import SwiftUI
 /// deletion.
 @Observable
 final class EducationListModel {
+    /// Whether the first snapshot has arrived.
+    ///
+    /// An observation is asynchronous, so a screen is briefly on screen with
+    /// nothing in it — and the empty state would flash "nothing here yet"
+    /// every time you switched sections, before the data it was wrong about
+    /// arrived a frame later. Nothing at all is the honest thing to draw
+    /// while there is nothing to say (SPEC-POLISH §2.7).
+    private(set) var hasLoaded = false
+
     /// Everything in the database, newest-created first (§3.6). Search and
     /// filters narrow this without reordering it.
     private(set) var rows: [EducationRow] = []
@@ -59,6 +68,8 @@ final class EducationListModel {
     }
 
     private func apply(_ data: EducationListData) {
+        hasLoaded = true
+
         rows = data.summaries.map(EducationRow.init)
         institutions = data.institutions
 

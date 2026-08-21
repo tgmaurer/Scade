@@ -23,14 +23,18 @@ struct SubjectListScreen: View {
         .navigationTitle("Subjects")
         .searchable(text: $model.searchText, prompt: "Search subjects")
         .overlay {
-            SubjectListEmptyState(
-                hasAnySubjects: model.rows.isEmpty == false,
-                hasVisibleRows: model.visibleRows.isEmpty == false,
-                hasActiveFilters: model.hasActiveFilters,
-                creationBlockedReason: model.creationBlockedReason,
-                onCreate: startCreating,
-                onClearFilters: model.clearFilters
-            )
+            // Not until the first snapshot has arrived: see
+            // `hasLoaded`.
+            if model.hasLoaded {
+                SubjectListEmptyState(
+                    hasAnySubjects: model.rows.isEmpty == false,
+                    hasVisibleRows: model.visibleRows.isEmpty == false,
+                    hasActiveFilters: model.hasActiveFilters,
+                    creationBlockedReason: model.creationBlockedReason,
+                    onCreate: startCreating,
+                    onClearFilters: model.clearFilters
+                )
+            }
         }
         .toolbar {
             ToolbarItem {

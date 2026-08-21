@@ -8,6 +8,15 @@ import SwiftUI
 /// average to follow the filter.
 @Observable
 final class HomeModel {
+    /// Whether the first snapshot has arrived.
+    ///
+    /// An observation is asynchronous, so a screen is briefly on screen with
+    /// nothing in it — and the empty state would flash "nothing here yet"
+    /// every time you switched sections, before the data it was wrong about
+    /// arrived a frame later. Nothing at all is the honest thing to draw
+    /// while there is nothing to say (SPEC-POLISH §2.7).
+    private(set) var hasLoaded = false
+
     private(set) var educations: [Education] = []
     private(set) var summary: EducationSummary?
 
@@ -80,6 +89,8 @@ final class HomeModel {
     }
 
     private func apply(_ data: HomeData) {
+        hasLoaded = true
+
         educations = data.educations
 
         // Default to the newest education, and drop a selection whose

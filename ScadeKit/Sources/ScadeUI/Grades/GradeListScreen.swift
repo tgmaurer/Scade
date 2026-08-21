@@ -23,14 +23,18 @@ struct GradeListScreen: View {
         .navigationTitle("Grades")
         .searchable(text: $model.searchText, prompt: "Search grades")
         .overlay {
-            GradeListEmptyState(
-                hasAnyGrades: model.rows.isEmpty == false,
-                hasVisibleRows: model.visibleRows.isEmpty == false,
-                hasActiveFilters: model.hasActiveFilters,
-                creationBlockedReason: model.creationBlockedReason,
-                onCreate: startCreating,
-                onClearFilters: model.clearFilters
-            )
+            // Not until the first snapshot has arrived: see
+            // `hasLoaded`.
+            if model.hasLoaded {
+                GradeListEmptyState(
+                    hasAnyGrades: model.rows.isEmpty == false,
+                    hasVisibleRows: model.visibleRows.isEmpty == false,
+                    hasActiveFilters: model.hasActiveFilters,
+                    creationBlockedReason: model.creationBlockedReason,
+                    onCreate: startCreating,
+                    onClearFilters: model.clearFilters
+                )
+            }
         }
         .toolbar {
             ToolbarItem {

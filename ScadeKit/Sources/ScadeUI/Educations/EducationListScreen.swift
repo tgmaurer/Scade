@@ -26,13 +26,17 @@ struct EducationListScreen: View {
         .navigationTitle("Educations")
         .searchable(text: $model.searchText, prompt: "Search educations")
         .overlay {
-            EducationListEmptyState(
-                hasAnyEducations: model.rows.isEmpty == false,
-                hasVisibleRows: model.visibleRows.isEmpty == false,
-                hasActiveFilters: model.hasActiveFilters,
-                onCreate: startCreating,
-                onClearFilters: model.clearFilters
-            )
+            // Not until the first snapshot has arrived: see
+            // `hasLoaded`.
+            if model.hasLoaded {
+                EducationListEmptyState(
+                    hasAnyEducations: model.rows.isEmpty == false,
+                    hasVisibleRows: model.visibleRows.isEmpty == false,
+                    hasActiveFilters: model.hasActiveFilters,
+                    onCreate: startCreating,
+                    onClearFilters: model.clearFilters
+                )
+            }
         }
         .toolbar {
             ToolbarItem {
