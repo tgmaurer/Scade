@@ -63,10 +63,16 @@ says which section owns the fix.
 - [x] ~~**The subject link claimed more than the subject name.**~~ §2.8.
 - [ ] **Padding and spacing throughout.** Space isn't used or distributed
       well — cramped where it should breathe, and wide windows leave content
-      stranded. §2.5, §2.6.
+      stranded. §2.5, §2.6. *The wide-window half is now the open question
+      §2.5's "a row is capped in width" describes, and the education detail
+      is where it finally bites: a card as wide as the window puts a subject
+      name at one end and its average at the other. Undecided — it reaches
+      Home too, which is already approved as it stands.*
 - [ ] **Detail screens are the rawest part of the app.** Every field is the
       same size, and the layout is a stack of ruled rows. They need the §2.4
       ladder and the §2.5 card treatment, which so far only Home has.
+      *Education detail done (2026-08-21) — see §2.4's "a detail screen is
+      not a table of its fields". Subject and grade detail outstanding.*
 - [x] ~~**The grade list needs separation**~~ — it was one undifferentiated
       run of rows, and it's now a grid of tiles, so each grade is its own
       object on its own surface. *Date sections were the fix proposed here
@@ -422,6 +428,41 @@ The averages and weights already render as badges — that treatment
 incidental: settled sizes, settled contrast, consistent across every screen
 that shows one.
 
+**A detail screen is not a table of its fields** (added 2026-08-21, building
+the education detail). It was eight `LabeledContent` rows — Average,
+Institution, Starts, Ends, Semesters, Subjects, Grades, Status — every one the
+same size, with a hairline between each. That is GradeMaster's detail screen
+reproduced rather than improved on, and §2.5's complaint exactly.
+
+Those were never eight facts worth eight rows; they are one paragraph of
+identity. The rule that replaces them:
+
+- **Drop the label wherever the value says what it is.** An institution reads
+  as an institution, a date range as a date range, "8 semesters" as a count.
+  A label earns its place only where the value alone is ambiguous — and if
+  every value on a screen needs one, the screen is a form, not a detail.
+- **Then apply the ladder to what's left.** The average takes
+  `headlineNumber`, the name sits beside it at `.title2`, the institution and
+  dates step down to `rowSecondary`, and the counts to `rowMeta`. Eight rows
+  become four lines and one card.
+- **A detail screen is where the whole value lives.** The tiles bound their
+  growable fields because a grid row is as tall as its tallest member; a
+  detail card has no neighbour to drag, so the bounds don't carry over. The
+  institution wraps here, and the date range wraps rather than truncating —
+  "Aug 1, 2023 – Jul…" is not a date range, and the half that goes is the
+  half the screen was opened for. Copying the tiles' `.lineLimit`s across is
+  the mistake to avoid.
+- **The badge stays in the phrase.** The tiles pin completion status to the
+  trailing edge and are right to: a tile is 300pt across. A detail card is as
+  wide as the window, and the same pin leaves a word at each end with a void
+  between them — which is the rule in §2.5 about only the number going hard
+  right, in the case that shows why it exists.
+
+**The parent record's own name is repeated from the navigation title, on
+purpose.** macOS draws that title small and in chrome, where it reads as the
+window's label rather than the record's, and the institution and dates below
+need something to hang from.
+
 ### 2.5 Surfaces and separators
 
 The macOS complaint in one sentence: **too many horizontal lines, not enough
@@ -468,12 +509,26 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   The distinction that matters is **one card of many rows** versus **many
   cards of one row each**. The first is a list with a surface under it; the
   second is a grid, and needs the cardinality above to earn it.
+
+  **A detail screen's sub-list is the first kind, and the grids don't reach
+  it** (decided 2026-08-21). All three top-level screens are grids now, so
+  the education detail's subject list is the one place the distinction still
+  gets made — and it goes the other way. A top-level screen is a collection
+  you arrive at to pick from; a detail screen's list is one record's
+  contents, read down a column while the header above it stays in view. The
+  averages line up in one column, which is what the second §2.5 question
+  asks for, and tiles here would push the header off screen to say less.
 - **A row is capped in width; a tile is not.** Past about 900pt a row stops
   being read as one thing: the name is at one end of the screen and its
-  average at the other, with nothing in between. *No screen currently needs
-  this — subjects, the one that did, became a grid instead, and the plumbing
-  was removed with it rather than left inert. Kept as a note because the next
-  long list to stay a list will meet the same wall.*
+  average at the other, with nothing in between. *Subjects, the screen that
+  first needed this, became a grid instead and the plumbing was removed with
+  it rather than left inert — with the note that the next long list to stay a
+  list would meet the same wall. **The education detail is that screen**
+  (2026-08-21): its subjects are a card of rows, and at a wide window the
+  averages sit an inch and a half from the names they belong to. Left
+  uncapped for now, deliberately — the same shape is on Home, which is
+  already approved as it stands, so capping one screen and not the other
+  trades a spacing flaw for an inconsistency. Decide it across both.*
 - **What goes hard right is the number, and only the number.** Everything else
   on a line follows the text before it. Pinning secondary metadata to the
   trailing edge as well leaves a word at each end of a wide row and a void

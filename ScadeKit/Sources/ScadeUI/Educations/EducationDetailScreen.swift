@@ -19,24 +19,10 @@ struct EducationDetailScreen: View {
             if let summary = model.summary {
                 EducationSummarySection(summary: summary, average: model.average)
 
-                Section("Subjects") {
-                    if summary.subjects.isEmpty {
-                        Text("No subjects yet.")
-                            .foregroundStyle(.secondary)
-                    } else {
-                        ForEach(summary.subjects) { subjectGrades in
-                            NavigationLink(value: subjectGrades.subject) {
-                                EducationSubjectRowView(
-                                    subjectGrades: subjectGrades,
-                                    totalSemesters: summary.education.semesters,
-                                    average: GradeCalculator.subjectAverage(of: subjectGrades)
-                                )
-                            }
-                        }
-                    }
-                }
+                subjects(of: summary)
             }
         }
+        .groupedListStyle()
         .accessibilityIdentifier(AccessibilityID.Education.detail)
         .navigationTitle(model.summary?.education.name ?? education.name)
         .toolbar {
@@ -88,6 +74,41 @@ struct EducationDetailScreen: View {
                 dismiss()
             }
         }
+    }
+
+    /// The education's subjects, as one card of many rows.
+    ///
+    /// A list and not a grid, unlike the three top-level screens: those are
+    /// collections you arrive at to pick from, and this is one record's
+    /// contents, read down a column while the header above it stays in view.
+    /// §2.5's "one card of many rows versus many cards of one row" — this is
+    /// the first kind.
+    @ViewBuilder
+    private func subjects(of summary: EducationSummary) -> some View {
+        Section {
+            if summary.subjects.isEmpty {
+                Text("No subjects yet.")
+                    .foregroundStyle(.secondary)
+                    .cardRow(.only, highlightsOnHover: false)
+            } else {
+                ForEach(summary.subjects.enumerated(), id: \.element.id) { index, subjectGrades in
+                    NavigationLink(value: subjectGrades.subject) {
+                        EducationSubjectRowView(
+                            subjectGrades: subjectGrades,
+                            average: GradeCalculator.subjectAverage(of: subjectGrades)
+                        )
+                    }
+                    .cardRow(CardRowPosition(index: index, count: summary.subjects.count))
+                }
+            }
+        } header: {
+            Text("Subjects")
+                .font(ScadeDesign.rowSecondary)
+                .bold()
+                .textCase(nil)
+                .cardSectionHeader()
+        }
+        .cardSection()
     }
 
     private func startEditing() {
