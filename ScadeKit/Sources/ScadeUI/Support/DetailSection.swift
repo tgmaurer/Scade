@@ -80,7 +80,7 @@ struct DetailSectionHeader: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 // Lined up with the content inside the card below, not with
                 // the card's edge.
-                .padding(.horizontal, ScadeDesign.contentMargin + ScadeDesign.cardTilePadding)
+                .padding(.horizontal, ScadeDesign.contentMargin + ScadeDesign.cardContentPadding)
                 .padding(.bottom, ScadeDesign.iconTextSpacing)
                 // Opaque, and full width: while it's pinned, rows pass
                 // underneath it.
@@ -97,6 +97,7 @@ struct DetailSectionText<Content: View>: View {
     var body: some View {
         content
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(ScadeDesign.cardTilePadding)
+            .padding(.horizontal, ScadeDesign.cardContentPadding)
+            .padding(.vertical, ScadeDesign.cardTilePadding)
     }
 }

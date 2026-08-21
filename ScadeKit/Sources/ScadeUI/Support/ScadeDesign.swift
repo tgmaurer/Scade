@@ -81,6 +81,15 @@ nonisolated enum ScadeDesign {
     /// content, not a highlight behind it.
     static let cardTilePadding: Double = 14
 
+    /// How far a card holds its content off its left and right edges.
+    ///
+    /// Wider than `cardTilePadding`, which stays what it is above and below:
+    /// a card is much wider than it is tall, so the same measure on all four
+    /// sides doesn't *look* the same — the sides read as tight while the top
+    /// and bottom read as generous. This is the number that makes them look
+    /// alike, not the number that makes them equal.
+    static let cardContentPadding: Double = 20
+
     /// Between tiles in a card grid, across and down.
     ///
     /// Deliberately smaller than `contentMargin`: the gap that separates two
@@ -146,7 +155,10 @@ nonisolated enum ScadeDesign {
 
     /// How far a card's internal divider is held back from its edges, so it
     /// reads as a line *within* the card rather than a cut across it.
-    static let cardDividerInset: Double = 12
+    ///
+    /// The same as the content's own inset, so the line starts and ends where
+    /// the text does.
+    static var cardDividerInset: Double { cardContentPadding }
 
 
     // MARK: - Pointer

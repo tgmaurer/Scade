@@ -181,6 +181,12 @@ says which section owns the fix.
       top-level lists carry the count as a navigation subtitle, following the
       search and the filters rather than the database — the number is only
       useful as an answer to "what am I looking at". §2.4.
+- [x] ~~**Cards were tight at the sides.**~~ Content sat 14pt from a card's
+      left and right edges, which reads as cramped next to the room above and
+      below it. 20pt now, at the sides only — see §2.5 for why the two
+      measures shouldn't match. *A first attempt squared them instead, at
+      14pt all round, and also moved the section title onto the card; both
+      were reverted.*
 - [x] ~~**The educations list wasted a wide window and separated nothing.**~~
       One column of plain text in a window three columns wide, with the
       system's own row separator drawn between records in place of any
@@ -716,6 +722,14 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
     them all. A pinned header has to paint the full width of the scroll view,
     and a header inset by the window margin leaves the content scrolling
     visibly through the gaps either side of it.
+
+  **A card's sides are padded more than its top and bottom, on purpose.**
+  20pt at the sides, 14 above and below a tile's content, 10 above and below
+  a row's. A card is far wider than it is tall, so the same measure on all
+  four sides doesn't *look* the same — the sides read as tight while the top
+  and bottom read as generous. Equal numbers were tried and reverted; these
+  are the numbers that look alike. The internal divider is inset to match the
+  content, so the line starts and ends where the text does.
 
   Three things follow, and the third is what forced it:
 

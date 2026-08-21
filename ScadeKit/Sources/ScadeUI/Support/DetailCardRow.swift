@@ -22,7 +22,7 @@ struct DetailCardRow<Content: View>: View {
             // case that proves it — the same view is a card tile on the
             // grades grid, a `List` row on a phone, and a row of this card,
             // and all three want different room.
-            .padding(.horizontal, ScadeDesign.cardTilePadding)
+            .padding(.horizontal, ScadeDesign.cardContentPadding)
             .padding(.vertical, ScadeDesign.cardRowVerticalPadding)
             .background(
                 CardRowSurface(position: position, isHovering: isHovering, margin: 0)
