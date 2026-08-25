@@ -66,6 +66,7 @@ struct SubjectFormScreen: View {
                 }
             }
             .formStyle(.grouped)
+            .saveShortcut(save)
             .navigationTitle(model.mode.title)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

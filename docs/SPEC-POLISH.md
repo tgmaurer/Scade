@@ -283,11 +283,22 @@ row is labelled.
 | `⌘⇧N` | New education, from anywhere |
 | `⌘⌫` | Delete the selected row (still routed through the existing confirmation) |
 | `⌘R` | Reload the current screen |
-| `⌘S` / `↩` | Save the open form |
+| `⌘↩` / `↩` | Save the open form — **built**, see below |
+| `⌘S` | Save the open form |
 | `⎋` | Cancel the open form / dismiss the sheet |
 
 `⌘N` being context-sensitive means the command needs to read the current
 selection, which the shell doesn't currently track — see §1.4.
+
+**`⌘↩` is the one row of this table that exists**, built ahead of the rest
+because the description needed it: Return there belongs to the text (§2.4),
+so the form lost its keyboard exit. `⌘↩` saves from any field.
+
+It is an invisible second button rather than a shortcut on Save itself.
+Giving Save an explicit `keyboardShortcut` **takes away** the default-button
+role `confirmationAction` granted it — measured: with the shortcut attached
+directly, `⌘↩` saved and plain `↩` in the name field did nothing at all. The
+same trap is waiting for `⌘S`.
 
 ### 1.3 iOS
 
@@ -523,8 +534,8 @@ is the whole point of a column of figures.
 then rejects": `IntegerField` drops everything but ASCII digits as they
 arrive, so the field never holds a value the form will later refuse.
 
-**A description is a paragraph, and Return starts a new one.** Everywhere
-else in a sheet Return means Save — but a field written to hold 2500
+**A description is a paragraph, and Return starts a new one**, and `⌘↩`
+saves from inside it (§1.2). Everywhere else in a sheet Return means Save — but a field written to hold 2500
 characters has to take the key itself, or it hands the text to the default
 button and loses it (§0.1). On macOS that means a `TextEditor`, which costs
 the field its growth: it stands four lines tall and scrolls inside instead of
