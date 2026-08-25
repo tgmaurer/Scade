@@ -152,6 +152,21 @@ nonisolated enum ScadeDesign {
     /// just after the word naming it, and in the same place on every row.
     static let formLabelWidth: Double = 96
 
+    /// How tall a form's paragraph field stands.
+    ///
+    /// About four lines: enough that a description reads as a paragraph
+    /// rather than a slot, and short enough that Save stays on screen. A
+    /// `TextEditor` doesn't grow with its content, so this is the whole of
+    /// what the field gets — past it, the text scrolls inside.
+    static let formEditorHeight: Double = 76
+
+    /// How far a text view insets its own text from its leading edge.
+    ///
+    /// AppKit's, not ours — it's here to be subtracted. Left alone, a
+    /// paragraph field starts its first character a few points to the right
+    /// of the labels stacked above it, and the column reads as crooked.
+    static let formEditorTextInset: Double = 5
+
     /// Inside a grade chip, to the left and right of its value.
     static let chipPadding: Double = 8
 

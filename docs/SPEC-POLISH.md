@@ -177,6 +177,14 @@ says which section owns the fix.
       semester field looking like an answer until the form was saved and
       reverted it. `IntegerField` drops everything but ASCII digits as they
       arrive, so there is no invalid state to explain.
+- [x] ~~**Return threw away a description.**~~ A sheet's Save is its default
+      button, so Return anywhere inside the sheet fired it — and the
+      description field's uncommitted text went with it: typing a line,
+      pressing Return, and typing another left only the second one, with the
+      form still open and looking fine. `axis: .vertical` never changed that;
+      it wraps and grows, but the key belongs to the button. The description
+      is a `TextEditor` on macOS now (`FormTextEditor`), which is a real text
+      view and takes Return itself. §2.4.
 - [x] ~~**A list didn't say how many things were in it.**~~ The three
       top-level lists carry the count as a navigation subtitle, following the
       search and the filters rather than the database — the number is only
@@ -514,6 +522,14 @@ is the whole point of a column of figures.
 **A field that takes a whole number takes nothing else.** Not "accepts and
 then rejects": `IntegerField` drops everything but ASCII digits as they
 arrive, so the field never holds a value the form will later refuse.
+
+**A description is a paragraph, and Return starts a new one.** Everywhere
+else in a sheet Return means Save — but a field written to hold 2500
+characters has to take the key itself, or it hands the text to the default
+button and loses it (§0.1). On macOS that means a `TextEditor`, which costs
+the field its growth: it stands four lines tall and scrolls inside instead of
+pushing Save off the bottom of the sheet. iPhone keeps the wrapping
+`TextField`, where a software keyboard's Return already inserts a line break.
 
 
 Each list row currently gives near-equal weight to every field. Decide, per

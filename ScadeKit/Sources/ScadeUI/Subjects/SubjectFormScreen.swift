@@ -61,9 +61,7 @@ struct SubjectFormScreen: View {
                 }
 
                 Section("Description") {
-                    TextField("Description", text: $model.details, axis: .vertical)
-                        .lineLimit(3...)
-                        .labelsHidden()
+                    FormTextEditor(title: "Description", text: $model.details)
                     FieldErrorLabel(model.message(for: .description))
                 }
             }
