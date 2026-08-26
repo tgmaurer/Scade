@@ -248,25 +248,39 @@ This is a usage pattern, not a rule. Nothing stops one education per course
 of study; the app just shouldn't assume it.
 
 ---
-
 ## 1. Keyboard shortcuts & menu commands (macOS first)
 
-Currently the app has no `Commands` scene at all: no menu items beyond the
-system defaults, no shortcuts. On macOS that reads as unfinished regardless
-of how the views look.
+**Built (2026-08-26).** The app had no `Commands` scene at all — no menu
+items beyond the system's, no shortcuts — which on macOS reads as unfinished
+however the views look. It has one now: `ScadeCommands`, declared in ScadeUI
+so the App target stays a shell that opens a database.
+
+Every shortcut has a menu item. That was the rule §1.4 set and it decided the
+shape of the implementation: shortcuts hung on the buttons themselves would
+have been a fraction of the work and undiscoverable.
 
 ### 1.1 Navigation
 
-| Shortcut | Action |
-|---|---|
-| `⌘1`–`⌘4` | Select tab (Home, Educations, Subjects, Grades) |
-| `⌘,` | Settings — **done**: a real `Settings` scene on macOS (2026-08-21) |
-| `⌘[` / `⌘]` | Back / forward in the detail stack |
-| `⌘F` | Focus the search field on the current list |
+| Shortcut | Action | Menu |
+|---|---|---|
+| `⌘1`–`⌘4` | Home / Educations / Subjects / Grades | Go |
+| `⌘ö` | Back | Go |
+| `⌘↑` | Open the record this one belongs to | Go |
+| `⌃⌘S` | Toggle the sidebar | View |
+| `⌘,` | Settings | Scade |
 
-These bind to the `TabView` selection from §2.2, not to a sidebar — the
-shortcuts are unchanged, the thing they set isn't. There is no `⌘5`: Settings
-is not a section on any platform any more (§2.2).
+**`⌘ö`, not `⌘[`.** The app is used on a Swiss keyboard, where `[` is `⌥5` —
+unreachable as a shortcut — and `ö` sits where a US layout puts `[`, which is
+why macOS apps answer `⌘ö` for Back there. SwiftUI matches a key equivalent
+by character, not by physical key, so it is bound as `ö` literally: right for
+the one machine this app runs on, wrong on a US layout, and deliberate.
+
+**`⌘↑` is Finder's Enclosing Folder**, applied to records: a grade opens its
+subject, a subject its education. Taken from GradeMaster, which had
+`Ctrl+Shift+A` and `Ctrl+Shift+Q` for the same two jumps.
+
+**No `⌘]`.** A `NavigationStack` keeps no forward history, so there is
+nowhere for it to go.
 
 `⌘,` needed a decision rather than an implementation, and **(b) was taken**:
 a `Settings` scene on macOS, no sidebar row anywhere. The argument that
@@ -277,47 +291,102 @@ row is labelled.
 
 ### 1.2 Records
 
+| Shortcut | Action | Menu |
+|---|---|---|
+| `⌘N` | New — whatever the screen in front makes | File |
+| `⌘E` | Edit this record | File |
+| `⌘⌫` | Delete this record, through its usual confirmation | File |
+| `⌘F` | Focus the search field | Edit |
+| `⌘⇧F` | Clear this screen's filters | Edit |
+| `⌘↩` | Save the open form | — |
+| `⎋` | Cancel the open form, clear the search | — |
+
+`⌘N` is context-sensitive without anything tracking context: each screen
+publishes its own action and the menu item takes that screen's name for it —
+"New Subject" on an education, "New Grade" on a subject, greyed on a grade,
+which has nothing below it. The same for `⌘⌫`, which reads "Delete
+Education…" or "Delete Grade…" and goes through the confirmation the toolbar
+button already used.
+
+`⌘↩` came first, ahead of the rest, because the description field needed it:
+Return there belongs to the text (§2.4), so the form had lost its keyboard
+exit. It is an invisible second button rather than a shortcut on Save
+itself — giving Save an explicit `keyboardShortcut` **takes away** the
+default-button role `confirmationAction` granted it, and plain `↩` in the
+name field then does nothing. Measured, on the first attempt.
+
+**Deliberately not built:**
+
+- **`⌘R` reload.** GradeMaster had four spellings of it (`F5`, `Ctrl+R`,
+  `Ctrl+F5`, `Ctrl+X`) because a Blazor page held stale data. Every screen
+  here is a live `ValueObservation`; the command could only re-run a query
+  that is already correct.
+- **`⌘⌫` on a list.** The three lists are card grids with no selection
+  model, and the context menu already deletes. Building selection to serve
+  one shortcut is a large change for a small gain; scoping the command to
+  detail screens gives it an unambiguous target for nothing.
+- **`⌘⇧N` for a new education from anywhere.** `⌘2` `⌘N` is two keystrokes.
+  The shortcut went to New Window instead.
+- **`⌘S`.** `⌘↩` saves, and `⌘S` means "save a document" in an app that has
+  no documents.
+
+### 1.3 Windows and tabs
+
 | Shortcut | Action |
 |---|---|
-| `⌘N` | New — context-sensitive: new grade on a subject detail, new subject on an education detail, otherwise new record of the current section's type |
-| `⌘⇧N` | New education, from anywhere |
-| `⌘⌫` | Delete the selected row (still routed through the existing confirmation) |
-| `⌘R` | Reload the current screen |
-| `⌘↩` / `↩` | Save the open form — **built**, see below |
-| `⌘S` | Save the open form |
-| `⎋` | Cancel the open form / dismiss the sheet |
+| `⌘T` | New tab |
+| `⌘⇧N` | New window |
 
-`⌘N` being context-sensitive means the command needs to read the current
-selection, which the shell doesn't currently track — see §1.4.
+`⌘N` was New Window, from SwiftUI's default `.newItem` group. It is the
+app's content key now, the way Notes, Reminders and Things all take it, and
+New Window moved beside the `⌘T` that didn't exist.
 
-**`⌘↩` is the one row of this table that exists**, built ahead of the rest
-because the description needed it: Return there belongs to the text (§2.4),
-so the form lost its keyboard exit. `⌘↩` saves from any field.
+**Why `⌘T` did nothing before**, in two parts, both needed:
 
-It is an invisible second button rather than a shortcut on Save itself.
-Giving Save an explicit `keyboardShortcut` **takes away** the default-button
-role `confirmationAction` granted it — measured: with the shortcut attached
-directly, `⌘↩` saved and plain `↩` in the name field did nothing at all. The
-same trap is waiting for `⌘S`.
+1. **There was no New Tab command.** macOS offers one only when something in
+   the responder chain implements `newWindowForTab(_:)`, and SwiftUI's
+   `WindowGroup` doesn't. The Window menu already had Show Previous/Next Tab
+   and Merge All Windows — tabbing was enabled the whole time; nothing could
+   start it.
+2. **The system tabbing preference is "In Full Screen Only"**
+   (`AppleWindowTabbingMode` unset). So even with the command, a new window
+   would not have joined as a tab on the desktop.
 
-### 1.3 iOS
-
-Full-size keyboard shortcuts also apply to iPad with a hardware keyboard, for
-free, if the commands are declared on the shared scene rather than in
-`#if os(macOS)`. Prefer that. iPhone gets nothing from this section, which is
-fine.
+`WindowTabbing` handles both without touching a system-wide setting: it notes
+the key window, asks SwiftUI to open another, and adds the new one to that
+window's tab group as it appears.
 
 ### 1.4 Implementation notes
 
-- Declare via a `Commands` scene on `WindowGroup`, in `ScadeUI`, not in the
-  App target — the App target stays a thin shell.
-- Menu commands live outside the view hierarchy, so they can't read
-  `@State` in a screen. The shell needs a small observable focus/selection
-  holder in the environment for `⌘N` and `⌘⌫` to target the right thing.
-  Keep it to *what is selected*, not a copy of screen state — the
-  no-ambient-state rule from CLAUDE.md applies to UI state too.
-- Every shortcut must have a visible menu item. Undiscoverable shortcuts are
-  worse than none.
+- Declared as a `Commands` scene on `WindowGroup`, in ScadeUI, not in the App
+  target.
+- **`FocusedValues`, not a shared selection holder** — the earlier sketch
+  here proposed "a small observable focus/selection holder in the
+  environment". A focused value is better on the app's own terms: it flows
+  *up* from whichever screen is in front and disappears with it, so there is
+  no state to keep correct and nothing ambient to go stale. The no-ambient-
+  state rule from CLAUDE.md applies to UI state too.
+- **A `ScreenAction` must not be `Equatable`.** It was, briefly, comparing an
+  id the caller passed in. The commands whose id never changed — Edit and
+  Delete, whose ids were string constants — silently stopped working:
+  SwiftUI read the equal value as no change and kept the *first* action it
+  was ever handed for that key, closing over a body pass whose state was long
+  gone. The menu item was enabled, correctly named, and did nothing when
+  chosen. The ones that did work (`⌘ö`, `⌘↑`) were the ones whose ids
+  happened to change.
+- **A modifier on the `NavigationStack` does not reach a pushed screen.**
+  `goBack` was published from `SectionStack` and Back sat greyed on every
+  detail. It goes on `navigable` instead — which is the second time this has
+  been paid for; see the note there about `\.navigate`.
+- Every shortcut has a menu item. Undiscoverable shortcuts are worse than
+  none.
+
+### 1.5 iOS
+
+Full-size keyboard shortcuts also apply to iPad with a hardware keyboard, for
+free, because the commands are declared on the shared scene rather than
+inside `#if os(macOS)` — only the window and tab commands are macOS-only.
+iPhone gets nothing from this section, which is fine.
 
 ---
 

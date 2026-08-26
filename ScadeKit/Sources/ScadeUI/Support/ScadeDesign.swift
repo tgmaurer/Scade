@@ -182,7 +182,6 @@ nonisolated enum ScadeDesign {
     /// the text does.
     static var cardDividerInset: Double { cardContentPadding }
 
-
     // MARK: - Pointer
     //
     // macOS has a pointer and the app should answer it (SPEC-POLISH §2.8).
@@ -227,7 +226,6 @@ nonisolated enum ScadeDesign {
     /// also removes the resize handle. Widening it would show nothing a narrow
     /// one doesn't: five fixed rows of a word each.
     static let sidebarWidth: Double = 150
-
 
     /// How wide the macOS Settings window is.
     ///

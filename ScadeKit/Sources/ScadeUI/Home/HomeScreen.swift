@@ -16,6 +16,10 @@ struct HomeScreen: View {
 
         content
         .navigationTitle("Home")
+        // The dashboard's own two commands (SPEC-POLISH §1.2). There is no
+        // search here to focus.
+        .focusedSceneValue(\.newRecord, newSubjectAction)
+        .focusedSceneValue(\.clearFilters, clearFiltersAction)
         .overlay {
             // Not until the first snapshot has arrived: see
             // `hasLoaded`.
@@ -207,6 +211,20 @@ struct HomeScreen: View {
 
     private func startAddingGrade(subjectId: Int64) {
         gradeFormMode = .create(subjectId: subjectId)
+    }
+
+    /// `nil` where §4 disables the toolbar button — a completed education
+    /// takes no new subjects.
+    private var newSubjectAction: ScreenAction? {
+        guard model.canAddSubject else { return nil }
+        return ScreenAction("New Subject", perform: startAddingSubject)
+    }
+
+    /// The semester picker is the only filter here; the education above it
+    /// is a choice of what to show, not a narrowing of it.
+    private var clearFiltersAction: ScreenAction? {
+        guard model.semester != nil else { return nil }
+        return ScreenAction("Clear Filters") { model.semester = nil }
     }
 }
 

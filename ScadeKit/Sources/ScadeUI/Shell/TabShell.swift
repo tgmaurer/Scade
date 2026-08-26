@@ -62,6 +62,9 @@ struct TabShell: View {
             }
             .accessibilityIdentifier(AccessibilityID.section(.grades))
         }
+        // What `⌘1`–`⌘4` set on an iPad with a keyboard attached — the same
+        // commands the Mac uses, pointed at this shell's selection instead.
+        .focusedSceneValue(\.selectSection, SectionSelector { section = $0 })
     }
 }
 

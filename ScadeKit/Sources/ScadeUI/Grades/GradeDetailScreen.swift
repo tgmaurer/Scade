@@ -7,6 +7,7 @@ struct GradeDetailScreen: View {
 
     @Environment(\.repositories) private var repositories
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.navigate) private var navigate
 
     @State private var model = GradeDetailModel()
     @State private var formMode: GradeFormMode?
@@ -69,6 +70,11 @@ struct GradeDetailScreen: View {
         } message: {
             Text(model.errorMessage ?? "")
         }
+        // The menu bar's version of the buttons above, plus the way up
+        // to the subject this grade belongs to (SPEC-POLISH §1.2).
+        .focusedSceneValue(\.editRecord, ScreenAction("Edit Grade", perform: startEditing))
+        .focusedSceneValue(\.deleteRecord, ScreenAction("Delete Grade…") { model.isConfirmingDeletion = true })
+        .focusedSceneValue(\.openParent, openSubjectAction)
         .task {
             await model.observe(id: grade.id, from: repositories)
         }
@@ -93,4 +99,9 @@ struct GradeDetailScreen: View {
         formMode = .edit(grade)
     }
 
+    /// `⌘↑` — the subject this grade was given in.
+    private var openSubjectAction: ScreenAction? {
+        guard let subject = model.item?.subject else { return nil }
+        return ScreenAction("Open Subject") { navigate(subject) }
+    }
 }

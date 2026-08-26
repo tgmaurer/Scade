@@ -48,7 +48,14 @@ struct SectionStack<Content: View>: View {
     /// has a row or a parent link that navigates — see `CardRowLink` and
     /// §0.1's "detail screens should link to their parents".
     private func navigable(_ screen: some View) -> some View {
-        screen.environment(\.navigate, navigator)
+        screen
+            // `⌘ö`, and here for the same reason the navigator is: applied
+            // to the stack it never reached a pushed screen, and the Back
+            // item sat greyed out on every detail — measured. Only a pushed
+            // screen publishes it, which is what leaves it greyed at the
+            // root, where there is nowhere to go back to.
+            .focusedSceneValue(\.goBack, ScreenAction("Back") { path.removeLast() })
+            .environment(\.navigate, navigator)
     }
 }
 

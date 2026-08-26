@@ -65,6 +65,11 @@ struct EducationDetailScreen: View {
         } message: {
             Text(model.errorMessage ?? "")
         }
+        // The menu bar's version of the three buttons above
+        // (SPEC-POLISH §1.2).
+        .focusedSceneValue(\.newRecord, ScreenAction("New Subject", perform: startAddingSubject))
+        .focusedSceneValue(\.editRecord, ScreenAction("Edit Education", perform: startEditing))
+        .focusedSceneValue(\.deleteRecord, ScreenAction("Delete Education…") { model.isConfirmingDeletion = true })
         .task {
             await model.observe(id: education.id, from: repositories)
         }

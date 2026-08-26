@@ -7,6 +7,7 @@ struct SubjectDetailScreen: View {
 
     @Environment(\.repositories) private var repositories
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.navigate) private var navigate
 
     @State private var model = SubjectDetailModel()
     @State private var formMode: SubjectFormMode?
@@ -65,6 +66,12 @@ struct SubjectDetailScreen: View {
         } message: {
             Text(model.errorMessage ?? "")
         }
+        // The menu bar's version of the three buttons above, plus the
+        // way up to the education this belongs to (SPEC-POLISH §1.2).
+        .focusedSceneValue(\.newRecord, newGradeAction)
+        .focusedSceneValue(\.editRecord, ScreenAction("Edit Subject", perform: startEditing))
+        .focusedSceneValue(\.deleteRecord, ScreenAction("Delete Subject…") { model.isConfirmingDeletion = true })
+        .focusedSceneValue(\.openParent, openEducationAction)
         .task {
             await model.observe(id: subject.id, from: repositories)
         }
@@ -125,4 +132,17 @@ struct SubjectDetailScreen: View {
         gradeFormMode = .create(subjectId: id)
     }
 
+    /// `nil` on a completed subject, matching the toolbar button §4 disables
+    /// there — the menu shows the command greyed rather than dropping it.
+    private var newGradeAction: ScreenAction? {
+        guard model.summary?.subject.completed == false else { return nil }
+        return ScreenAction("New Grade", perform: startAddingGrade)
+    }
+
+    /// `⌘↑`, the way Finder's Enclosing Folder works: the record this one
+    /// sits inside.
+    private var openEducationAction: ScreenAction? {
+        guard let education = model.summary?.education else { return nil }
+        return ScreenAction("Open Education") { navigate(education) }
+    }
 }

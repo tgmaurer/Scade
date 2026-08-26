@@ -34,6 +34,11 @@ public struct RootView: View {
             #endif
         }
         .windowSizeFloor()
+        #if os(macOS)
+        // Invisible: it exists to catch the `NSWindow` this scene lands in,
+        // so `⌘T` can add it to the tab group that asked for it.
+        .background(WindowTabReader())
+        #endif
         .environment(\.repositories, repositories)
         .preferredColorScheme(theme.colorScheme)
     }

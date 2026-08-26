@@ -15,6 +15,7 @@ struct SubjectListScreen: View {
     @Environment(\.repositories) private var repositories
     @State private var model = SubjectListModel()
     @State private var formMode: SubjectFormMode?
+    @FocusState private var isSearchFocused: Bool
 
     var body: some View {
         @Bindable var model = model
@@ -36,6 +37,12 @@ struct SubjectListScreen: View {
                 : ""
         )
         .searchable(text: $model.searchText, prompt: "Search subjects")
+        .searchFocused($isSearchFocused)
+        // What the menu bar can do here (SPEC-POLISH §1.2). Published while
+        // this screen is in front and gone when it isn't.
+        .focusedSceneValue(\.newRecord, ScreenAction("New Subject", perform: startCreating))
+        .focusedSceneValue(\.focusSearch, ScreenAction("Search") { isSearchFocused = true })
+        .focusedSceneValue(\.clearFilters, clearFiltersAction)
         .overlay {
             // Not until the first snapshot has arrived: see
             // `hasLoaded`.
@@ -137,6 +144,12 @@ struct SubjectListScreen: View {
         formMode = .create()
     }
 
+    /// `nil` where there is nothing to clear, which is what greys the menu
+    /// item out rather than offering an action that would do nothing.
+    private var clearFiltersAction: ScreenAction? {
+        guard model.hasActiveFilters else { return nil }
+        return ScreenAction("Clear Filters", perform: model.clearFilters)
+    }
 }
 
 #Preview {

@@ -47,6 +47,9 @@ struct SidebarShell: View {
                 SectionScreen(section: section ?? .home)
             }
         }
+        // What `⌘1`–`⌘4` set. The menu can't reach this state, so the shell
+        // hands the menu a way in.
+        .focusedSceneValue(\.selectSection, SectionSelector { section = $0 })
     }
 }
 
