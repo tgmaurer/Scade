@@ -5,6 +5,8 @@ starting any feature work.
 
 ## Documentation map
 - `docs/SPEC.md` — the v1 functional contract. What the app does.
+- `docs/STATUS.md` — where development stopped and why. Read it before
+  proposing work: iOS and iCloud sync are frozen, not pending.
 - `docs/SPEC-POLISH.md` — look and feel; presentation and interaction only.
 - `docs/SPEC-BACKLOG.md` — behaviour that isn't built and isn't v1.
 - `docs/design/` — mockups and visual references. See its README for what

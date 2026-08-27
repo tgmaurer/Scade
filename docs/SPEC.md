@@ -1,5 +1,8 @@
 # Scade — Build Spec
 
+> **Where this stands:** see [STATUS.md](STATUS.md). This document describes
+> the goal; that one records where development stopped, and why.
+
 Consolidated spec for the from-scratch SwiftUI rebuild of GradeMaster, merging
 architectural decisions with the functional/logic audit of the old app.
 

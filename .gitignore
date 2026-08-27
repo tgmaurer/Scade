@@ -67,3 +67,6 @@ fastlane/test_output
 # every revision of a binary forever, and these change every few minutes.
 # Reference images meant to be kept go in docs/design/ instead.
 /screenshots/
+
+## Release builds made by the README instructions
+build/

@@ -1,10 +1,17 @@
-#if DEBUG
 import Foundation
 import ScadeKit
 
 /// Sample records for `#Preview` blocks.
 ///
-/// Debug-only, so none of it reaches a shipping build.
+/// Compiled in every configuration, not just Debug. It was `#if DEBUG` once,
+/// on the reasonable-sounding grounds that sample data shouldn't ship — but
+/// a `#Preview` body is compiled in Release too, and the 52 of them in this
+/// target are not guarded, so a Release build failed with 57 errors the
+/// first time one was attempted. Guarding this one file and leaving the
+/// previews unguarded is the shape that doesn't work; the alternative is
+/// fifty hand-written `#if DEBUG` fences around blocks that exist to be
+/// read. A few hundred lines of sample structs in a binary that is never
+/// distributed is the cheaper side of that trade.
 enum PreviewData {
     static func education(
         id: Int64 = 1,
@@ -162,4 +169,3 @@ extension CalendarDate {
         CalendarDate(iso8601: text)
     }
 }
-#endif

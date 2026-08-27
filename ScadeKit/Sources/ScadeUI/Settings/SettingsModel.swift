@@ -16,6 +16,17 @@ final class SettingsModel {
 
     var errorMessage: String?
 
+    #if os(macOS)
+    /// Where backups go, if a folder has been chosen (`BackupFolder`).
+    private(set) var backupFolder: URL?
+
+    /// When the last one was written, and where it landed — the second is
+    /// only known for a backup taken this session, which is why "Show in
+    /// Finder" appears after taking one rather than always.
+    private(set) var lastBackup: Date?
+    private(set) var lastBackupFolder: URL?
+    #endif
+
     var isShowingError: Bool {
         get { errorMessage != nil }
         set { if newValue == false { errorMessage = nil } }
@@ -36,6 +47,11 @@ final class SettingsModel {
     /// which reloads.
     func load(from repositories: Repositories) {
         prepareExport(from: repositories)
+
+        #if os(macOS)
+        backupFolder = BackupFolder.current
+        lastBackup = BackupFolder.lastBackup
+        #endif
 
         do {
             educationCount = try repositories.educations.count()
@@ -61,6 +77,31 @@ final class SettingsModel {
             errorMessage = error.localizedDescription
         }
     }
+
+    #if os(macOS)
+    /// Asks for a folder, and remembers it. Cancelling leaves the old one.
+    func chooseBackupFolder() {
+        guard let chosen = BackupFolder.choose() else { return }
+        backupFolder = chosen
+    }
+
+    /// Writes the snapshot and the three CSV tables into the chosen folder.
+    func backUpNow(from repositories: Repositories) {
+        guard let folder = backupFolder else { return }
+
+        do {
+            let written = try BackupFolder.withAccess(to: folder) {
+                try BackupWriter.write(into: $0, from: repositories)
+            }
+
+            BackupFolder.recordBackup()
+            lastBackup = BackupFolder.lastBackup
+            lastBackupFolder = written
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+    #endif
 
     /// Empties the database.
     ///
