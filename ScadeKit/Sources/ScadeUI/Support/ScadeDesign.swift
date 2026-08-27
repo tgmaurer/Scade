@@ -119,6 +119,21 @@ nonisolated enum ScadeDesign {
     /// seeing every education at once — is already served at two or three.
     static let maximumCardColumns: Int = 3
 
+    /// The widest a card grid's content will grow, however wide the window.
+    ///
+    /// Set from the machine the app is used on: a 14" MacBook Pro is 1512pt
+    /// across, less the 150pt sidebar, so a maximised window offers about
+    /// 1362pt of content. The cap sits just above that, which means it never
+    /// takes effect there — three columns of roughly 440pt — and holds tiles
+    /// to that same width on a 27" display instead of stretching them to
+    /// 780pt each. A grade tile at 780pt is a name at one end of the screen
+    /// and a number at the other.
+    ///
+    /// The grid lists only. Home and the detail screens read as documents
+    /// down a single column and are approved as they stand (SPEC-POLISH
+    /// §0.1).
+    static let cardGridMaximumWidth: Double = 1400
+
     // MARK: - Rhythm
     //
     // SwiftUI's defaults are tuned for forms, not for dense data rows, so

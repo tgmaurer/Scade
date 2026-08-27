@@ -75,10 +75,10 @@ because a sandboxed app cannot open a folder it was not handed.
 
 ## Still open, if work resumes
 
-- **SPEC-POLISH §0.1, the last unchecked item**: content is not capped in
-  width, so on a wide window a card puts a subject's name at one end and its
-  average at the other. It reaches Home and all three detail screens.
-  Raised several times, never decided.
+- **The row-width problem on Home and the detail screens.** The three grid
+  lists were capped at 1400pt on 2026-08-27; Home and the details were left
+  full width deliberately, so a card as wide as the window there still puts a
+  subject's name at one end and its average at the other. SPEC-POLISH §2.5.
 - **SPEC-BACKLOG** in full — linked semester counts, education completion
   cascading to subjects, sectioned lists, and the rest.
 - **The iOS layouts**, which are functional and unconsidered.

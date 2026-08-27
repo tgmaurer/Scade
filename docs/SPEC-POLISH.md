@@ -61,13 +61,16 @@ says which section owns the fix.
 - [x] ~~**Subject rows changed height with their contents.**~~ A row with no
       grades sat shorter than one with chips in it. §2.5.
 - [x] ~~**The subject link claimed more than the subject name.**~~ §2.8.
-- [ ] **Padding and spacing throughout.** Space isn't used or distributed
+- [x] ~~**Padding and spacing throughout.** Space isn't used or distributed
       well — cramped where it should breathe, and wide windows leave content
-      stranded. §2.5, §2.6. *The wide-window half is now the open question
-      §2.5's "a row is capped in width" describes, and the education detail
-      is where it finally bites: a card as wide as the window puts a subject
-      name at one end and its average at the other. Undecided — it reaches
-      Home too, which is already approved as it stands.*
+      stranded.~~ §2.5, §2.6. The cramped half was settled over the August
+      padding passes. The wide-window half was open longest and is settled
+      **by splitting it** (2026-08-27): the three grid lists are capped at
+      1400pt and centred, chosen so a 14" MacBook Pro never sees the cap;
+      Home and the detail screens stay full width by decision, because they
+      read as documents rather than grids. *What that leaves unfixed, on
+      purpose: a card as wide as the window on Home and the education detail
+      still puts a subject's name at one end and its average at the other.*
 - [x] ~~**Detail screens are the rawest part of the app.** Every field is the
       same size, and the layout is a stack of ruled rows.~~ All three rebuilt
       2026-08-21 on one structure: `ScrollView` + `DetailSection`, a
@@ -875,6 +878,25 @@ The fix is the iOS inset-grouped idea applied deliberately, not more rules:
   uncapped for now, deliberately — the same shape is on Home, which is
   already approved as it stands, so capping one screen and not the other
   trades a spacing flaw for an inconsistency. Decide it across both.*
+- **A grid is capped in width too — 1400pt** (decided 2026-08-27). Not the
+  same wall as the row above it: a tile past three columns is held by
+  `maximumCardColumns`, so what a very wide window stretches is the tiles
+  themselves, until a grade tile is a name at one end and a number at the
+  other — the row problem arriving by another road. `cardGridMaximumWidth`
+  is set from the machine the app runs on: a 14" MacBook Pro offers about
+  1362pt of content at full width, so the cap sits just above that and never
+  takes effect there. On a 27" display the content centres and the tiles stay
+  the width they are on the laptop. The scroll view stays full width, so the
+  scroller stays on the window edge; only its content is capped.
+
+  **Home and the detail screens are deliberately left uncapped**, which
+  settles the question above by splitting it rather than answering it across
+  both. They read as documents down a single column, they are approved as
+  they stand, and the "decide it across both" worry was that capping one
+  screen and not another trades a flaw for an inconsistency — but a grid and
+  a document are not the same shape, and the grids are where the stretching
+  actually hurts. The row-width finding stands unfixed on Home and on the
+  education detail.
 - **What goes hard right is the number, and only the number.** Everything else
   on a line follows the text before it. Pinning secondary metadata to the
   trailing edge as well leaves a word at each end of a wide row and a void

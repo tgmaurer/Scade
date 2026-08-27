@@ -23,9 +23,15 @@ struct CardGrid<Item: Identifiable, Content: View>: View {
 
     var body: some View {
         GeometryReader { proxy in
+            // The width the grid lays itself out for, which is not always the
+            // width it's been given: past the cap the columns are sized for
+            // the cap, or they'd be computed for a window they aren't going
+            // to fill.
+            let width = min(proxy.size.width, ScadeDesign.cardGridMaximumWidth)
+
             ScrollView {
                 LazyVGrid(
-                    columns: Self.columns(forWidth: proxy.size.width, itemCount: items.count),
+                    columns: Self.columns(forWidth: width, itemCount: items.count),
                     alignment: .leading,
                     spacing: ScadeDesign.cardGridSpacing
                 ) {
@@ -38,6 +44,12 @@ struct CardGrid<Item: Identifiable, Content: View>: View {
                 // it, leaving the scrollbar floating short of the window edge
                 // instead of sitting on it.
                 .padding(ScadeDesign.contentMargin)
+                // Two frames: the first caps the content, the second fills
+                // the window so the first is centred inside it. The scroll
+                // view itself stays full width, so the scroller stays on the
+                // window edge where it belongs.
+                .frame(maxWidth: ScadeDesign.cardGridMaximumWidth)
+                .frame(maxWidth: .infinity)
             }
         }
     }
