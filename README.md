@@ -1,7 +1,19 @@
-# Scade
+<div align="center">
 
-A weighted grade tracker for macOS, on the Swiss 1–6 scale. Educations hold
-subjects, subjects hold grades, and every average is weighted on the way up.
+<img src="assets/icon/Scade-iOS-Default-1024x1024@1x.png" alt="Scade icon" width="128"/>
+
+</div>
+
+<h1 align="center">Scade</h1>
+
+<div align="center">
+
+A weighted grade tracker for macOS, on the Swiss 1–6 scale.
+
+</div>
+
+Educations hold subjects, subjects hold grades, and every average is weighted
+on the way up.
 
 It is built to be used, not published: there is no release download and no
 App Store listing. You build it once and keep it in `/Applications` like any
