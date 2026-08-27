@@ -33,6 +33,7 @@ struct SettingsScreen: View {
                         Button("Choose…", action: model.chooseBackupFolder)
                     }
                 }
+                .padding(.top, ScadeDesign.formButtonRowTopPadding)
 
                 Button("Back Up Now") {
                     model.backUpNow(from: repositories)

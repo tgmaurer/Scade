@@ -152,6 +152,14 @@ nonisolated enum ScadeDesign {
     /// just after the word naming it, and in the same place on every row.
     static let formLabelWidth: Double = 96
 
+    /// Added above a form row whose trailing control is a button.
+    ///
+    /// A grouped `Form` insets its first row for the height of *text*, and a
+    /// button is taller than that — so the button ends up nearer the top of
+    /// the section than the divider below it. Measured at 3pt out on the
+    /// backup folder row.
+    static let formButtonRowTopPadding: Double = 3
+
     /// How tall a form's paragraph field stands.
     ///
     /// About four lines: enough that a description reads as a paragraph
