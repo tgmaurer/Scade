@@ -15,28 +15,14 @@ struct EducationDetailScreen: View {
     var body: some View {
         @Bindable var model = model
 
-        List {
+        DetailScroll {
             if let summary = model.summary {
-                EducationSummarySection(summary: summary, average: model.average)
+                educationSummarySection(summary: summary, average: model.average)
 
-                Section("Subjects") {
-                    if summary.subjects.isEmpty {
-                        Text("No subjects yet.")
-                            .foregroundStyle(.secondary)
-                    } else {
-                        ForEach(summary.subjects) { subjectGrades in
-                            NavigationLink(value: subjectGrades.subject) {
-                                EducationSubjectRowView(
-                                    subjectGrades: subjectGrades,
-                                    totalSemesters: summary.education.semesters,
-                                    average: GradeCalculator.subjectAverage(of: subjectGrades)
-                                )
-                            }
-                        }
-                    }
-                }
+                subjects(of: summary)
             }
         }
+        .accessibilityIdentifier(AccessibilityID.Education.detail)
         .navigationTitle(model.summary?.education.name ?? education.name)
         .toolbar {
             ToolbarItem {
@@ -69,20 +55,59 @@ struct EducationDetailScreen: View {
                 }
             }
         }
-        .sheet(item: $formMode, onDismiss: reload) { mode in
+        .sheet(item: $formMode) { mode in
             EducationFormScreen(mode: mode)
         }
-        .sheet(item: $subjectFormMode, onDismiss: reload) { mode in
+        .sheet(item: $subjectFormMode) { mode in
             SubjectFormScreen(mode: mode)
         }
         .alert("Something went wrong", isPresented: $model.isShowingError) {
         } message: {
             Text(model.errorMessage ?? "")
         }
-        .onAppear(perform: reload)
+        // The menu bar's version of the three buttons above
+        // (SPEC-POLISH §1.2).
+        .focusedSceneValue(\.newRecord, ScreenAction("New Subject", perform: startAddingSubject))
+        .focusedSceneValue(\.editRecord, ScreenAction("Edit Education", perform: startEditing))
+        .focusedSceneValue(\.deleteRecord, ScreenAction("Delete Education…") { model.isConfirmingDeletion = true })
+        .task {
+            await model.observe(id: education.id, from: repositories)
+        }
         .onChange(of: model.wasDeleted) {
             if model.wasDeleted {
                 dismiss()
+            }
+        }
+    }
+
+    /// The education's subjects, as one card of many rows.
+    ///
+    /// A list and not a grid, unlike the three top-level screens: those are
+    /// collections you arrive at to pick from, and this is one record's
+    /// contents, read down a column while the header above it stays in view.
+    /// §2.5's "one card of many rows versus many cards of one row" — this is
+    /// the first kind.
+    @ViewBuilder
+    private func subjects(of summary: EducationSummary) -> some View {
+        DetailSection(title: "Subjects") {
+            if summary.subjects.isEmpty {
+                DetailSectionText {
+                    Text("No subjects yet.")
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                ForEach(summary.subjects.enumerated(), id: \.element.id) { index, subjectGrades in
+                    DetailCardRow(
+                        position: CardRowPosition(index: index, count: summary.subjects.count)
+                    ) {
+                        CardRowLink(destination: subjectGrades.subject) {
+                            EducationSubjectRowView(
+                                subjectGrades: subjectGrades,
+                                average: GradeCalculator.subjectAverage(of: subjectGrades)
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -97,9 +122,6 @@ struct EducationDetailScreen: View {
         subjectFormMode = .create(educationId: id)
     }
 
-    private func reload() {
-        model.load(id: education.id, from: repositories)
-    }
 }
 
 #Preview {

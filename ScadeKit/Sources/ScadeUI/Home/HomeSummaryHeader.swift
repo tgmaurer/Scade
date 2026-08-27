@@ -15,23 +15,35 @@ struct HomeSummaryHeader: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: ScadeDesign.iconTextSpacing) {
-            HStack(alignment: .firstTextBaseline) {
-                VStack(alignment: .leading) {
-                    Text(education.name)
-                        .font(.title2)
-                        .bold()
-
-                    if let institution = education.institution, institution.isEmpty == false {
-                        Text(institution)
-                            .font(ScadeDesign.rowSecondary)
-                            .foregroundStyle(.secondary)
-                    }
-                }
+            // Centred, not baseline-aligned. Sharing a baseline with a number
+            // this much larger pins the name's *bottom* to the number's, so
+            // all the slack lands above it and the name reads as having
+            // slipped down. Centred, the space is split evenly and the name
+            // sits in the middle of the figure it belongs to.
+            //
+            // The institution is a row of its own rather than stacked with
+            // the name inside this one, which is what made the name the top
+            // of a two-line block instead of a thing to centre. It lands in
+            // the same place on screen either way.
+            HStack(alignment: .center) {
+                // The name is the way to the education; the rest of the card
+                // is figures and stays inert (§2.8).
+                DetailButton(
+                    title: education.name,
+                    destination: education,
+                    font: .title2.bold()
+                )
 
                 Spacer(minLength: 0)
 
                 AverageLabel(average)
                     .font(ScadeDesign.headlineNumber)
+            }
+
+            if let institution = education.institution, institution.isEmpty == false {
+                Text(institution)
+                    .font(ScadeDesign.rowSecondary)
+                    .foregroundStyle(.secondary)
             }
 
             HStack(spacing: ScadeDesign.cardCornerRadius) {
@@ -53,7 +65,6 @@ struct HomeSummaryHeader: View {
                 .foregroundStyle(.secondary)
             }
         }
-        .padding(.vertical, ScadeDesign.iconTextSpacing)
     }
 }
 

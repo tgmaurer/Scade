@@ -56,13 +56,12 @@ struct GradeFormScreen: View {
                 }
 
                 Section("Description") {
-                    TextField("Description", text: $model.details, axis: .vertical)
-                        .lineLimit(3...)
-                        .labelsHidden()
+                    FormTextEditor(title: "Description", text: $model.details)
                     FieldErrorLabel(model.message(for: .description))
                 }
             }
             .formStyle(.grouped)
+            .saveShortcut(save)
             .navigationTitle(model.mode.title)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

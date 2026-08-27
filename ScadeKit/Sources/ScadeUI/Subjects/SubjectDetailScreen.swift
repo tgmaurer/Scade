@@ -7,6 +7,7 @@ struct SubjectDetailScreen: View {
 
     @Environment(\.repositories) private var repositories
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.navigate) private var navigate
 
     @State private var model = SubjectDetailModel()
     @State private var formMode: SubjectFormMode?
@@ -15,32 +16,15 @@ struct SubjectDetailScreen: View {
     var body: some View {
         @Bindable var model = model
 
-        List {
+        DetailScroll {
             if let summary = model.summary {
-                SubjectSummarySection(summary: summary, average: model.average)
+                subjectSummarySection(summary: summary, average: model.average)
 
-                Section("Grades") {
-                    if summary.grades.isEmpty {
-                        Text("No grades yet.")
-                            .foregroundStyle(.secondary)
-                    } else {
-                        ForEach(summary.grades) { grade in
-                            NavigationLink(value: grade) {
-                                GradeRowView(
-                                    item: GradeListItem(
-                                        grade: grade,
-                                        subject: summary.subject,
-                                        education: summary.education
-                                    ),
-                                    showsContext: false
-                                )
-                            }
-                        }
-                    }
-                }
+                grades(of: summary)
             }
         }
         .navigationTitle(model.summary?.subject.name ?? subject.name)
+        .accessibilityIdentifier(AccessibilityID.Subject.detail)
         .toolbar {
             ToolbarItem {
                 // §4 hides quick-add on a completed subject.
@@ -50,6 +34,7 @@ struct SubjectDetailScreen: View {
 
             ToolbarItem {
                 Button("Edit", systemImage: "pencil", action: startEditing)
+                    .accessibilityIdentifier(AccessibilityID.Subject.edit)
             }
 
             ToolbarItem {
@@ -71,20 +56,68 @@ struct SubjectDetailScreen: View {
                 }
             }
         }
-        .sheet(item: $formMode, onDismiss: reload) { mode in
+        .sheet(item: $formMode) { mode in
             SubjectFormScreen(mode: mode)
         }
-        .sheet(item: $gradeFormMode, onDismiss: reload) { mode in
+        .sheet(item: $gradeFormMode) { mode in
             GradeFormScreen(mode: mode)
         }
         .alert("Something went wrong", isPresented: $model.isShowingError) {
         } message: {
             Text(model.errorMessage ?? "")
         }
-        .onAppear(perform: reload)
+        // The menu bar's version of the three buttons above, plus the
+        // way up to the education this belongs to (SPEC-POLISH §1.2).
+        .focusedSceneValue(\.newRecord, newGradeAction)
+        .focusedSceneValue(\.editRecord, ScreenAction("Edit Subject", perform: startEditing))
+        .focusedSceneValue(\.deleteRecord, ScreenAction("Delete Subject…") { model.isConfirmingDeletion = true })
+        .focusedSceneValue(\.openParent, openEducationAction)
+        .task {
+            await model.observe(id: subject.id, from: repositories)
+        }
         .onChange(of: model.wasDeleted) {
             if model.wasDeleted {
                 dismiss()
+            }
+        }
+    }
+
+    /// The subject's grades, as one card of many rows.
+    ///
+    /// A list, like the education detail's subjects and for the same reason:
+    /// this is one record's contents, read down a column while the header
+    /// above it stays in view. The top-level Grades screen is a grid, which
+    /// §2.5 records as an override taken on that screen alone — it does not
+    /// follow a grade wherever a grade appears.
+    ///
+    /// The rows show no parent: the screen around them already says which
+    /// subject and which education this is, which is what `showsContext`
+    /// exists to drop.
+    @ViewBuilder
+    private func grades(of summary: SubjectSummary) -> some View {
+        DetailSection(title: "Grades") {
+            if summary.grades.isEmpty {
+                DetailSectionText {
+                    Text("No grades yet.")
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                ForEach(summary.grades.enumerated(), id: \.element.id) { index, grade in
+                    DetailCardRow(
+                        position: CardRowPosition(index: index, count: summary.grades.count)
+                    ) {
+                        CardRowLink(destination: grade) {
+                            GradeRowView(
+                                item: GradeListItem(
+                                    grade: grade,
+                                    subject: summary.subject,
+                                    education: summary.education
+                                ),
+                                showsContext: false
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -99,7 +132,17 @@ struct SubjectDetailScreen: View {
         gradeFormMode = .create(subjectId: id)
     }
 
-    private func reload() {
-        model.load(id: subject.id, from: repositories)
+    /// `nil` on a completed subject, matching the toolbar button §4 disables
+    /// there — the menu shows the command greyed rather than dropping it.
+    private var newGradeAction: ScreenAction? {
+        guard model.summary?.subject.completed == false else { return nil }
+        return ScreenAction("New Grade", perform: startAddingGrade)
+    }
+
+    /// `⌘↑`, the way Finder's Enclosing Folder works: the record this one
+    /// sits inside.
+    private var openEducationAction: ScreenAction? {
+        guard let education = model.summary?.education else { return nil }
+        return ScreenAction("Open Education") { navigate(education) }
     }
 }

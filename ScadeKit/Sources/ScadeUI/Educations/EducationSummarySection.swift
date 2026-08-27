@@ -1,59 +1,43 @@
 import ScadeKit
 import SwiftUI
 
-/// The education's own details, above its subject list.
-struct EducationSummarySection: View {
-    let summary: EducationSummary
-    let average: Double?
-
-    private var education: Education { summary.education }
-
-    var body: some View {
-        Section {
-            LabeledContent("Average") {
-                AverageLabel(average)
-            }
-
-            if let institution = education.institution, institution.isEmpty == false {
-                LabeledContent("Institution", value: institution)
-            }
-
-            LabeledContent("Starts") {
-                Text(education.startDate.startOfDay(), format: .dateTime.day().month().year())
-            }
-
-            LabeledContent("Ends") {
-                Text(education.endDate.startOfDay(), format: .dateTime.day().month().year())
-            }
-
-            LabeledContent("Semesters") {
-                Text(education.semesters.formatted(.number.grouping(.never)))
-            }
-
-            LabeledContent("Subjects") {
-                Text(summary.subjectCount.formatted(.number.grouping(.never)))
-            }
-
-            LabeledContent("Grades") {
-                Text(summary.gradeCount.formatted(.number.grouping(.never)))
-            }
-
-            LabeledContent("Status") {
-                CompletionBadge(isCompleted: education.completed)
-            }
+/// The education's own details, above its subject list: the identity card,
+/// and the description under a header of its own where there is one.
+///
+/// The content lives in `EducationDetailHeader`; this is the card plumbing
+/// around it, kept separate so the header can be rendered and measured on its
+/// own.
+///
+/// A function rather than a `View`, for the reason `DetailSection` is one:
+/// `DetailScroll` pins section headers, and a `LazyVStack` pins only a
+/// `Section` it can see. Sections wrapped in a view of their own are
+/// invisible to it, and this held two of them.
+@ViewBuilder
+func educationSummarySection(summary: EducationSummary, average: Double?) -> some View {
+    DetailSection {
+        DetailSectionText {
+            EducationDetailHeader(summary: summary, average: average)
         }
+    }
 
-        if let details = education.description, details.isEmpty == false {
-            Section("Description") {
+    if let details = summary.education.description, details.isEmpty == false {
+        // A card of its own rather than a last paragraph of the one above. A
+        // description runs to 2500 characters, which would swamp the identity
+        // it was meant to qualify.
+        DetailSection(title: "Description") {
+            DetailSectionText {
                 Text(details)
+                    // The longest free text the app holds, and the one most
+                    // likely to be wanted elsewhere.
+                    .textSelection(.enabled)
             }
         }
     }
 }
 
 #Preview {
-    List {
-        EducationSummarySection(
+    DetailScroll {
+        educationSummarySection(
             summary: EducationSummary(education: PreviewData.education(), subjects: []),
             average: 5.25
         )

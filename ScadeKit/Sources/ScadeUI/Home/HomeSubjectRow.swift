@@ -1,31 +1,59 @@
 import ScadeKit
 import SwiftUI
 
-/// One subject on the dashboard: what it's called, and how it's going.
+/// One subject on the dashboard: what it's called, how it's going, and — where
+/// there's width for it — the grades behind the average.
 ///
-/// The semester isn't repeated here — the section it sits in already says it
-/// (SPEC-POLISH §2.3).
+/// Nothing in the row is a `NavigationLink`; the name and the chips are
+/// buttons that push. See `Navigator` for why, and SPEC-POLISH §2.8.
+///
+/// The semester isn't repeated here — the section it sits in already says it.
 struct HomeSubjectRow: View {
     let item: HomeSubject
+    let showsGrades: Bool
+    let onAddGrade: () -> Void
 
     var body: some View {
-        NavigationLink(value: item.subject) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(item.subject.name)
-                    .font(ScadeDesign.rowTitle)
+        HStack(alignment: .center, spacing: ScadeDesign.rowSpacing) {
+            // The frame reserves the column; the button inside stays the
+            // width of the name, so the empty rest of the column isn't
+            // clickable. Nothing here may have an infinite ideal width — the
+            // priority means it's served first, and a greedy view would take
+            // the whole row and leave the grades and average with nothing.
+            DetailButton(title: item.subject.name, destination: item.subject)
+                .frame(minWidth: ScadeDesign.subjectColumnWidth, alignment: .leading)
+                .layoutPriority(1)
 
-                Spacer(minLength: 0)
-
-                AverageLabel(item.average)
-                    .font(ScadeDesign.value)
+            if showsGrades {
+                HomeSubjectGrades(
+                    grades: item.grades,
+                    // §4 hides quick-add once the subject is completed.
+                    canAddGrade: item.subject.completed == false,
+                    onAddGrade: onAddGrade
+                )
             }
+
+            Spacer(minLength: 0)
+
+            AverageLabel(item.average)
+                .font(ScadeDesign.value)
+                .bold()
         }
+        // A subject with no grades has no chips to give the row its height, so
+        // it would sit shorter than its neighbours. A chip is the tallest
+        // thing the row can hold, so that's the floor.
+        //
+        // The breathing room around it belongs to whatever the row sits in —
+        // `DetailCardRow` on macOS, the list row on iOS — the same way every
+        // other row in the app leaves its padding to its container.
+        .frame(minHeight: ScadeDesign.chipHeight)
     }
 }
 
 #Preview {
     List {
-        HomeSubjectRow(item: PreviewData.homeSubject())
-        HomeSubjectRow(item: PreviewData.homeSubject(failing: true))
+        HomeSubjectRow(item: PreviewData.homeSubject(), showsGrades: true) {}
+        HomeSubjectRow(item: PreviewData.homeSubject(failing: true), showsGrades: true) {}
+        HomeSubjectRow(item: PreviewData.homeSubject(), showsGrades: false) {}
     }
 }

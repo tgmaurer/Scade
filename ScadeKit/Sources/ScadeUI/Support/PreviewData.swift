@@ -1,10 +1,17 @@
-#if DEBUG
 import Foundation
 import ScadeKit
 
 /// Sample records for `#Preview` blocks.
 ///
-/// Debug-only, so none of it reaches a shipping build.
+/// Compiled in every configuration, not just Debug. It was `#if DEBUG` once,
+/// on the reasonable-sounding grounds that sample data shouldn't ship — but
+/// a `#Preview` body is compiled in Release too, and the 52 of them in this
+/// target are not guarded, so a Release build failed with 57 errors the
+/// first time one was attempted. Guarding this one file and leaving the
+/// previews unguarded is the shape that doesn't work; the alternative is
+/// fifty hand-written `#if DEBUG` fences around blocks that exist to be
+/// read. A few hundred lines of sample structs in a binary that is never
+/// distributed is the cheaper side of that trade.
 enum PreviewData {
     static func education(
         id: Int64 = 1,
@@ -26,7 +33,47 @@ enum PreviewData {
         return education
     }
 
+    static func subjectRow(
+        id: Int64 = 1,
+        name: String = "Analysis",
+        semester: Int = 3,
+        weight: Double = 1.0,
+        completed: Bool = false,
+        grades: [Grade] = [Grade(subjectId: 1, value: 5.5, date: .today())]
+    ) -> SubjectRow {
+        var subject = Subject(educationId: 1, name: name, semester: semester, weight: weight)
+        subject.id = id
+        subject.completed = completed
+
+        return SubjectRow(
+            SubjectSummary(subject: subject, education: education(), grades: grades)
+        )
+    }
+
+    static func gradeItem(
+        id: Int64 = 1,
+        value: Double = 5.5,
+        weight: Double = 1.0,
+        details: String? = "Schlussprüfung",
+        subjectName: String = "Analysis"
+    ) -> GradeListItem {
+        let grade = Grade(
+            id: id,
+            subjectId: 1,
+            value: value,
+            weight: weight,
+            description: details,
+            date: .today()
+        )
+
+        var subject = Subject(educationId: 1, name: subjectName, semester: 2)
+        subject.id = 1
+
+        return GradeListItem(grade: grade, subject: subject, education: education())
+    }
+
     static func educationRow(
+        id: Int64 = 1,
         average: Double?,
         subjectCount: Int = 4,
         completed: Bool = false
@@ -39,7 +86,7 @@ enum PreviewData {
         }
 
         return EducationRow(
-            EducationSummary(education: education(completed: completed), subjects: subjects)
+            EducationSummary(education: education(id: id, completed: completed), subjects: subjects)
         )
     }
 
@@ -122,4 +169,3 @@ extension CalendarDate {
         CalendarDate(iso8601: text)
     }
 }
-#endif

@@ -18,8 +18,11 @@ struct SubjectFormScreen: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Name", text: $model.name)
-                        .accessibilityIdentifier(AccessibilityID.Subject.name)
+                    FormTextField(
+                        title: "Name",
+                        text: $model.name,
+                        identifier: AccessibilityID.Subject.name
+                    )
                     FieldErrorLabel(model.message(for: .name))
 
                     if model.mode.locksEducation {
@@ -34,13 +37,11 @@ struct SubjectFormScreen: View {
                 }
 
                 Section {
-                    LabeledContent("Semester") {
-                        TextField("Semester", value: $model.semester, format: .number)
-                            .numberPadKeyboard()
-                            .multilineTextAlignment(.trailing)
-                            .labelsHidden()
-                            .accessibilityIdentifier(AccessibilityID.Subject.semester)
-                    }
+                    IntegerField(
+                        title: "Semester",
+                        value: $model.semester,
+                        identifier: AccessibilityID.Subject.semester
+                    )
                     FieldErrorLabel(model.message(for: .semester))
 
                     if let education = model.selectedEducation {
@@ -60,13 +61,12 @@ struct SubjectFormScreen: View {
                 }
 
                 Section("Description") {
-                    TextField("Description", text: $model.details, axis: .vertical)
-                        .lineLimit(3...)
-                        .labelsHidden()
+                    FormTextEditor(title: "Description", text: $model.details)
                     FieldErrorLabel(model.message(for: .description))
                 }
             }
             .formStyle(.grouped)
+            .saveShortcut(save)
             .navigationTitle(model.mode.title)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

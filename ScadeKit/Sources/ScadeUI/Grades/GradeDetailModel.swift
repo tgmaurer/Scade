@@ -15,11 +15,16 @@ final class GradeDetailModel {
         set { if newValue == false { errorMessage = nil } }
     }
 
-    func load(id: Int64?, from repositories: Repositories) {
+    /// Follows this grade for as long as the screen is on screen — its own
+    /// edits included, so an edit here needs no reload. See
+    /// `AppDatabase.observe`.
+    func observe(id: Int64?, from repositories: Repositories) async {
         guard let id else { return }
 
         do {
-            item = try repositories.grades.listItem(id: id)
+            for try await item in repositories.database.observeGrade(id: id) {
+                self.item = item
+            }
         } catch {
             errorMessage = error.localizedDescription
         }

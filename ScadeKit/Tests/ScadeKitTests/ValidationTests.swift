@@ -328,6 +328,14 @@ struct GradeValidatorTests {
         )
     }
 
+    @Test("Accepts a grade with no description at all")
+    func acceptsNoDescription() {
+        #expect(
+            GradeValidator.validate(Fixture.grade(subjectId: 1, description: nil), in: education)
+                .isEmpty
+        )
+    }
+
     @Test("Reports every broken rule together")
     func reportsAllErrors() {
         let grade = Fixture.grade(

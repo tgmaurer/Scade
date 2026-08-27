@@ -16,6 +16,17 @@ final class SettingsModel {
 
     var errorMessage: String?
 
+    #if os(macOS)
+    /// Where backups go, if a folder has been chosen (`BackupFolder`).
+    private(set) var backupFolder: URL?
+
+    /// When the last one was written, and where it landed — the second is
+    /// only known for a backup taken this session, which is why "Show in
+    /// Finder" appears after taking one rather than always.
+    private(set) var lastBackup: Date?
+    private(set) var lastBackupFolder: URL?
+    #endif
+
     var isShowingError: Bool {
         get { errorMessage != nil }
         set { if newValue == false { errorMessage = nil } }
@@ -26,8 +37,21 @@ final class SettingsModel {
         "Scade-\(CalendarDate.today().iso8601String).sqlite"
     }
 
+    /// The one screen still on fetch-on-appear, deliberately.
+    ///
+    /// Loading here *writes a file* — the export snapshot — so an observation
+    /// would rewrite it on every change anywhere in the database. Settings
+    /// also has nothing pushed on top of it, so the staleness that drove the
+    /// rest of the app onto `AppDatabase.observe` can't happen here: the only
+    /// thing that changes the count while it's open is the button below,
+    /// which reloads.
     func load(from repositories: Repositories) {
         prepareExport(from: repositories)
+
+        #if os(macOS)
+        backupFolder = BackupFolder.current
+        lastBackup = BackupFolder.lastBackup
+        #endif
 
         do {
             educationCount = try repositories.educations.count()
@@ -53,6 +77,31 @@ final class SettingsModel {
             errorMessage = error.localizedDescription
         }
     }
+
+    #if os(macOS)
+    /// Asks for a folder, and remembers it. Cancelling leaves the old one.
+    func chooseBackupFolder() {
+        guard let chosen = BackupFolder.choose() else { return }
+        backupFolder = chosen
+    }
+
+    /// Writes the snapshot and the three CSV tables into the chosen folder.
+    func backUpNow(from repositories: Repositories) {
+        guard let folder = backupFolder else { return }
+
+        do {
+            let written = try BackupFolder.withAccess(to: folder) {
+                try BackupWriter.write(into: $0, from: repositories)
+            }
+
+            BackupFolder.recordBackup()
+            lastBackup = BackupFolder.lastBackup
+            lastBackupFolder = written
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+    #endif
 
     /// Empties the database.
     ///

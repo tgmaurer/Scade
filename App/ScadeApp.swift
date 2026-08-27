@@ -43,8 +43,19 @@ struct ScadeApp: App {
     }
 
     var body: some Scene {
-        WindowGroup {
+        WindowGroup(id: ScadeWindow.main) {
             RootView(repositories: repositories)
         }
+        // The whole menu bar (SPEC-POLISH §1), declared in ScadeUI so this
+        // target stays a shell that opens a database.
+        .commands { ScadeCommands() }
+
+        // macOS only, and the reason Settings has no sidebar row: this is
+        // what puts "Scade ▸ Settings…" in the app menu and answers ⌘,.
+        #if os(macOS)
+        Settings {
+            SettingsWindow(repositories: repositories)
+        }
+        #endif
     }
 }

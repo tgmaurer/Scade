@@ -7,6 +7,7 @@ struct GradeDetailScreen: View {
 
     @Environment(\.repositories) private var repositories
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.navigate) private var navigate
 
     @State private var model = GradeDetailModel()
     @State private var formMode: GradeFormMode?
@@ -14,57 +15,32 @@ struct GradeDetailScreen: View {
     var body: some View {
         @Bindable var model = model
 
-        List {
+        DetailScroll {
             if let item = model.item {
-                Section {
-                    LabeledContent("Grade") {
-                        GradeValueLabel(item.grade.value)
-                    }
-
-                    LabeledContent("Weight") {
-                        WeightLabel(item.grade.weight)
-                    }
-
-                    LabeledContent("Date") {
-                        Text(
-                            item.grade.date.startOfDay(),
-                            format: .dateTime.day().month().year()
-                        )
-                    }
-                }
-
-                Section("Subject") {
-                    LabeledContent("Name", value: item.subject.name)
-
-                    LabeledContent("Semester") {
-                        Text("\(item.subject.semester.formatted(.number.grouping(.never))) of \(item.education.semesters.formatted(.number.grouping(.never)))")
-                    }
-
-                    LabeledContent("Status") {
-                        CompletionBadge(isCompleted: item.subject.completed)
-                    }
-                }
-
-                Section("Education") {
-                    LabeledContent("Name", value: item.education.name)
-
-                    if let institution = item.education.institution, institution.isEmpty == false {
-                        LabeledContent("Institution", value: institution)
-                    }
-
-                    LabeledContent("Status") {
-                        CompletionBadge(isCompleted: item.education.completed)
+                DetailSection {
+                    DetailSectionText {
+                        GradeDetailHeader(item: item)
                     }
                 }
 
                 if let details = item.grade.description, details.isEmpty == false {
-                    Section("Description") {
-                        Text(details)
+                    // A card of its own, in full — the one place the whole
+                    // description lives. Every list and grid holds it to a
+                    // line (§2.4).
+                    DetailSection(title: "Description") {
+                        DetailSectionText {
+                            Text(details)
+                                .textSelection(.enabled)
+                        }
                     }
                 }
             }
         }
-        .navigationTitle("Grade")
+        // The most specific thing that names it, the same rule the grades
+        // list heads a tile with: what the grade was for, or failing that
+        // the day it happened. It read "Grade" on every one of them.
+        .navigationTitle(title)
+        .accessibilityIdentifier(AccessibilityID.Grade.detail)
         .toolbar {
             ToolbarItem {
                 Button("Edit", systemImage: "pencil", action: startEditing)
@@ -87,14 +63,21 @@ struct GradeDetailScreen: View {
                 }
             }
         }
-        .sheet(item: $formMode, onDismiss: reload) { mode in
+        .sheet(item: $formMode) { mode in
             GradeFormScreen(mode: mode)
         }
         .alert("Something went wrong", isPresented: $model.isShowingError) {
         } message: {
             Text(model.errorMessage ?? "")
         }
-        .onAppear(perform: reload)
+        // The menu bar's version of the buttons above, plus the way up
+        // to the subject this grade belongs to (SPEC-POLISH §1.2).
+        .focusedSceneValue(\.editRecord, ScreenAction("Edit Grade", perform: startEditing))
+        .focusedSceneValue(\.deleteRecord, ScreenAction("Delete Grade…") { model.isConfirmingDeletion = true })
+        .focusedSceneValue(\.openParent, openSubjectAction)
+        .task {
+            await model.observe(id: grade.id, from: repositories)
+        }
         .onChange(of: model.wasDeleted) {
             if model.wasDeleted {
                 dismiss()
@@ -102,12 +85,23 @@ struct GradeDetailScreen: View {
         }
     }
 
+    private var title: String {
+        if let details = model.item?.grade.description, details.isEmpty == false {
+            return details
+        }
+
+        let date = model.item?.grade.date ?? grade.date
+        return date.startOfDay().formatted(.dateTime.day().month().year())
+    }
+
     private func startEditing() {
         guard let grade = model.item?.grade else { return }
         formMode = .edit(grade)
     }
 
-    private func reload() {
-        model.load(id: grade.id, from: repositories)
+    /// `⌘↑` — the subject this grade was given in.
+    private var openSubjectAction: ScreenAction? {
+        guard let subject = model.item?.subject else { return nil }
+        return ScreenAction("Open Subject") { navigate(subject) }
     }
 }

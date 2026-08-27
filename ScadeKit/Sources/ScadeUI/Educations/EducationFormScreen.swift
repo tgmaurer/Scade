@@ -18,12 +18,18 @@ struct EducationFormScreen: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Name", text: $model.name)
-                        .accessibilityIdentifier(AccessibilityID.Education.name)
+                    FormTextField(
+                        title: "Name",
+                        text: $model.name,
+                        identifier: AccessibilityID.Education.name
+                    )
                     FieldErrorLabel(model.message(for: .name))
 
-                    TextField("Institution", text: $model.institution)
-                        .accessibilityIdentifier(AccessibilityID.Education.institution)
+                    FormTextField(
+                        title: "Institution",
+                        text: $model.institution,
+                        identifier: AccessibilityID.Education.institution
+                    )
                 }
 
                 Section {
@@ -39,13 +45,11 @@ struct EducationFormScreen: View {
                     )
                     FieldErrorLabel(model.message(for: .endDate))
 
-                    LabeledContent("Semesters") {
-                        TextField("Semesters", value: $model.semesters, format: .number)
-                            .numberPadKeyboard()
-                            .multilineTextAlignment(.trailing)
-                            .labelsHidden()
-                            .accessibilityIdentifier(AccessibilityID.Education.semesters)
-                    }
+                    IntegerField(
+                        title: "Semesters",
+                        value: $model.semesters,
+                        identifier: AccessibilityID.Education.semesters
+                    )
                     FieldErrorLabel(model.message(for: .semesters))
                 }
 
@@ -58,13 +62,12 @@ struct EducationFormScreen: View {
                 }
 
                 Section("Description") {
-                    TextField("Description", text: $model.details, axis: .vertical)
-                        .lineLimit(3...)
-                        .labelsHidden()
+                    FormTextEditor(title: "Description", text: $model.details)
                     FieldErrorLabel(model.message(for: .description))
                 }
             }
             .formStyle(.grouped)
+            .saveShortcut(save)
             .navigationTitle(model.mode.title)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

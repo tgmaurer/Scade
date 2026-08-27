@@ -1,0 +1,127 @@
+{
+  "fill" : {
+    "automatic-gradient" : "srgb:1.00000,1.00000,1.00000,1.00000"
+  },
+  "groups" : [
+    {
+      "hidden" : true,
+      "layers" : [
+        {
+          "hidden" : false,
+          "image-name" : "scade-icon-split-1024.png",
+          "name" : "scade-icon-split-1024",
+          "position" : {
+            "scale" : 1.2,
+            "translation-in-points" : [
+              0,
+              -35.984442269347824
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "hidden" : false,
+      "layers" : [
+        {
+          "fill" : "automatic",
+          "image-name" : "fragment-board-1024.png",
+          "name" : "fragment-board-1024",
+          "opacity-specializations" : [
+            {
+              "value" : 1
+            },
+            {
+              "appearance" : "dark",
+              "value" : 1
+            }
+          ],
+          "position" : {
+            "scale" : 1.15,
+            "translation-in-points" : [
+              0,
+              -89.79678487583908
+            ]
+          }
+        },
+        {
+          "hidden" : true,
+          "image-name" : "fragment-crown-1024.png",
+          "name" : "fragment-crown-1024",
+          "opacity-specializations" : [
+            {
+              "value" : 1
+            },
+            {
+              "appearance" : "dark",
+              "value" : 1
+            }
+          ],
+          "position" : {
+            "scale" : 1.2,
+            "translation-in-points" : [
+              1.2000000000000455,
+              99
+            ]
+          }
+        },
+        {
+          "fill" : "automatic",
+          "hidden" : false,
+          "image-name" : "fragment-crown-pentagon-1024.png",
+          "name" : "fragment-crown-pentagon-1024",
+          "position" : {
+            "scale" : 1.15,
+            "translation-in-points" : [
+              0,
+              122.48049529333457
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "hidden" : true,
+      "layers" : [
+        {
+          "image-name" : "scade-icon-split-1024 2.png",
+          "name" : "scade-icon-split-1024 2",
+          "position" : {
+            "scale" : 1.15,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : "shared"
+  }
+}

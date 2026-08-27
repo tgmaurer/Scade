@@ -8,6 +8,15 @@ import SwiftUI
 /// average to follow the filter.
 @Observable
 final class HomeModel {
+    /// Whether the first snapshot has arrived.
+    ///
+    /// An observation is asynchronous, so a screen is briefly on screen with
+    /// nothing in it — and the empty state would flash "nothing here yet"
+    /// every time you switched sections, before the data it was wrong about
+    /// arrived a frame later. Nothing at all is the honest thing to draw
+    /// while there is nothing to say (SPEC-POLISH §2.7).
+    private(set) var hasLoaded = false
+
     private(set) var educations: [Education] = []
     private(set) var summary: EducationSummary?
 
@@ -20,7 +29,25 @@ final class HomeModel {
     /// changes.
     private(set) var semesters: [HomeSemester] = []
 
-    var selectedEducationId: Int64? { didSet { refresh() } }
+    /// No `didSet` refetch: the screen's `task` is keyed on this, so changing
+    /// it restarts the observation against the education now chosen. The
+    /// `didSet` that *is* here only writes the choice down, so leaving Home
+    /// and coming back — or relaunching — returns to it. See
+    /// `EducationSelectionStore`.
+    var selectedEducationId: Int64? {
+        didSet { selectionStore.remember(selectedEducationId) }
+    }
+
+    private let selectionStore: EducationSelectionStore
+
+    init(selectionStore: EducationSelectionStore = .shared) {
+        self.selectionStore = selectionStore
+        // Assigning in `init` doesn't call `didSet`, so restoring the
+        // remembered choice doesn't write it straight back.
+        selectedEducationId = selectionStore.remembered()
+    }
+
+    /// Narrows what's already in hand, so it needs no query of its own.
     var semester: Int? { didSet { recompute() } }
 
     var errorMessage: String?
@@ -49,56 +76,50 @@ final class HomeModel {
         selectedEducation.map { $0.completed == false } ?? false
     }
 
-    func load(from repositories: Repositories) {
+    /// Follows the chosen education for as long as the screen is on screen.
+    /// See `AppDatabase.observe`.
+    func observe(_ repositories: Repositories) async {
         do {
-            educations = try repositories.educations.all()
-
-            // Default to the newest education, and drop a selection whose
-            // education has since been deleted.
-            if selectedEducationId == nil
-                || educations.contains(where: { $0.id == selectedEducationId }) == false {
-                selectedEducationId = educations.first?.id
-                // `didSet` did the reload; nothing more to do here.
-                return
+            for try await data in repositories.database.observeHome(educationId: selectedEducationId) {
+                apply(data)
             }
-
-            reloadSummary(from: repositories)
         } catch {
             errorMessage = error.localizedDescription
         }
     }
 
-    /// Stored so `didSet` on the selection can refetch without the view
-    /// having to notice.
-    private var repositories: Repositories?
+    private func apply(_ data: HomeData) {
+        hasLoaded = true
 
-    func attach(_ repositories: Repositories) {
-        self.repositories = repositories
-    }
+        educations = data.educations
 
-    private func refresh() {
-        // A different education invalidates a semester filter that may not
-        // exist there.
-        if let semester, availableSemesters.contains(semester) == false {
-            self.semester = nil
-        }
-        guard let repositories else { return }
-        reloadSummary(from: repositories)
-    }
+        // Default to the newest education, and drop a selection whose
+        // education has since been deleted.
+        let resolved = data.educations.contains { $0.id == selectedEducationId }
+            ? selectedEducationId
+            : data.educations.first?.id
 
-    private func reloadSummary(from repositories: Repositories) {
-        guard let id = selectedEducationId else {
-            summary = nil
-            recompute()
+        // Only when it actually moves: the screen's task is keyed on this, so
+        // assigning something different restarts the observation and a second
+        // value is already on its way. Returning on an *unchanged* selection
+        // would strand the last education's subjects on screen after it was
+        // deleted — nil resolves to nil, so nothing would restart and nothing
+        // below would run.
+        if resolved != selectedEducationId {
+            selectedEducationId = resolved
             return
         }
 
-        do {
-            summary = try repositories.educations.summary(id: id)
-            recompute()
-        } catch {
-            errorMessage = error.localizedDescription
+        summary = data.summary
+
+        // A different education invalidates a semester filter that may not
+        // exist there. `didSet` recomputes.
+        if let semester, availableSemesters.contains(semester) == false {
+            self.semester = nil
+            return
         }
+
+        recompute()
     }
 
     private func recompute() {

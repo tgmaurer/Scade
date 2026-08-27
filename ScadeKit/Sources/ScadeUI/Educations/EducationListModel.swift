@@ -5,6 +5,15 @@ import SwiftUI
 /// deletion.
 @Observable
 final class EducationListModel {
+    /// Whether the first snapshot has arrived.
+    ///
+    /// An observation is asynchronous, so a screen is briefly on screen with
+    /// nothing in it — and the empty state would flash "nothing here yet"
+    /// every time you switched sections, before the data it was wrong about
+    /// arrived a frame later. Nothing at all is the honest thing to draw
+    /// while there is nothing to say (SPEC-POLISH §2.7).
+    private(set) var hasLoaded = false
+
     /// Everything in the database, newest-created first (§3.6). Search and
     /// filters narrow this without reordering it.
     private(set) var rows: [EducationRow] = []
@@ -44,17 +53,29 @@ final class EducationListModel {
         completion != .all || institution != nil
     }
 
-    func load(from repositories: Repositories) {
+    /// Follows the database for as long as the screen is on screen.
+    ///
+    /// Runs until cancelled, which SwiftUI does when the `task` modifier's
+    /// view goes away. See `AppDatabase.observe`.
+    func observe(_ repositories: Repositories) async {
         do {
-            rows = try repositories.educations.allSummaries().map(EducationRow.init)
-            institutions = try repositories.educations.distinctInstitutions()
-
-            // An institution can stop existing while its filter is active.
-            if let institution, institutions.contains(institution) == false {
-                self.institution = nil
+            for try await data in repositories.database.observeEducationList() {
+                apply(data)
             }
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    private func apply(_ data: EducationListData) {
+        hasLoaded = true
+
+        rows = data.summaries.map(EducationRow.init)
+        institutions = data.institutions
+
+        // An institution can stop existing while its filter is active.
+        if let institution, institutions.contains(institution) == false {
+            self.institution = nil
         }
     }
 
@@ -69,7 +90,7 @@ final class EducationListModel {
 
         do {
             try repositories.educations.delete(id: id)
-            load(from: repositories)
+            // No reload: the observation publishes the deletion.
         } catch {
             errorMessage = error.localizedDescription
         }

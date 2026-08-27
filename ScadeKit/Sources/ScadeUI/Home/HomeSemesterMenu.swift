@@ -8,6 +8,8 @@ struct HomeSemesterMenu: View {
 
     var body: some View {
         Menu {
+            // Inline, so the semesters are in the menu rather than behind a
+            // "Semester" submenu inside it. See `HomeEducationMenu`.
             Picker("Semester", selection: $semester) {
                 Text("All Semesters").tag(Int?.none)
 
@@ -16,6 +18,7 @@ struct HomeSemesterMenu: View {
                         .tag(Int?.some(value))
                 }
             }
+            .pickerStyle(.inline)
         } label: {
             Label(
                 "Semester",

@@ -11,7 +11,15 @@ struct HomeSubject: Identifiable, Hashable, Sendable {
 
     init(_ subjectGrades: SubjectGrades) {
         subject = subjectGrades.subject
-        grades = subjectGrades.grades
+        // Oldest-first here alone (SPEC §3.6). The row lays these out as a
+        // horizontal run, which reads as a timeline — left to right is
+        // earlier to later — while every list of grades stays newest-first.
+        //
+        // Reversing rather than re-sorting: the canonical order is total
+        // (date desc, then id desc), so its reverse is exactly date asc then
+        // id asc. Sorting again here would be a second copy of an order the
+        // repository already owns.
+        grades = subjectGrades.grades.reversed()
         average = GradeCalculator.subjectAverage(of: subjectGrades.grades)
     }
 }

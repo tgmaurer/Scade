@@ -26,6 +26,10 @@ enum FieldRules {
 
     /// Optional, and at most `ValidationLimits.maximumDescriptionLength`
     /// characters.
+    ///
+    /// Optional on a grade too, which was briefly not the case — see
+    /// [SPEC-BACKLOG](../../../docs/SPEC-BACKLOG.md) for why it was made
+    /// required and why that was undone.
     static func description(_ value: String?) -> [ValidationError] {
         guard let value else { return [] }
 

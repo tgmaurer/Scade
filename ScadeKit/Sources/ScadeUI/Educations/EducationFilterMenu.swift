@@ -17,11 +17,16 @@ struct EducationFilterMenu: View {
 
     var body: some View {
         Menu {
+            // Inline on every picker: nested in a menu they'd each become a
+            // submenu, putting the options two levels down. Their titles
+            // still read as the section headers that separate the groups.
+            // See `HomeEducationMenu`.
             Picker("Status", selection: $completion) {
                 ForEach(CompletionFilter.allCases) { filter in
                     Text(filter.title).tag(filter)
                 }
             }
+            .pickerStyle(.inline)
 
             if institutions.isEmpty == false {
                 Picker("Institution", selection: $institution) {
@@ -31,6 +36,7 @@ struct EducationFilterMenu: View {
                         Text(name).tag(String?.some(name))
                     }
                 }
+                .pickerStyle(.inline)
             }
         } label: {
             Label(

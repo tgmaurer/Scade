@@ -4,6 +4,15 @@ import SwiftUI
 /// Backs the subjects list.
 @Observable
 final class SubjectListModel {
+    /// Whether the first snapshot has arrived.
+    ///
+    /// An observation is asynchronous, so a screen is briefly on screen with
+    /// nothing in it — and the empty state would flash "nothing here yet"
+    /// every time you switched sections, before the data it was wrong about
+    /// arrived a frame later. Nothing at all is the honest thing to draw
+    /// while there is nothing to say (SPEC-POLISH §2.7).
+    private(set) var hasLoaded = false
+
     private(set) var rows: [SubjectRow] = []
     private(set) var institutions: [String] = []
     /// Whether any education is still in progress — §4 disables subject
@@ -57,21 +66,31 @@ final class SubjectListModel {
         }
     }
 
-    func load(from repositories: Repositories) {
+    /// Follows the database for as long as the screen is on screen. See
+    /// `AppDatabase.observe`.
+    func observe(_ repositories: Repositories) async {
         do {
-            rows = try repositories.subjects.allSummaries().map(SubjectRow.init)
-            institutions = try repositories.educations.distinctInstitutions()
-            hasInProgressEducation = try repositories.educations.inProgress().isEmpty == false
-            hasAnyEducation = try repositories.educations.count() > 0
-
-            if let institution, institutions.contains(institution) == false {
-                self.institution = nil
-            }
-            if let semester, availableSemesters.contains(semester) == false {
-                self.semester = nil
+            for try await data in repositories.database.observeSubjectList() {
+                apply(data)
             }
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    private func apply(_ data: SubjectListData) {
+        hasLoaded = true
+
+        rows = data.summaries.map(SubjectRow.init)
+        institutions = data.institutions
+        hasInProgressEducation = data.hasInProgressEducation
+        hasAnyEducation = data.hasAnyEducation
+
+        if let institution, institutions.contains(institution) == false {
+            self.institution = nil
+        }
+        if let semester, availableSemesters.contains(semester) == false {
+            self.semester = nil
         }
     }
 
@@ -87,7 +106,7 @@ final class SubjectListModel {
 
         do {
             try repositories.subjects.delete(id: id)
-            load(from: repositories)
+            // No reload: the observation publishes the deletion.
         } catch {
             errorMessage = error.localizedDescription
         }

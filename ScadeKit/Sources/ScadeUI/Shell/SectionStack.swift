@@ -11,13 +11,51 @@ import SwiftUI
 struct SectionStack<Content: View>: View {
     @ViewBuilder let content: Content
 
+    /// Held here so rows that can't be `NavigationLink`s can still push. See
+    /// `Navigator` for which ones those are and why.
+    @State private var path = NavigationPath()
+
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             content
-                .navigationDestination(for: Education.self, destination: EducationDetailScreen.init)
-                .navigationDestination(for: Subject.self, destination: SubjectDetailScreen.init)
-                .navigationDestination(for: Grade.self, destination: GradeDetailScreen.init)
+                .navigationDestination(for: Education.self) {
+                    navigable(EducationDetailScreen(education: $0))
+                }
+                .navigationDestination(for: Subject.self) {
+                    navigable(SubjectDetailScreen(subject: $0))
+                }
+                .navigationDestination(for: Grade.self) {
+                    navigable(GradeDetailScreen(grade: $0))
+                }
+                .environment(\.navigate, navigator)
         }
+    }
+
+    private var navigator: Navigator {
+        Navigator { path.append($0) }
+    }
+
+    /// Hands a *pushed* screen the navigator as well.
+    ///
+    /// A pushed destination does not inherit it otherwise — measured, not
+    /// assumed: with the environment applied to the stack, and again applied
+    /// inside it beneath the registrations, a button on a detail screen ran
+    /// its action and pushed nothing, because `navigate` was still the
+    /// do-nothing default. Only the root content was ever reached.
+    ///
+    /// It went unnoticed because every earlier caller was on Home, which *is*
+    /// root content. It stops being an edge case the moment a detail screen
+    /// has a row or a parent link that navigates — see `CardRowLink` and
+    /// §0.1's "detail screens should link to their parents".
+    private func navigable(_ screen: some View) -> some View {
+        screen
+            // `⌘ö`, and here for the same reason the navigator is: applied
+            // to the stack it never reached a pushed screen, and the Back
+            // item sat greyed out on every detail — measured. Only a pushed
+            // screen publishes it, which is what leaves it greyed at the
+            // root, where there is nowhere to go back to.
+            .focusedSceneValue(\.goBack, ScreenAction("Back") { path.removeLast() })
+            .environment(\.navigate, navigator)
     }
 }
 

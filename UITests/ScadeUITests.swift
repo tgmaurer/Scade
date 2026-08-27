@@ -44,16 +44,19 @@ final class ScadeUITests: XCTestCase {
         static let error = "form.error"
 
         static let newEducation = Control("education.new", "New Education")
+        static let educationDetail = "education.detail"
         static let educationName = "education.form.name"
 
         static let newSubject = Control("subject.new", "New Subject")
         static let subjectName = "subject.form.name"
         static let subjectSemester = "subject.form.semester"
+        static let subjectDetail = "subject.detail"
+        static let editSubject = Control("subject.edit", "Edit")
 
         static let newGrade = Control("grade.new", "New Grade")
         static let gradeValue = "grade.form.value"
+        static let gradeDetail = "grade.detail"
 
-        static let settingsSection = Control("section.settings", "Settings")
         static let openSettings = Control("settings.open", "Settings")
         static let deleteAll = Control("settings.deleteAll", "Delete All Data")
         static let confirmDeleteAll = Control("settings.deleteAll.confirm", "Delete Everything")
@@ -171,6 +174,264 @@ final class ScadeUITests: XCTestCase {
         )
     }
 
+    /// Home's rows navigate.
+    ///
+    /// This exists because they once silently stopped. The subject name and
+    /// the grade chips are `Button`s that push a path rather than
+    /// `NavigationLink`s (see `Navigator`), and nothing else in this suite
+    /// would notice if that wiring came undone — every other test reaches a
+    /// detail screen through one of the flat lists, which push a different
+    /// way. The app still built, still launched, and still drew the row.
+    func testTappingASubjectOnHomeOpensIt() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Navigable Course")
+
+        openSection(ID.subjectsSection)
+        createSubject(named: "Databases")
+
+        openSection(ID.homeSection)
+        app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label == %@", "Databases"))
+            .firstMatch
+            .tap()
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.subjectDetail)
+                .firstMatch
+                .waitForExistence(timeout: 5),
+            "Clicking a subject's name on Home should open its detail screen."
+        )
+    }
+
+    /// An education in the list opens when you click it.
+    ///
+    /// Trivial while the list was a `List` — a row pushed because that's what
+    /// a `NavigationLink` in a row does, and no test needed to say so. It
+    /// stopped being trivial when macOS moved to a grid of tiles: the tile is
+    /// a `Button` with `.buttonStyle(.plain)` and a `contentShape` deciding
+    /// what counts as a click, and every one of those is a way to draw a card
+    /// that looks right and doesn't navigate. Home's rows made that exact
+    /// mistake once already.
+    func testTappingAnEducationInTheListOpensIt() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Openable Course")
+
+        rowMentioning("Openable Course").tap()
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.educationDetail)
+                .firstMatch
+                .waitForExistence(timeout: 5),
+            "Clicking an education should open its detail screen."
+        )
+    }
+
+    /// A subject opens from the education that holds it — a push *from* a
+    /// pushed screen, which is a different thing from a push from a root.
+    ///
+    /// What it catches: `Navigator` did not reach a pushed screen at all.
+    /// Every earlier caller was on Home, which is a stack's *root*; from a
+    /// detail screen the button ran its action and pushed nothing, because
+    /// `navigate` was still the do-nothing default. `SectionStack` now hands
+    /// each destination its own — verified by removing that and watching this
+    /// fail.
+    ///
+    /// What it does not catch, said plainly: the row could go back to being a
+    /// `NavigationLink` and this would still pass. That change navigates
+    /// perfectly well and merely looks wrong — macOS draws a link row's
+    /// pressed state across the whole row, which on an inset card lights a
+    /// strip either side of it (`CardRowLink`). No test in this suite sees
+    /// colour.
+    func testTappingASubjectOnItsEducationOpensIt() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Parent Course")
+
+        openSection(ID.subjectsSection)
+        createSubject(named: "Nested Subject")
+
+        openSection(ID.educationsSection)
+        rowMentioning("Parent Course").tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.educationDetail)
+                .firstMatch
+                .waitForExistence(timeout: 5)
+        )
+
+        rowMentioning("Nested Subject").tap()
+
+        XCTAssertTrue(
+            subjectDetail.waitForExistence(timeout: 5),
+            "Clicking a subject on its education should open the subject."
+        )
+    }
+
+    /// A subject links back up to the education that holds it (§0.1,
+    /// "detail screens should link to their parents").
+    ///
+    /// The link is a `DetailButton`, which navigates through `Navigator`
+    /// rather than a `NavigationLink` — the same mechanism as a card row, and
+    /// the same one that pushed nothing at all until `SectionStack` started
+    /// handing pushed screens their own navigator.
+    func testTheEducationLinkOnASubjectOpensIt() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Linkable Course")
+
+        openSection(ID.subjectsSection)
+        createSubject(named: "Linking Subject")
+
+        rowMentioning("Linking Subject").tap()
+        XCTAssertTrue(subjectDetail.waitForExistence(timeout: 5))
+
+        let link = app.buttons["Linkable Course"]
+        XCTAssertTrue(
+            link.waitForExistence(timeout: 5),
+            "The subject detail should name its education as a button."
+        )
+        link.tap()
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.educationDetail)
+                .firstMatch
+                .waitForExistence(timeout: 5),
+            "The education link should open the education."
+        )
+    }
+
+    /// A grade links back up to both of its parents (§0.1, "detail screens
+    /// should link to their parents").
+    ///
+    /// The bottom of the chain and so the screen with the most to link back
+    /// to. Both are `DetailButton`s pushing through `Navigator`, from a
+    /// screen that is itself pushed — the case that did nothing at all until
+    /// `SectionStack` started handing pushed screens their own navigator.
+    func testAGradeLinksToItsSubjectAndItsEducation() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Chain Course")
+
+        openSection(ID.subjectsSection)
+        createSubject(named: "Chain Subject")
+
+        openSection(ID.gradesSection)
+        tap(ID.newGrade)
+        replaceText("5", in: app.textFields[ID.gradeValue])
+        tap(ID.save)
+
+        rowMentioning("5.00").tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.gradeDetail)
+                .firstMatch
+                .waitForExistence(timeout: 5),
+            "Clicking a grade should open it."
+        )
+
+        let subjectLink = app.buttons["Chain Subject"]
+        XCTAssertTrue(subjectLink.waitForExistence(timeout: 5))
+        subjectLink.tap()
+        XCTAssertTrue(
+            subjectDetail.waitForExistence(timeout: 5),
+            "The subject link should open the subject."
+        )
+        // Belt and braces: the grade's own screen has to be gone. Asserting
+        // only that the subject's screen appeared once passed with the link
+        // doing nothing at all, which is worse than having no test.
+        XCTAssertFalse(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.gradeDetail)
+                .firstMatch
+                .exists,
+            "The subject link should have pushed a screen, not stayed put."
+        )
+
+        goBack()
+
+        let educationLink = app.buttons["Chain Course"]
+        XCTAssertTrue(educationLink.waitForExistence(timeout: 5))
+        educationLink.tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.educationDetail)
+                .firstMatch
+                .waitForExistence(timeout: 5),
+            "The education link should open the education."
+        )
+    }
+
+    /// Switching section works from inside a section, not just at its root.
+    ///
+    /// A `NavigationStack`'s path outlives a change of its root, so the macOS
+    /// shell sharing one stack across every section meant switching section
+    /// swapped the root *underneath* whatever was pushed on top of it — the
+    /// sidebar looked dead until you navigated back. Every other test in this
+    /// file switches section from a list, which is the one case that worked.
+    func testSwitchingSectionFromADetailScreenLeavesIt() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Deep Course")
+
+        openSection(ID.subjectsSection)
+        createSubject(named: "Compilers")
+
+        openSection(ID.homeSection)
+        app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label == %@", "Compilers"))
+            .firstMatch
+            .tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.subjectDetail)
+                .firstMatch
+                .waitForExistence(timeout: 5),
+            "Precondition: the subject detail should be open."
+        )
+
+        openSection(ID.educationsSection)
+
+        XCTAssertTrue(
+            rowMentioning("Deep Course").waitForExistence(timeout: 5),
+            "Choosing a section from a pushed screen should land on that section."
+        )
+        XCTAssertFalse(
+            app.descendants(matching: .any)
+                .matching(identifier: ID.subjectDetail)
+                .firstMatch
+                .exists,
+            "The pushed screen should be gone, not left sitting on top."
+        )
+    }
+
+    /// A list shows an edit made on the detail screen it pushed.
+    ///
+    /// Screens load in `onAppear`, which doesn't run again when a pushed
+    /// screen is popped, so a list could sit showing a record that had since
+    /// been renamed underneath it.
+    func testRenamingASubjectOnItsDetailUpdatesTheListBehindIt() {
+        openSection(ID.educationsSection)
+        createEducation(named: "Refresh Course")
+
+        openSection(ID.subjectsSection)
+        createSubject(named: "Before Rename")
+
+        rowMentioning("Before Rename").tap()
+        XCTAssertTrue(subjectDetail.waitForExistence(timeout: 5))
+
+        tap(ID.editSubject)
+        replaceText("After Rename", in: app.textFields[ID.subjectName])
+        tap(ID.save)
+
+        goBack()
+
+        XCTAssertTrue(
+            rowMentioning("After Rename").waitForExistence(timeout: 5),
+            "The list should show the renamed subject once the detail is closed."
+        )
+    }
+
+
+
     /// The only destructive action that isn't scoped to one record, so the
     /// one most worth pinning down: it has to actually empty the database,
     /// and it has to be reachable only through the confirmation.
@@ -199,6 +460,31 @@ final class ScadeUITests: XCTestCase {
         app.descendants(matching: .any).matching(identifier: ID.error)
     }
 
+    /// The subject detail screen, as a way of asking whether a push happened —
+    /// the subject's *name* is on the screen the push started from too.
+    private var subjectDetail: XCUIElement {
+        app.descendants(matching: .any)
+            .matching(identifier: ID.subjectDetail)
+            .firstMatch
+    }
+
+    /// Pops the pushed screen, the way a person would.
+    ///
+    /// macOS gives its back button the chevron's symbol name as an
+    /// identifier; iOS labels its own with the *previous screen's* title, so
+    /// there the navigation bar's first button is the only portable handle.
+    private func goBack() {
+        let chevron = app.buttons["chevron.backward"]
+        if chevron.waitForExistence(timeout: 3) {
+            chevron.tap()
+            return
+        }
+
+        let first = app.navigationBars.buttons.firstMatch
+        XCTAssertTrue(first.waitForExistence(timeout: 5), "No back button on the pushed screen.")
+        first.tap()
+    }
+
     /// Finds a list row by something written in it.
     ///
     /// macOS collapses a row into a single element whose label concatenates
@@ -215,28 +501,15 @@ final class ScadeUITests: XCTestCase {
 
     /// Switches shell section — a tab on iOS, a sidebar row on macOS.
     ///
-    /// All three platforms need a different handle, and only one of them keeps
-    /// the accessibility identifier:
-    ///
-    /// - **macOS** draws the sidebar row in AppKit, which drops the identifier
-    ///   and exposes a `StaticText` whose *value* — not label — is the title.
-    /// - **iPhone** renders a tab bar whose buttons keep their label but not
-    ///   the identifier.
-    /// - **iPad** renders a top tab bar and keeps both.
-    ///
-    /// So iOS matches on either, and takes whichever is actually on screen.
-    /// Matching on a title is a weaker handle than an identifier; that's the
-    /// cost of these being system-drawn controls rather than views the app
-    /// composes itself.
+    /// Matched on identifier *or* label, because the shells differ in what
+    /// they keep. macOS draws its sidebar rows itself and keeps the
+    /// identifier; iPhone's tab bar is system-drawn and keeps only the label.
+    /// Element type isn't pinned for the same reason — a sidebar row and a tab
+    /// don't report as the same thing.
     private func openSection(_ section: Control) {
-        #if os(macOS)
-        let matches = app.outlines["Sidebar"].staticTexts
-            .matching(NSPredicate(format: "value == %@", section.label))
-        #else
-        let matches = app.buttons.matching(
+        let matches = app.descendants(matching: .any).matching(
             NSPredicate(format: "identifier == %@ OR label == %@", section.identifier, section.label)
         )
-        #endif
 
         XCTAssertTrue(
             matches.firstMatch.waitForExistence(timeout: 10),
@@ -275,22 +548,28 @@ final class ScadeUITests: XCTestCase {
         target.tap()
     }
 
-    /// Opens Settings, which each platform offers differently: a sidebar row
-    /// on macOS, and everywhere else a button on Home, because Settings has no
-    /// section of its own there. See `AppSection.showsSettingsSection`.
+    /// Opens Settings, which each platform offers differently: its own window
+    /// on macOS, opened the way every Mac app opens one, and everywhere else a
+    /// button on Home, because there's no menu bar to keep it in. See
+    /// `AppSection`.
+    ///
+    /// ⌘, rather than walking the app menu, because the shortcut is the part
+    /// that would silently stop working: it's wired by the system to the
+    /// `Settings` scene, so an app without one answers it with nothing at all.
     private func openSettings() {
         #if os(macOS)
-        openSection(ID.settingsSection)
+        app.typeKey(",", modifierFlags: .command)
         #else
         openSection(ID.homeSection)
         tap(ID.openSettings)
         #endif
     }
 
-    /// Dismisses the Settings sheet, where there was one to dismiss. On macOS
-    /// Settings is a section rather than a sheet, so there's nothing to close.
+    /// Closes Settings — a window on macOS, a sheet everywhere else.
     private func closeSettings() {
-        #if os(iOS)
+        #if os(macOS)
+        app.typeKey("w", modifierFlags: .command)
+        #else
         let done = app.buttons["Done"]
         XCTAssertTrue(done.waitForExistence(timeout: 5), "The Settings sheet should have a Done button.")
         done.tap()
@@ -316,6 +595,8 @@ final class ScadeUITests: XCTestCase {
         type(name, into: app.textFields[ID.educationName])
         tap(ID.save)
     }
+
+
 
     private func createSubject(named name: String) {
         tap(ID.newSubject)

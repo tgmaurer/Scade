@@ -2,36 +2,62 @@ import ScadeKit
 import SwiftUI
 
 /// The educations list (SPEC §4): search, filter, create, edit, delete.
+///
+/// The one list that isn't laid out as a list. There are a handful of
+/// educations — several run in parallel, one per institution — so they fit a
+/// window all at once, and a single column of them left most of a wide one
+/// empty. See `CardGrid` and the §2.5 amendment; the long lists keep their
+/// column.
+///
+/// The layout forks because the delete action does. A grid can't carry
+/// `.swipeActions` — those are `List`-only — and it shouldn't want to: swipe
+/// to delete is an iOS gesture, and the macOS answer is the context menu the
+/// grid uses instead. Neither is the only way out, since the detail screen
+/// has a Delete of its own.
 struct EducationListScreen: View {
     @Environment(\.repositories) private var repositories
     @State private var model = EducationListModel()
     @State private var formMode: EducationFormMode?
+    @FocusState private var isSearchFocused: Bool
 
     var body: some View {
         @Bindable var model = model
 
-        List {
-            ForEach(model.visibleRows) { row in
-                NavigationLink(value: row.education) {
-                    EducationRowView(row: row)
-                }
-                .swipeActions(edge: .trailing) {
-                    Button("Delete", systemImage: "trash", role: .destructive) {
-                        model.pendingDeletion = row
-                    }
-                }
-            }
-        }
+        rows
         .navigationTitle("Educations")
+        // How many are on screen, not how many exist: it follows the search
+        // and the filters, because the number is only useful as an answer to
+        // "what am I looking at". Nothing is claimed before the first
+        // snapshot lands — see `hasLoaded`.
+        //
+        // "items", not the record's own name: the title above it already
+        // says what they are, and macOS puts title and subtitle together in
+        // the Window menu and the app switcher, where "Grades — 13 grades"
+        // says "grades" twice.
+        .navigationSubtitle(
+            model.hasLoaded
+                ? "^[\(model.visibleRows.count) item](inflect: true)"
+                : ""
+        )
         .searchable(text: $model.searchText, prompt: "Search educations")
+        .searchFocused($isSearchFocused)
+        // What the menu bar can do here (SPEC-POLISH §1.2). Published while
+        // this screen is in front and gone when it isn't.
+        .focusedSceneValue(\.newRecord, ScreenAction("New Education", perform: startCreating))
+        .focusedSceneValue(\.focusSearch, ScreenAction("Search") { isSearchFocused = true })
+        .focusedSceneValue(\.clearFilters, clearFiltersAction)
         .overlay {
-            EducationListEmptyState(
-                hasAnyEducations: model.rows.isEmpty == false,
-                hasVisibleRows: model.visibleRows.isEmpty == false,
-                hasActiveFilters: model.hasActiveFilters,
-                onCreate: startCreating,
-                onClearFilters: model.clearFilters
-            )
+            // Not until the first snapshot has arrived: see
+            // `hasLoaded`.
+            if model.hasLoaded {
+                EducationListEmptyState(
+                    hasAnyEducations: model.rows.isEmpty == false,
+                    hasVisibleRows: model.visibleRows.isEmpty == false,
+                    hasActiveFilters: model.hasActiveFilters,
+                    onCreate: startCreating,
+                    onClearFilters: model.clearFilters
+                )
+            }
         }
         .toolbar {
             ToolbarItem {
@@ -47,7 +73,7 @@ struct EducationListScreen: View {
                     .accessibilityIdentifier(AccessibilityID.Education.new)
             }
         }
-        .sheet(item: $formMode, onDismiss: reload) { mode in
+        .sheet(item: $formMode) { mode in
             EducationFormScreen(mode: mode)
         }
         .confirmationDialog(
@@ -68,15 +94,58 @@ struct EducationListScreen: View {
         } message: {
             Text(model.errorMessage ?? "")
         }
-        .onAppear(perform: reload)
+        .task {
+            await model.observe(repositories)
+        }
+    }
+
+    /// macOS: a grid of tiles. iOS: the list it has always been, with the
+    /// system's separator between every row taken away — a card and a rule
+    /// are two answers to the same question (§2.5).
+    @ViewBuilder
+    private var rows: some View {
+        #if os(macOS)
+        CardGrid(items: model.visibleRows) { row in
+            NavigationLink(value: row.education) {
+                EducationRowView(row: row)
+                    // Inside the link, so the whole tile is the click target
+                    // rather than the text within it.
+                    .cardTile()
+            }
+            .buttonStyle(.plain)
+            .contextMenu {
+                Button("Delete", systemImage: "trash", role: .destructive) {
+                    model.pendingDeletion = row
+                }
+            }
+        }
+        #else
+        List {
+            ForEach(model.visibleRows) { row in
+                NavigationLink(value: row.education) {
+                    EducationRowView(row: row)
+                        .padding(.vertical, ScadeDesign.rowVerticalPadding)
+                }
+                .listRowSeparator(.hidden)
+                .swipeActions(edge: .trailing) {
+                    Button("Delete", systemImage: "trash", role: .destructive) {
+                        model.pendingDeletion = row
+                    }
+                }
+            }
+        }
+        #endif
     }
 
     private func startCreating() {
         formMode = .create
     }
 
-    private func reload() {
-        model.load(from: repositories)
+    /// `nil` where there is nothing to clear, which is what greys the menu
+    /// item out rather than offering an action that would do nothing.
+    private var clearFiltersAction: ScreenAction? {
+        guard model.hasActiveFilters else { return nil }
+        return ScreenAction("Clear Filters", perform: model.clearFilters)
     }
 }
 

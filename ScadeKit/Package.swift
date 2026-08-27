@@ -42,5 +42,13 @@ let package = Package(
             name: "ScadeKitTests",
             dependencies: ["ScadeKit"]
         ),
+        // The view layer without a running app: view models, and geometry
+        // measured by rendering a view. The flow tests in the app's own UI
+        // test target drive the real app and assert on what's on screen;
+        // these cover what those can't reach or can't drive.
+        .testTarget(
+            name: "ScadeUIUnitTests",
+            dependencies: ["ScadeKit", "ScadeUI"]
+        ),
     ]
 )
