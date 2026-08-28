@@ -21,8 +21,8 @@ extension ValidationError {
             "The end date can't come before the start date."
         case .semesterOutOfRange(let minimum, let maximum):
             "Choose a semester between \(minimum) and \(maximum)."
-        case .weightNotPositive:
-            "The weight has to be greater than zero."
+        case .weightNegative:
+            "The weight can't be negative. Use 0% for something that doesn't count."
         case .valueOutOfRange(let minimum, let maximum):
             "Grades run from \(minimum.formatted()) to \(maximum.formatted())."
         case .dateOutsideEducationRange(let start, let end):

@@ -21,7 +21,9 @@ public enum ValidationError: Error, Hashable, Sendable {
     /// won't do, rather than watching their input change by itself.
     case semesterOutOfRange(minimum: Int, maximum: Int)
 
-    case weightNotPositive
+    /// A weight below zero, or not a number at all. Zero itself is allowed —
+    /// see `FieldRules.weight`.
+    case weightNegative
 
     /// A grade value outside the 1–6 Swiss scale.
     case valueOutOfRange(minimum: Double, maximum: Double)
@@ -38,7 +40,7 @@ public enum ValidationError: Error, Hashable, Sendable {
         case .semestersOutOfRange: .semesters
         case .endDateBeforeStartDate: .endDate
         case .semesterOutOfRange: .semester
-        case .weightNotPositive: .weight
+        case .weightNegative: .weight
         case .valueOutOfRange: .value
         case .dateOutsideEducationRange: .date
         }

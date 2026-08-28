@@ -60,7 +60,11 @@ struct AboutSection: View {
             )
             AboutEntry(
                 question: "Why does an average show N/A?",
-                answer: "Nothing has been graded yet. That's different from a zero, so Scade doesn't pretend otherwise."
+                answer: "Nothing has been graded yet — or nothing that has been graded counts, because every grade is weighted 0%. Either way that's different from a zero, so Scade doesn't pretend otherwise."
+            )
+            AboutEntry(
+                question: "What does a weight of 0% do?",
+                answer: "Keeps the grade or subject on the record without letting it move any average. Useful for a practice paper, or a subject you sit that carries no marks."
             )
             AboutEntry(
                 question: "Which grades count as failing?",
