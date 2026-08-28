@@ -26,6 +26,34 @@ App Store listing. You build it once and keep it in `/Applications` like any
 other app. See [docs/STATUS.md](docs/STATUS.md) for what that means and what
 it leaves unfinished.
 
+## Why this exists
+
+[GradeMaster](https://github.com/tgmaurer/GradeMaster) came first and still
+works: an open-source grade manager on .NET MAUI and Blazor, drawing Bootstrap
+inside a WebView2 control, storing SQLite through Entity Framework Core. It is
+a Windows application — 10 and 11, x64 and arm64 — and it isn't going
+anywhere.
+
+Scade is the same idea for the other desk. Not a port: a rewrite, because
+porting would have meant carrying a web view onto a platform that has never
+needed one.
+
+| | GradeMaster | Scade |
+|---|---|---|
+| Platform | Windows 10 / 11 | macOS 26.5+ |
+| UI | Blazor + Bootstrap in WebView2 | SwiftUI, native |
+| Data | SQLite via Entity Framework Core | SQLite via GRDB, explicit queries |
+| Install | Installer from Releases, ~1 GB | Build it yourself, 10 MB app |
+| Licence | GPL-3.0 | GPL-3.0 |
+
+What carried over is the domain — educations hold subjects, subjects hold
+grades, weights all the way up — and the judgement about what a screen needs
+to say. What did not carry over is the architecture, and in two places not
+even the behaviour: [SPEC.md](docs/SPEC.md) §3.2 weights each subject's
+contribution to its education where GradeMaster averages them evenly, and
+§3.4 rejects out-of-range input with a visible field error where GradeMaster
+silently clamped it. Both changes are recorded there with the reasoning.
+
 ## Requirements
 
 - macOS 26.5 or later
@@ -187,6 +215,51 @@ use **Swift Testing**; the end-to-end tests drive the real app through
 [GRDB.swift](https://github.com/groue/GRDB.swift) by Gwendal Roué — the SQLite
 toolkit the whole persistence layer sits on. MIT licensed. It is Scade's only
 dependency, and it is credited in the app as well, under **Settings → About**.
+
+## How it was built
+
+Most of this code was written by an AI agent — Claude Code — working against
+a written contract rather than a conversation. That is worth describing only
+because the method is visible in the repository and can be checked against it.
+
+**The specification came first, and it is dated.** `docs/SPEC.md` and
+`CLAUDE.md` were committed on 28 July 2026; the first feature pull request
+merged on 29 July. The spec is 399 lines of what the app does — the schema,
+the two averaging formulas, validation rules field by field, screen by screen
+— written to be argued against rather than written up afterwards. Three
+documents joined it: [SPEC-POLISH.md](docs/SPEC-POLISH.md) for look and feel,
+[SPEC-BACKLOG.md](docs/SPEC-BACKLOG.md) for what is deliberately *not* built,
+and [STATUS.md](docs/STATUS.md) for where development stopped and why.
+
+**The constraints are standing, not per-prompt.** `CLAUDE.md` holds the rules
+the agent is held to on every task, and they are architectural rather than
+stylistic. No ORM change-tracking — a direct reaction to Entity Framework in
+GradeMaster: GRDB only, explicit queries, no ambient state. Business logic in
+one place, unit-tested, never duplicated across call sites. GradeMaster is a
+reference for *what* a screen must say and never for *how* it was built.
+
+**Nothing is trusted because the model said it.** The package runs 297 tests.
+The averaging tests were themselves checked, by breaking the calculator four
+ways on purpose — dividing by count instead of total weight, rolling up raw
+grades instead of subject averages, applying a weight twice, counting an
+ungraded subject as zero — and confirming the suite caught each one. The
+migration suite starts from a literal copy of the schema that shipped, so
+editing the original migration in place cannot quietly keep it green.
+
+**Claims are measured in the running app.** Help tags were verified by reading
+`AXHelp` back through the accessibility API rather than by watching for a
+tooltip; the schema migration was timed against a real database; the install
+instructions above were run end to end from a fresh clone.
+
+That last habit exists for a reason. The agent once concluded, from a tooltip
+that failed to appear, that one SwiftUI modifier had to be applied above
+another — and wrote it into both a code comment and the polish spec. It was
+wrong; a twenty-line probe app disproved it, and the correction is in the
+history. **An agent being confidently wrong is the normal case, not the
+exception, and a process that can't catch it is not a process.**
+
+The division of labour: specification, product decisions and review on one
+side; implementation on the other.
 
 ## Licence
 
