@@ -34,14 +34,21 @@ Build a Release copy and move it into `/Applications`:
 xcodebuild -project Scade.xcodeproj -scheme Scade -configuration Release \
   -destination 'platform=macOS' -derivedDataPath build
 cp -R build/Build/Products/Release/Scade.app /Applications/
+rm -rf build
 ```
+
+The third command deletes the build tree. `-derivedDataPath build` keeps it
+inside the repository rather than in `~/Library/Developer/Xcode/DerivedData`,
+which is what makes it easy to find — and easy to forget. It holds a few
+hundred megabytes of intermediates around a 10 MB app, it is already in
+`.gitignore`, and the copy in `/Applications` does not depend on it.
 
 Then open it from `/Applications` and keep it in the Dock. Gatekeeper is
 satisfied because the app is signed with your own development certificate on
 the machine that built it; it is not notarised, so it will not run on anyone
 else's Mac without them building it too.
 
-To update it, pull, run the same two commands, and replace the copy in
+To update it, pull, run the same three commands, and replace the copy in
 `/Applications`. Your data is not inside the app and is not touched by this.
 
 ## Where your data lives
@@ -118,6 +125,12 @@ of deleting it — it is the only copy of anything you have not backed up.
 | `ScadeKit/Tests/` | Unit tests for the logic and persistence |
 | `UITests/` | End-to-end tests |
 | `docs/` | The specs — start with `SPEC.md`, then `STATUS.md` |
+
+## Built with
+
+[GRDB.swift](https://github.com/groue/GRDB.swift) by Gwendal Roué — the SQLite
+toolkit the whole persistence layer sits on. MIT licensed. It is Scade's only
+dependency, and it is credited in the app as well, under **Settings → About**.
 
 ## Licence
 
