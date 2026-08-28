@@ -1098,11 +1098,16 @@ figures with a single control in it, so the card itself takes
 `highlightsOnHover: false` and only the education's name responds. Lighting
 the whole card would promise a click that does nothing.
 
-**No `.pointerStyle(.link)`.** The pointing hand is a *web* convention that
-macOS reserves for navigation leaving the app. Using it for an in-app push
-promises a browser. Internal navigation keeps the arrow — the background
-change is the whole affordance. Accent-coloured or underlined text is out for
-the same reason: that's what a link looks like, and none of these are links.
+**No `.pointerStyle(.link)` — except where something really is a link.** The
+pointing hand is a *web* convention that macOS reserves for navigation leaving
+the app. Using it for an in-app push promises a browser. Internal navigation
+keeps the arrow — the background change is the whole affordance.
+Accent-coloured or underlined text is out for the same reason: that's what a
+link looks like, and none of these are links.
+
+The two in Settings ▸ About are. They open GitHub in a browser, so they take
+the hand, and the accent colour with it — the same convention, read the right
+way round. That is the whole of the exception: a control that leaves the app.
 
 **None of them is a `NavigationLink` either**, which is a layout constraint
 rather than a style one. macOS `List` gives a row containing one a

@@ -1,6 +1,11 @@
 import SwiftUI
 
 /// What Scade is, and the handful of things worth explaining about it.
+///
+/// **The two links take the pointing hand**, which SPEC-POLISH §2.8 keeps
+/// away from everything else in the app. That rule is about in-app
+/// navigation, where the hand promises a browser that never opens; these two
+/// genuinely leave for one, which is the case macOS reserves it for.
 struct AboutSection: View {
     /// Scade's own repository: the only place a copy of the app comes from.
     private static let repository = URL(string: "https://github.com/tgmaurer/Scade")!
@@ -30,6 +35,7 @@ struct AboutSection: View {
             // and no other way of reaching any of that.
             LabeledContent("Source") {
                 Link("github.com/tgmaurer/Scade", destination: Self.repository)
+                    .pointerStyle(.link)
             }
 
             // GRDB is the only dependency Scade has, and it earns a line
@@ -39,6 +45,7 @@ struct AboutSection: View {
             // actually lives.
             LabeledContent("Built With") {
                 Link("GRDB.swift (MIT)", destination: Self.grdb)
+                    .pointerStyle(.link)
             }
         }
 
