@@ -95,15 +95,27 @@ Scade cannot pick the folder for you: it is sandboxed, so it can only write
 where you have pointed it, and it remembers your choice as a security-scoped
 bookmark rather than a path.
 
-Each backup is a dated folder — `Scade Backup 2026-08-27` — holding four
+Each backup is a dated folder — `Scade Backup 2026-08-27` — holding five
 files:
 
 | File | What it is |
 |---|---|
 | `scade.sqlite` | The whole database. **This is the file that restores the app.** |
+| `overview.csv` | Everything on one sheet. **Open this one.** |
 | `educations.csv` | One row per education |
 | `subjects.csv` | One row per subject, `educationId` pointing at its education |
 | `grades.csv` | One row per grade, `subjectId` pointing at its subject |
+
+**`overview.csv` is the one to open in a spreadsheet.** One row per grade,
+with the subject and education that place it spelled out on the same row, so
+there is nothing to join. The three tables under it keep the ids instead, and
+those are what a script or a re-import wants — but reading them means joining
+on `educationId` and `subjectId`, which Excel will do through Power Query and
+Numbers will not do at all.
+
+Nothing is missing from the flat sheet: an education with no subjects and a
+subject with no grades each still get a row, with the columns below them
+empty.
 
 Backing up twice in one day refreshes that day's folder rather than making a
 second one. Earlier days are never touched.
@@ -111,7 +123,10 @@ second one. Earlier days are never touched.
 The CSVs are for reading — a spreadsheet, a script, anything that outlives
 this app. They carry stored values rather than displayed ones, so `weight` is
 the multiplier the app calculates with: `1.0` is the `100%` you see on
-screen, `0.25` is `25%`. They are UTF-8 with a byte order mark and CRLF line
+screen, `0.25` is `25%`. The two exceptions are `overview.csv`'s
+`subjectAverage` and `educationAverage`, the only computed columns in any of
+these files: they are rounded to two decimals, exactly as the app shows them,
+and an empty cell there means the same as `N/A` on screen. They are UTF-8 with a byte order mark and CRLF line
 endings, which is what Excel needs to read umlauts correctly on a
 double-click.
 

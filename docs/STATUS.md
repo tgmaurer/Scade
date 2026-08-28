@@ -46,8 +46,12 @@ into it holding:
 
 - `scade.sqlite`, a consistent `VACUUM INTO` snapshot: the file that
   restores the app
+- `overview.csv`: everything on one sheet, one row per grade with its
+  subject and education spelled out, so a spreadsheet needs no join. A left
+  join, so a subject with no grades and an education with no subjects each
+  keep a row
 - `educations.csv`, `subjects.csv`, `grades.csv`: the same data in a form a
-  spreadsheet or a script can read, ids intact so the three re-join
+  script can read, ids intact so the three re-join
 
 Restoring is a file copy with the app quit, documented in the README. There
 is no Import button, and that is deliberate: an importer has to answer what

@@ -56,7 +56,7 @@ struct SettingsScreen: View {
             } header: {
                 Text("Backup")
             } footer: {
-                Text("Writes a dated folder holding a copy of your database and its three tables as CSV. iCloud Drive is a good place for it — a backup on this Mac alone is lost with this Mac.")
+                Text("Writes a dated folder holding a copy of your database, an overview sheet and its three tables as CSV. iCloud Drive is a good place for it — a backup on this Mac alone is lost with this Mac.")
             }
             #else
             Section {

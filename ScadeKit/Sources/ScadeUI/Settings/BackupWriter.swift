@@ -4,10 +4,14 @@ import ScadeKit
 /// Writes a complete backup into a folder.
 ///
 /// Two things at once, deliberately: the `.sqlite` snapshot, which is the
-/// only file that restores the app exactly, and the three CSV tables, which
-/// are the only ones a spreadsheet can read. Either alone is half a backup —
-/// one you can't open, or one you can't put back — and doing both on the
-/// same click means it can't be half-done.
+/// only file that restores the app exactly, and the CSVs, which are the only
+/// ones a spreadsheet can read. Either alone is half a backup — one you
+/// can't open, or one you can't put back — and doing both on the same click
+/// means it can't be half-done.
+///
+/// `overview.csv` is written first because it is the one to open. The three
+/// normalised tables behind it are the faithful record; see `BackupTables`
+/// for why both exist.
 enum BackupWriter {
     /// One folder per day. Clicking twice in an afternoon refreshes it
     /// rather than leaving a drift of near-identical copies; yesterday's is
@@ -30,6 +34,12 @@ enum BackupWriter {
 
         try repositories.database.exportSnapshot(
             to: folder.appending(path: databaseFilename, directoryHint: .notDirectory)
+        )
+
+        try write(
+            BackupTables.overview(try repositories.educations.allSummaries()),
+            to: folder,
+            as: "overview.csv"
         )
 
         try write(BackupTables.educations(try repositories.educations.all()), to: folder, as: "educations.csv")
