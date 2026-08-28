@@ -115,7 +115,7 @@ struct EducationValidatorTests {
         #expect(ValidationError.semestersOutOfRange(minimum: 1).field == .semesters)
         #expect(ValidationError.endDateBeforeStartDate.field == .endDate)
         #expect(ValidationError.semesterOutOfRange(minimum: 1, maximum: 6).field == .semester)
-        #expect(ValidationError.weightNotPositive.field == .weight)
+        #expect(ValidationError.weightNegative.field == .weight)
         #expect(ValidationError.valueOutOfRange(minimum: 1, maximum: 6).field == .value)
         #expect(
             ValidationError.dateOutsideEducationRange(
@@ -192,27 +192,36 @@ struct SubjectValidatorTests {
         )
     }
 
-    @Test("Requires a positive weight", arguments: [0.0, -1.0, -0.5])
-    func requiresPositiveWeight(weight: Double) {
+    @Test("Rejects a negative weight", arguments: [-1.0, -0.5])
+    func rejectsNegativeWeight(weight: Double) {
         let subject = Fixture.subject(educationId: 1, weight: weight)
 
-        #expect(SubjectValidator.validate(subject, in: education) == [.weightNotPositive])
+        #expect(SubjectValidator.validate(subject, in: education) == [.weightNegative])
+    }
+
+    /// A subject that doesn't count towards its education is a real thing to
+    /// record, not a mistake to catch.
+    @Test("Accepts a weight of zero")
+    func acceptsZeroWeight() {
+        let subject = Fixture.subject(educationId: 1, weight: 0)
+
+        #expect(SubjectValidator.validate(subject, in: education).isEmpty)
     }
 
     @Test("Rejects a weight that isn't a number")
     func rejectsNonFiniteWeight() {
         #expect(
             SubjectValidator.validate(Fixture.subject(educationId: 1, weight: .nan), in: education)
-                == [.weightNotPositive]
+                == [.weightNegative]
         )
         #expect(
             SubjectValidator.validate(
                 Fixture.subject(educationId: 1, weight: .infinity), in: education
-            ) == [.weightNotPositive]
+            ) == [.weightNegative]
         )
     }
 
-    @Test("Accepts the fractional weights the quick-picks produce", arguments: [0.125, 0.5, 1.0, 1.25, 3.0])
+    @Test("Accepts the fractional weights the quick-picks produce", arguments: [0.0, 0.125, 0.5, 1.0, 1.25, 3.0])
     func acceptsFractionalWeights(weight: Double) {
         let subject = Fixture.subject(educationId: 1, weight: weight)
 
@@ -270,11 +279,20 @@ struct GradeValidatorTests {
         )
     }
 
-    @Test("Requires a positive weight", arguments: [0.0, -1.0])
-    func requiresPositiveWeight(weight: Double) {
+    @Test("Rejects a negative weight", arguments: [-1.0, -0.5])
+    func rejectsNegativeWeight(weight: Double) {
         let grade = Fixture.grade(subjectId: 1, weight: weight)
 
-        #expect(GradeValidator.validate(grade, in: education) == [.weightNotPositive])
+        #expect(GradeValidator.validate(grade, in: education) == [.weightNegative])
+    }
+
+    /// A grade that is on the record without moving the average — a practice
+    /// paper, a mark that was later dropped.
+    @Test("Accepts a weight of zero")
+    func acceptsZeroWeight() {
+        let grade = Fixture.grade(subjectId: 1, weight: 0)
+
+        #expect(GradeValidator.validate(grade, in: education).isEmpty)
     }
 
     @Test("Accepts a grade dated on either boundary of the education")
@@ -341,14 +359,14 @@ struct GradeValidatorTests {
         let grade = Fixture.grade(
             subjectId: 1,
             value: 0.0,
-            weight: 0.0,
+            weight: -1.0,
             date: .iso("2030-01-01")
         )
 
         let errors = GradeValidator.validate(grade, in: education)
 
         #expect(errors.count == 3)
-        #expect(errors.contains(.weightNotPositive))
+        #expect(errors.contains(.weightNegative))
         #expect(errors.contains(.valueOutOfRange(minimum: 1.0, maximum: 6.0)))
         #expect(
             errors.contains(

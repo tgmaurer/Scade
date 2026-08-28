@@ -30,16 +30,23 @@ struct EducationDetailScreen: View {
                 // education. Unavailable once the education is completed.
                 Button("New Subject", systemImage: "plus", action: startAddingSubject)
                     .disabled(model.summary?.education.completed ?? true)
+                    .help(
+                        model.summary?.education.completed ?? true
+                            ? "This education is completed. Reopen it to add a subject."
+                            : "Add a subject to this education"
+                    )
             }
 
             ToolbarItem {
                 Button("Edit", systemImage: "pencil", action: startEditing)
+                    .help("Edit this education")
             }
 
             ToolbarItem {
                 Button("Delete", systemImage: "trash", role: .destructive) {
                     model.isConfirmingDeletion = true
                 }
+                .help("Delete this education")
                 .confirmationDialog(
                     "Delete Education?",
                     isPresented: $model.isConfirmingDeletion

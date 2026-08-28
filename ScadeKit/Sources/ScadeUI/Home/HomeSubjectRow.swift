@@ -20,8 +20,15 @@ struct HomeSubjectRow: View {
             // clickable. Nothing here may have an infinite ideal width — the
             // priority means it's served first, and a greedy view would take
             // the whole row and leave the grades and average with nothing.
-            DetailButton(title: item.subject.name, destination: item.subject)
-                .frame(minWidth: ScadeDesign.subjectColumnWidth, alignment: .leading)
+            DetailButton(
+                title: item.subject.name,
+                destination: item.subject,
+                // What the row can't say: how much this subject counts for
+                // in the education above it. The chips beside it answer the
+                // same question about each grade with their dates.
+                help: Text("Weight \(item.subject.weight.formatted(GradeFormatter.weightStyle))")
+            )
+            .frame(minWidth: ScadeDesign.subjectColumnWidth, alignment: .leading)
                 .layoutPriority(1)
 
             if showsGrades {

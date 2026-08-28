@@ -54,14 +54,24 @@ struct SchemaTests {
         }
     }
 
-    @Test("Rejects a non-positive subject weight", arguments: [0.0, -1.0, -0.001])
-    func rejectsNonPositiveSubjectWeight(weight: Double) throws {
+    @Test("Rejects a negative subject weight", arguments: [-1.0, -0.001])
+    func rejectsNegativeSubjectWeight(weight: Double) throws {
         try database.write { db in
             let educationId = try insertEducation(db)
 
             #expect(throws: DatabaseError.self) {
                 try insertSubject(db, educationId: educationId, weight: weight)
             }
+        }
+    }
+
+    @Test("Accepts a subject that doesn't count")
+    func acceptsZeroSubjectWeight() throws {
+        try database.write { db in
+            let educationId = try insertEducation(db)
+
+            try insertSubject(db, educationId: educationId, weight: 0)
+            #expect(try Subject.fetchCount(db) == 1)
         }
     }
 
@@ -142,8 +152,8 @@ struct SchemaTests {
         }
     }
 
-    @Test("Rejects a non-positive grade weight", arguments: [0.0, -1.0])
-    func rejectsNonPositiveGradeWeight(weight: Double) throws {
+    @Test("Rejects a negative grade weight", arguments: [-1.0, -0.001])
+    func rejectsNegativeGradeWeight(weight: Double) throws {
         try database.write { db in
             let educationId = try insertEducation(db)
             let subjectId = try insertSubject(db, educationId: educationId)
@@ -151,6 +161,17 @@ struct SchemaTests {
             #expect(throws: DatabaseError.self) {
                 try insertGrade(db, subjectId: subjectId, weight: weight)
             }
+        }
+    }
+
+    @Test("Accepts a grade that doesn't count")
+    func acceptsZeroGradeWeight() throws {
+        try database.write { db in
+            let educationId = try insertEducation(db)
+            let subjectId = try insertSubject(db, educationId: educationId)
+
+            try insertGrade(db, subjectId: subjectId, weight: 0)
+            #expect(try Grade.fetchCount(db) == 1)
         }
     }
 

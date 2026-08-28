@@ -27,5 +27,6 @@ struct HomeSemesterMenu: View {
                     : "line.3.horizontal.decrease.circle.fill"
             )
         }
+        .help("Show one semester of this education")
     }
 }

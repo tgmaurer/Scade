@@ -30,6 +30,30 @@ struct SubjectAverageTests {
         )
     }
 
+    /// The point of allowing 0: a mark that is on the record without moving
+    /// anything — a practice paper, a mark that was later dropped.
+    @Test("A grade at zero weight leaves the average alone")
+    func zeroWeightGradeDoesNotCount() throws {
+        let counting = [Fixture.grade(subjectId: 1, value: 5.0)]
+        let withAPassenger = counting + [
+            Fixture.grade(subjectId: 1, value: 1.0, weight: 0.0)
+        ]
+
+        try expectApproximately(GradeCalculator.subjectAverage(of: withAPassenger), 5.0)
+    }
+
+    /// Not the same as having no grades, and shown the same way: there is no
+    /// average, rather than a quiet fallback to an unweighted mean.
+    @Test("A subject where nothing counts has no average")
+    func allZeroWeightsGiveNil() {
+        let grades = [
+            Fixture.grade(subjectId: 1, value: 5.0, weight: 0.0),
+            Fixture.grade(subjectId: 1, value: 3.0, weight: 0.0),
+        ]
+
+        #expect(GradeCalculator.subjectAverage(of: grades) == nil)
+    }
+
     @Test("Equal weights give the plain mean")
     func equalWeights() throws {
         let grades = [
@@ -197,14 +221,27 @@ struct EducationAverageTests {
         try expectApproximately(forward, try #require(reversed))
     }
 
-    /// `CHECK (weight > 0)` makes this unreachable through the database, but
-    /// the calculator returns `nil` rather than dividing by zero if a bad row
-    /// ever reaches it another way.
+    /// A weight of 0 is allowed, so this is reachable and meant: nothing
+    /// counts, so there is no average to state.
     @Test("Returns nil instead of dividing by a zero total weight")
     func guardsAgainstZeroTotalWeight() {
         let subjects = [Fixture.subjectGrades(subjectWeight: 0.0, gradeValues: [5.0])]
 
         #expect(GradeCalculator.educationAverage(of: subjects) == nil)
+    }
+
+    @Test("A subject at zero weight leaves the education average alone")
+    func zeroWeightSubjectDoesNotCount() throws {
+        let counting = [Fixture.subjectGrades(subjectWeight: 1.0, gradeValues: [5.0])]
+        let withAPassenger = counting + [
+            Fixture.subjectGrades(subjectWeight: 0.0, gradeValues: [1.0])
+        ]
+
+        try expectApproximately(GradeCalculator.educationAverage(of: withAPassenger), 5.0)
+        #expect(
+            GradeCalculator.educationAverage(of: withAPassenger)
+                == GradeCalculator.educationAverage(of: counting)
+        )
     }
 }
 

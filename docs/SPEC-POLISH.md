@@ -1098,11 +1098,16 @@ figures with a single control in it, so the card itself takes
 `highlightsOnHover: false` and only the education's name responds. Lighting
 the whole card would promise a click that does nothing.
 
-**No `.pointerStyle(.link)`.** The pointing hand is a *web* convention that
-macOS reserves for navigation leaving the app. Using it for an in-app push
-promises a browser. Internal navigation keeps the arrow — the background
-change is the whole affordance. Accent-coloured or underlined text is out for
-the same reason: that's what a link looks like, and none of these are links.
+**No `.pointerStyle(.link)` — except where something really is a link.** The
+pointing hand is a *web* convention that macOS reserves for navigation leaving
+the app. Using it for an in-app push promises a browser. Internal navigation
+keeps the arrow — the background change is the whole affordance.
+Accent-coloured or underlined text is out for the same reason: that's what a
+link looks like, and none of these are links.
+
+The two in Settings ▸ About are. They open GitHub in a browser, so they take
+the hand, and the accent colour with it — the same convention, read the right
+way round. That is the whole of the exception: a control that leaves the app.
 
 **None of them is a `NavigationLink` either**, which is a layout constraint
 rather than a style one. macOS `List` gives a row containing one a
@@ -1169,6 +1174,35 @@ above and not a styling tweak.
 (`CardRow`, `SubjectButton`, `GradeChipButton`). Hover propagates to
 ancestors, so a chip and its row light together — which is correct: they're
 nested targets and both are live.
+
+**Every icon-only control carries a help tag.** A toolbar of glyphs is only
+legible if resting on one says what it does, so each has a `.help` — and it
+says what the *click* does rather than repeating the label: "Add a subject to
+this education", not "New Subject". A toggle names the state it is about to
+move to ("Show only grades below 4"), because a toggle's ambiguity is always
+which way it is going. Where a button is disabled, the tag is the reason it is
+disabled, which is the one thing the greyed-out glyph cannot say.
+
+**A grade chip's tag is its date, and a dashboard subject's is its weight.**
+The chip has room for the value and the weight and nothing else, so the date
+— the one field every grade has — was otherwise only readable by opening the
+grade. The subject beside it is the same problem one level up: the dashboard
+row carries the name, the grades and the average, and never says how much the
+subject counts for in the education above it. Both are facts the row has no
+width for and the eye has no other way to reach.
+
+**Attach a help tag to the control, not to a wrapper around it.** The
+dashboard's subject name is a `DetailButton`, and a `.help` at the call site
+never reached it; the tag is a parameter the button applies to itself.
+`DetailButton` is the one control here composed from another view, so it is
+the only one that needed saying.
+
+**Verify a help tag by reading `AXHelp`, not by watching for the bubble.**
+Every tag in the app is on a button, and `System Events` will read the
+attribute back — `help of <element>`. The bubble itself does not reliably
+draw for a pointer moved by `CGEvent`, which cost an afternoon and produced
+one confident wrong conclusion about modifier order before the attribute was
+checked instead.
 
 ---
 

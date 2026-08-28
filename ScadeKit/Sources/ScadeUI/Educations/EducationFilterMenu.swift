@@ -46,6 +46,7 @@ struct EducationFilterMenu: View {
                     : "line.3.horizontal.decrease.circle"
             )
         }
+        .help("Filter the educations shown")
     }
 }
 

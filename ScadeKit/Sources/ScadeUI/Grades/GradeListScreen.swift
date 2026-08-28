@@ -68,13 +68,21 @@ struct GradeListScreen: View {
                     )
                 }
                 .toggleStyle(.button)
+                // Says what the next click does, not what the toggle is
+                // called: the label is already on screen, and a toggle's
+                // ambiguity is always which way it is about to go.
+                .help(
+                    model.showsFailingOnly
+                        ? "Show every grade again"
+                        : "Show only grades below 4"
+                )
             }
 
             ToolbarItem {
                 Button("New Grade", systemImage: "plus", action: startCreating)
                     .accessibilityIdentifier(AccessibilityID.Grade.new)
                     .disabled(model.creationBlockedReason != nil)
-                    .help(model.creationBlockedReason ?? "")
+                    .help(model.creationBlockedReason ?? "Add a grade")
             }
         }
         .sheet(item: $formMode) { mode in

@@ -32,6 +32,7 @@ struct AddGradeButton: View {
                 .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .help("Add a grade to this subject")
         .onHover { isHovering = $0 }
         .animation(.easeOut(duration: ScadeDesign.hoverDuration), value: isHovering)
         // The glyph alone reads as "plus" to VoiceOver, which says what it

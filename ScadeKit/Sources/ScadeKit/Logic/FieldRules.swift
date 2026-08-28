@@ -39,9 +39,15 @@ enum FieldRules {
         return [.descriptionTooLong(maximum: ValidationLimits.maximumDescriptionLength)]
     }
 
-    /// Strictly positive — matching the `CHECK (weight > 0)` constraint on
-    /// both `Subjects` and `Grades`.
+    /// Zero or more — matching the `CHECK (weight >= 0)` constraint on both
+    /// `Subjects` and `Grades`.
+    ///
+    /// Zero is allowed and means "doesn't count": a subject you sit but that
+    /// carries no marks, a practice paper you want on the record without it
+    /// moving the average. It is a real weight, not a missing one, so it is
+    /// entered and stored like any other rather than needing a flag of its
+    /// own. What that does to an average is `GradeCalculator`'s business.
     static func weight(_ value: Double) -> [ValidationError] {
-        value > 0 && value.isFinite ? [] : [.weightNotPositive]
+        value >= 0 && value.isFinite ? [] : [.weightNegative]
     }
 }

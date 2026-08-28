@@ -57,7 +57,7 @@ CREATE TABLE Subjects (
     name        TEXT NOT NULL COLLATE NOCASE,
     description TEXT COLLATE NOCASE,
     semester    INTEGER NOT NULL CHECK (semester >= 1),
-    weight      REAL NOT NULL DEFAULT 1.0 CHECK (weight > 0),
+    weight      REAL NOT NULL DEFAULT 1.0 CHECK (weight >= 0),
     completed   INTEGER NOT NULL DEFAULT 0,
     updatedAt   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );
@@ -66,7 +66,7 @@ CREATE TABLE Grades (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     subjectId   INTEGER NOT NULL REFERENCES Subjects(id) ON DELETE CASCADE,
     value       REAL NOT NULL CHECK (value >= 1.0 AND value <= 6.0),
-    weight      REAL NOT NULL DEFAULT 1.0 CHECK (weight > 0),
+    weight      REAL NOT NULL DEFAULT 1.0 CHECK (weight >= 0),
     description TEXT COLLATE NOCASE,
     date        TEXT NOT NULL,
     updatedAt   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
@@ -89,6 +89,13 @@ Changes vs. the old schema, for reference:
   DEFAULT 1.0` and can never be absent.
 - `Subject.weight`: **new column**, doesn't exist in the old app. Scales a
   subject's contribution to its education's overall average (see §3).
+- **Weights of 0 are allowed** on both tables — amended 2026-08-28, from
+  `CHECK (weight > 0)`. A weight of 0 means "on the record, counts for
+  nothing": a practice paper, a mark that was later dropped, a subject you
+  sit that carries no marks. It is a real weight rather than a missing one,
+  so it is entered and stored like any other and needs no flag of its own.
+  Shipped as migration `v2.zeroWeights`, which rebuilds both tables because
+  SQLite cannot alter a `CHECK`.
 
 ---
 
@@ -101,9 +108,15 @@ Unchanged in shape from the old app, simplified because weight can no longer be 
 ```
 if subject has no grades → nil   (display "N/A")
 totalWeight = Σ grade.weight
+if totalWeight == 0 → nil        (display "N/A")
 weightedSum = Σ (grade.value * grade.weight)
 average = weightedSum / totalWeight
 ```
+
+A grade at weight 0 is on the record and moves nothing. Where *every* grade
+is at 0 there is no average to state, so the result is `nil` and the screen
+reads N/A — the alternative would be falling back to an unweighted mean,
+which invents a weighting nobody asked for.
 
 ### 3.2 Education average rollup — CHANGED
 
@@ -120,9 +133,11 @@ weightedSum = Σ (subjectAverage * subject.weight)  (for qualifying subjects)
 educationAverage = weightedSum / totalWeight
 ```
 
-Since `weight > 0` is DB-enforced and at least one qualifying subject exists
-whenever this runs, `totalWeight` can never be zero here — no div-by-zero
-guard needed in that branch.
+`totalWeight` can be zero here, and that is not a bug: weights of 0 are
+allowed, so an education whose only graded subjects all count for nothing
+has no average. Same rule as §3.1 — `nil`, displayed as N/A. A subject at 0
+still has its *own* average, which is about its grades; it simply
+contributes nothing to the education above it.
 
 **Architecture note:** the old app had this formula duplicated verbatim in
 two files (`SubjectUtils` and an unused copy in `EducationUtils`). Implement
@@ -165,8 +180,9 @@ never from an object graph that might be partially loaded.
   it can (`CHECK (endDate >= startDate)`) — include it as a DB-level
   guarantee too, not just UI validation).
 - **Subject**: name required ≤255, description ≤2500, semester ≥1, weight
-  >0. **Semester ≤ parent education's `semesters`**: recommend rejecting
-  with an inline field error rather than the old app's silent-clamp-and-
+  ≥0 (0 = doesn't count; see §2). **Semester ≤ parent education's
+  `semesters`**: recommend rejecting with an inline field error rather than
+  the old app's silent-clamp-and-
   toast pattern — clamping user input without them asking for it is
   surprising; a form error they can see and fix is more predictable.
   Duplicate (education, name, semester): now enforced at the DB level via
@@ -174,11 +190,11 @@ never from an object graph that might be partially loaded.
 - **Grade**: value required, **1–6** (drop the old app's inconsistent `Min=0`
   UI relic — the DataAnnotation `[Range(1,6)]` was always the real rule, the
   0-minimum was dead/unreachable code, not an intentional design choice).
-  Weight >0. Subject required. **Date within parent education's
-  [startDate, endDate]**: same recommendation as above — inline validation
-  error instead of silent clamping. Description **optional**, ≤2500, like
-  the other two — made required on 2026-08-21 and reverted the next day; see
-  [SPEC-BACKLOG](SPEC-BACKLOG.md) §5 for why.
+  Weight ≥0 (0 = doesn't count; see §2). Subject required. **Date within
+  parent education's [startDate, endDate]**: same recommendation as above —
+  inline validation error instead of silent clamping. Description
+  **optional**, ≤2500, like the other two — made required on 2026-08-21 and
+  reverted the next day; see [SPEC-BACKLOG](SPEC-BACKLOG.md) §5 for why.
 - Completion state: only settable via edit, never at creation (both
   Education and Subject are always born "in progress") — preserved as-is,
   it's a reasonable rule.

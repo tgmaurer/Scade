@@ -28,21 +28,40 @@ it leaves unfinished.
 
 ## Install
 
-Build a Release copy and move it into `/Applications`:
+Clone the repository and change into it:
+
+```sh
+git clone https://github.com/tgmaurer/Scade.git
+cd Scade
+```
+
+Every command below is run from that directory — `xcodebuild` is pointed at
+`Scade.xcodeproj` by relative path, so running it anywhere else finds
+nothing.
+
+Then build a Release copy and move it into `/Applications`:
 
 ```sh
 xcodebuild -project Scade.xcodeproj -scheme Scade -configuration Release \
   -destination 'platform=macOS' -derivedDataPath build
 cp -R build/Build/Products/Release/Scade.app /Applications/
+rm -rf build
 ```
+
+The last command deletes the build tree. `-derivedDataPath build` keeps it
+inside the repository rather than in `~/Library/Developer/Xcode/DerivedData`,
+which is what makes it easy to find — and easy to forget. It holds a few
+hundred megabytes of intermediates around a 10 MB app, it is already in
+`.gitignore`, and the copy in `/Applications` does not depend on it.
 
 Then open it from `/Applications` and keep it in the Dock. Gatekeeper is
 satisfied because the app is signed with your own development certificate on
 the machine that built it; it is not notarised, so it will not run on anyone
 else's Mac without them building it too.
 
-To update it, pull, run the same two commands, and replace the copy in
-`/Applications`. Your data is not inside the app and is not touched by this.
+To update it: `git pull` in the same directory, run those three commands
+again, and replace the copy in `/Applications`. Your data is not inside the
+app and is not touched by this.
 
 ## Where your data lives
 
@@ -118,6 +137,35 @@ of deleting it — it is the only copy of anything you have not backed up.
 | `ScadeKit/Tests/` | Unit tests for the logic and persistence |
 | `UITests/` | End-to-end tests |
 | `docs/` | The specs — start with `SPEC.md`, then `STATUS.md` |
+
+## Built with
+
+**Swift 6 and SwiftUI**, native the whole way down. No cross-platform
+runtime, no web view, no UI framework standing between the app and the
+system. Swift 6 language mode throughout, so data-race safety is checked by
+the compiler rather than left to convention — the view layer is main-actor
+by default and the domain layer is `Sendable` and isolated to nothing.
+
+SwiftUI draws every screen, and the menu bar, the toolbars and the Settings
+window are its own `Commands` and `Settings` scenes rather than hand-built
+imitations — so the app inherits macOS's behaviour instead of approximating
+it. The same code renders the iOS screens; see
+[docs/STATUS.md](docs/STATUS.md) for how far that got.
+
+AppKit appears in four files, each of them somewhere SwiftUI has no
+equivalent: the backup folder panel (`NSOpenPanel`), Show in Finder
+(`NSWorkspace`), Toggle Sidebar, and window tabbing. UIKit appears nowhere
+at all.
+
+Models, business logic and persistence sit in a Swift package target that
+imports no UI framework — 31 files, none of them touching SwiftUI — so every
+average and every validation rule is testable without a screen. Those tests
+use **Swift Testing**; the end-to-end tests drive the real app through
+**XCUITest**.
+
+[GRDB.swift](https://github.com/groue/GRDB.swift) by Gwendal Roué — the SQLite
+toolkit the whole persistence layer sits on. MIT licensed. It is Scade's only
+dependency, and it is credited in the app as well, under **Settings → About**.
 
 ## Licence
 

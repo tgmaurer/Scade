@@ -44,12 +44,14 @@ struct GradeDetailScreen: View {
         .toolbar {
             ToolbarItem {
                 Button("Edit", systemImage: "pencil", action: startEditing)
+                    .help("Edit this grade")
             }
 
             ToolbarItem {
                 Button("Delete", systemImage: "trash", role: .destructive) {
                     model.isConfirmingDeletion = true
                 }
+                .help("Delete this grade")
                 .confirmationDialog(
                     "Delete Grade?",
                     isPresented: $model.isConfirmingDeletion,
