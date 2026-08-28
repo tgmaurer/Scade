@@ -85,7 +85,8 @@ final class SettingsModel {
         backupFolder = chosen
     }
 
-    /// Writes the snapshot and the three CSV tables into the chosen folder.
+    /// Writes the snapshot, the overview sheet and the three CSV tables
+    /// into the chosen folder.
     func backUpNow(from repositories: Repositories) {
         guard let folder = backupFolder else { return }
 
