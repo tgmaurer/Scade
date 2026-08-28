@@ -8,9 +8,16 @@
 
 <div align="center">
 
+![Swift](https://img.shields.io/badge/Swift-FA7343?style=for-the-badge&logo=swift&logoColor=white)
+![XCode](https://img.shields.io/badge/Xcode-007ACC?style=for-the-badge&logo=Xcode&logoColor=white)
+![Git](https://img.shields.io/badge/GIT-E44C30?style=for-the-badge&logo=git&logoColor=white)
+![MacOS](https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=white)
+
 A weighted grade tracker for macOS, on the Swiss 1–6 scale.
 
 </div>
+
+![Screenshot](assets/screenshots/scade_home_2.png)
 
 Educations hold subjects, subjects hold grades, and every average is weighted
 on the way up.
