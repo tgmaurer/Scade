@@ -2,6 +2,12 @@ import SwiftUI
 
 /// What Scade is, and the handful of things worth explaining about it.
 struct AboutSection: View {
+    /// Scade's own repository: the only place a copy of the app comes from.
+    private static let repository = URL(string: "https://github.com/tgmaurer/Scade")!
+
+    /// The database library the whole persistence layer is built on.
+    private static let grdb = URL(string: "https://github.com/groue/GRDB.swift")!
+
     private var version: String {
         let bundle = Bundle.main
         let short = bundle.infoDictionary?["CFBundleShortVersionString"] as? String
@@ -18,6 +24,22 @@ struct AboutSection: View {
         Section("About") {
             LabeledContent("Version", value: version)
             LabeledContent("Licence", value: "GPL-3.0")
+
+            // The repository is where the licence is honoured, where a build
+            // comes from and where a bug goes — this app has no download page
+            // and no other way of reaching any of that.
+            LabeledContent("Source") {
+                Link("github.com/tgmaurer/Scade", destination: Self.repository)
+            }
+
+            // GRDB is the only dependency Scade has, and it earns a line
+            // here rather than only in the README: the app is the thing
+            // people run, and this is where its credits are legible. The
+            // link goes to the licence itself, which is where MIT's notice
+            // actually lives.
+            LabeledContent("Built With") {
+                Link("GRDB.swift (MIT)", destination: Self.grdb)
+            }
         }
 
         Section("How Grades Work") {
