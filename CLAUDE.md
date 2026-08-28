@@ -26,8 +26,9 @@ starting any feature work.
   through `AppDatabase.observe`: the query is one you wrote and it is re-run
   whole, with nothing tracked per object, no graph and no cache. What's banned
   is a layer that watches objects and decides for you what changed.
-- Business logic (averages, validation) lives in Sources/Logic/, is unit
-  tested, and is never duplicated across call sites.
+- Business logic (averages, validation) lives in
+  `ScadeKit/Sources/ScadeKit/Logic/`, is unit tested, and is never
+  duplicated across call sites.
 - If GradeMaster (old MAUI app) is in context: reference for business logic,
   data shape, and — from `docs/design/reference/grademaster/` — what
   information belongs on a screen. Never for project structure, architecture,

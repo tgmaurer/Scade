@@ -108,16 +108,6 @@
 			path = UITests;
 			sourceTree = "<group>";
 		};
-		1CF372813018C3930020724D /* Sources */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Sources;
-			sourceTree = "<group>";
-		};
-		1CF3728E3018C4380020724D /* Resources */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Resources;
-			sourceTree = "<group>";
-		};
 		1CF372933018C6520020724D /* docs */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -160,8 +150,6 @@
 			children = (
 				1CED567C301AA37C001BF91E /* Scade.xctestplan */,
 				1C22F5583018F04400C3E1A3 /* ScadeKit */,
-				1CF3728E3018C4380020724D /* Resources */,
-				1CF372813018C3930020724D /* Sources */,
 				1CF3723D3018C0360020724D /* App */,
 				1CF3724F3018C0370020724D /* Tests */,
 				1CF372593018C0370020724D /* UITests */,
@@ -193,8 +181,6 @@
 			);
 			fileSystemSynchronizedGroups = (
 				1CF3723D3018C0360020724D /* App */,
-				1CF372813018C3930020724D /* Sources */,
-				1CF3728E3018C4380020724D /* Resources */,
 				1CF372933018C6520020724D /* docs */,
 			);
 			name = Scade;
