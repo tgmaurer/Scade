@@ -28,18 +28,28 @@ it leaves unfinished.
 
 ## Why this exists
 
-A MacBook Pro became my main machine, and the grade tracker I had written for
-myself didn't run on it.
-
-[GradeMaster](https://github.com/tgmaurer/GradeMaster) came first and still
-works: an open-source grade manager on .NET MAUI and Blazor, drawing Bootstrap
+Scade answers [GradeMaster](https://github.com/tgmaurer/GradeMaster), an
+open-source grade manager for Windows: .NET MAUI and Blazor, drawing Bootstrap
 inside a WebView2 control, storing SQLite through Entity Framework Core. It is
-a Windows application — 10 and 11, x64 and arm64 — and it isn't going
-anywhere; it just isn't where I work any more.
+maintained and it still works. What changed is the machine the app is used on
+every day, which is now a Mac.
 
-So Scade is the same app for the machine I actually use. Not a port: a
-rewrite, because porting would have meant carrying a web view onto a platform
-that has never needed one.
+**A port was possible, and was rejected.** .NET MAUI targets Mac Catalyst, so
+the existing codebase could have been taken to Apple platforms; this was a
+choice rather than a necessity. It was rejected because a port arrives
+carrying what it is built on — a web view drawing Bootstrap on a platform that
+has a native toolkit, an ORM whose change-tracking decides for itself what to
+write, packaging and dependencies shaped around Windows. None of that is a
+hard lock; all of it is cheaper to leave behind than to unpick, and none of it
+gets better by being compiled for a second platform. Running on macOS is not
+the same as belonging there.
+
+So Scade is not a port but the same domain rebuilt on a different stack — and
+the rebuild carried a second question worth answering on its own: how good an
+app an AI agent produces when the work is driven by a written specification
+instead of a conversation, and when that specification is itself derived from
+the codebase being replaced. [How it was built](#how-it-was-built) is the rest
+of that answer.
 
 | | GradeMaster | Scade |
 |---|---|---|
@@ -225,12 +235,20 @@ Most of this code was written by an AI agent — Claude Code — working against
 a written contract rather than a conversation. That is worth describing only
 because the method is visible in the repository and can be checked against it.
 
-**The specification came first, and it is dated.** `docs/SPEC.md` and
-`CLAUDE.md` were committed on 28 July 2026; the first feature pull request
-merged on 29 July. The spec is 399 lines of what the app does — the schema,
-the two averaging formulas, validation rules field by field, screen by screen
-— written to be argued against rather than written up afterwards. Three
-documents joined it: [SPEC-POLISH.md](docs/SPEC-POLISH.md) for look and feel,
+**The specification came first, and it was derived from the old app.** The
+agent read GradeMaster's source and wrote [SPEC.md](docs/SPEC.md) from it —
+"merging architectural decisions with the functional/logic audit of the old
+app", as the document says at the top. That audit is what lets it separate
+GradeMaster's intentional rules from its accidents: §3.4 records that the old
+minimum of `0` on a grade value was unreachable code rather than a design
+decision, and drops it, while §3.1's weighting is kept because it was meant.
+
+The result is 399 lines of what the app does — the schema, the two averaging
+formulas, validation rules field by field, screen by screen. It was committed
+with `CLAUDE.md` on 28 July 2026; the first feature pull request merged on 29
+July. Everything after that is argued against the document rather than against
+the last message in a chat. Three more joined it:
+[SPEC-POLISH.md](docs/SPEC-POLISH.md) for look and feel,
 [SPEC-BACKLOG.md](docs/SPEC-BACKLOG.md) for what is deliberately *not* built,
 and [STATUS.md](docs/STATUS.md) for where development stopped and why.
 
@@ -261,8 +279,10 @@ wrong; a twenty-line probe app disproved it, and the correction is in the
 history. **An agent being confidently wrong is the normal case, not the
 exception, and a process that can't catch it is not a process.**
 
-The division of labour: specification, product decisions and review on one
-side; implementation on the other.
+The division of labour, then: the agent wrote the specification and the code.
+The direction, the product decisions and the review that accepted or rejected
+each change were not its — and a specification is only a contract if somebody
+else is holding the other end of it.
 
 ## Licence
 
