@@ -28,11 +28,15 @@ it leaves unfinished.
 
 ## Why this exists
 
-Scade answers [GradeMaster](https://github.com/tgmaurer/GradeMaster), an
-open-source grade manager for Windows: .NET MAUI and Blazor, drawing Bootstrap
-inside a WebView2 control, storing SQLite through Entity Framework Core. It is
-maintained and it still works. What changed is the machine it is used on every
-day, which is now a Mac.
+It starts with wanting a grade tracker that works the way I want one to:
+weights that match how a course is actually graded, and the data in a file on
+my own machine rather than in somebody's account.
+
+[GradeMaster](https://github.com/tgmaurer/GradeMaster) was the first answer to
+that — an open-source grade manager for Windows: .NET MAUI and Blazor, drawing
+Bootstrap inside a WebView2 control, storing SQLite through Entity Framework
+Core. It is maintained and it still works. What changed is the machine it is
+used on every day, which is now a Mac.
 
 **A port was possible. I decided against it.** .NET MAUI targets Mac Catalyst,
 so the existing codebase could have been taken to Apple platforms; this was a
