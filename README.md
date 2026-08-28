@@ -28,15 +28,18 @@ it leaves unfinished.
 
 ## Why this exists
 
+A MacBook Pro became my main machine, and the grade tracker I had written for
+myself didn't run on it.
+
 [GradeMaster](https://github.com/tgmaurer/GradeMaster) came first and still
 works: an open-source grade manager on .NET MAUI and Blazor, drawing Bootstrap
 inside a WebView2 control, storing SQLite through Entity Framework Core. It is
 a Windows application — 10 and 11, x64 and arm64 — and it isn't going
-anywhere.
+anywhere; it just isn't where I work any more.
 
-Scade is the same idea for the other desk. Not a port: a rewrite, because
-porting would have meant carrying a web view onto a platform that has never
-needed one.
+So Scade is the same app for the machine I actually use. Not a port: a
+rewrite, because porting would have meant carrying a web view onto a platform
+that has never needed one.
 
 | | GradeMaster | Scade |
 |---|---|---|
