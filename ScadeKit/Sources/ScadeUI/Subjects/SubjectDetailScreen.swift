@@ -30,17 +30,24 @@ struct SubjectDetailScreen: View {
                 // §4 hides quick-add on a completed subject.
                 Button("New Grade", systemImage: "plus", action: startAddingGrade)
                     .disabled(model.summary?.subject.completed ?? true)
+                    .help(
+                        model.summary?.subject.completed ?? true
+                            ? "This subject is completed. Reopen it to add a grade."
+                            : "Add a grade to this subject"
+                    )
             }
 
             ToolbarItem {
                 Button("Edit", systemImage: "pencil", action: startEditing)
                     .accessibilityIdentifier(AccessibilityID.Subject.edit)
+                    .help("Edit this subject")
             }
 
             ToolbarItem {
                 Button("Delete", systemImage: "trash", role: .destructive) {
                     model.isConfirmingDeletion = true
                 }
+                .help("Delete this subject")
                 .confirmationDialog(
                     "Delete Subject?",
                     isPresented: $model.isConfirmingDeletion

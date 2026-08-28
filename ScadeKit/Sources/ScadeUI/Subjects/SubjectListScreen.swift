@@ -72,7 +72,7 @@ struct SubjectListScreen: View {
                 Button("New Subject", systemImage: "plus", action: startCreating)
                     .accessibilityIdentifier(AccessibilityID.Subject.new)
                     .disabled(model.creationBlockedReason != nil)
-                    .help(model.creationBlockedReason ?? "")
+                    .help(model.creationBlockedReason ?? "Add a subject")
             }
         }
         .sheet(item: $formMode) { mode in

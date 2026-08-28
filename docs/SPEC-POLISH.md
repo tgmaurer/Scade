@@ -1170,6 +1170,23 @@ above and not a styling tweak.
 ancestors, so a chip and its row light together — which is correct: they're
 nested targets and both are live.
 
+**Every icon-only control carries a help tag.** A toolbar of glyphs is only
+legible if resting on one says what it does, so each has a `.help` — and it
+says what the *click* does rather than repeating the label: "Add a subject to
+this education", not "New Subject". A toggle names the state it is about to
+move to ("Show only grades below 4"), because a toggle's ambiguity is always
+which way it is going. Where a button is disabled, the tag is the reason it is
+disabled, which is the one thing the greyed-out glyph cannot say.
+
+**A grade chip's tag is its date.** The chip has room for the value and the
+weight and nothing else, so the date — the one field every grade has — was
+otherwise only readable by opening the grade.
+
+**`.help` must be applied above `.accessibilityLabel`, not below it.** Below
+it, no tooltip appears at all, however long the pointer rests. Found on
+`AddGradeButton`, measured rather than reasoned about, and the reason that
+file has a comment guarding the order.
+
 ---
 
 ## 3. Accessibility pass

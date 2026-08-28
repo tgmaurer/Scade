@@ -20,6 +20,7 @@ struct HomeEducationMenu: View {
             .pickerStyle(.inline)
         }
         .disabled(educations.isEmpty)
+        .help("Choose which education the dashboard shows")
         .accessibilityIdentifier(AccessibilityID.Home.educationMenu)
     }
 }

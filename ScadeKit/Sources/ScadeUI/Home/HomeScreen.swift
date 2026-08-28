@@ -57,7 +57,7 @@ struct HomeScreen: View {
                     .disabled(model.canAddSubject == false)
                     .help(
                         model.canAddSubject
-                            ? ""
+                            ? "Add a subject to this education"
                             : "This education is completed. Reopen it to add a subject."
                     )
             }

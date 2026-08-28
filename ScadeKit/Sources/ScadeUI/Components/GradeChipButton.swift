@@ -21,6 +21,11 @@ struct GradeChipButton: View {
         }
         .buttonStyle(.plain)
         .onHover { isHovering = $0 }
+        // The chip has room for the value and the weight and nothing else
+        // (see `GradeChip`), so a grade's date — the one field every grade
+        // has — is otherwise only readable by opening it. A help tag hands
+        // it back without spending any of the row's width on it.
+        .help(Text(grade.date.startOfDay(), format: .dateTime.day().month().year()))
     }
 
     private func open() {
