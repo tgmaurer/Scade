@@ -26,6 +26,12 @@ struct DetailButton<Destination: Hashable>: View {
     let destination: Destination
     var font: Font = ScadeDesign.rowTitle
 
+    /// What resting on the title says, where the row has something to add.
+    /// Empty by default, which is how SwiftUI is told there is no tag —
+    /// the same idiom the list screens use for a button that is only
+    /// sometimes blocked.
+    var help = Text(verbatim: "")
+
     @Environment(\.navigate) private var navigate
     @State private var isHovering = false
 
@@ -50,6 +56,7 @@ struct DetailButton<Destination: Hashable>: View {
                 .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .help(help)
         .onHover { isHovering = $0 }
         .animation(.easeOut(duration: ScadeDesign.hoverDuration), value: isHovering)
     }

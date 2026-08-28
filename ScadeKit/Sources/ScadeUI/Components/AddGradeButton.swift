@@ -32,10 +32,6 @@ struct AddGradeButton: View {
                 .contentShape(.rect)
         }
         .buttonStyle(.plain)
-        // Above `accessibilityLabel`, and it has to stay there: applied
-        // after it, no tooltip appears at all. Measured, not guessed — the
-        // same modifier one line lower showed nothing however long the
-        // pointer rested on the button.
         .help("Add a grade to this subject")
         .onHover { isHovering = $0 }
         .animation(.easeOut(duration: ScadeDesign.hoverDuration), value: isHovering)
