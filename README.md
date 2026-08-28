@@ -31,25 +31,28 @@ it leaves unfinished.
 Scade answers [GradeMaster](https://github.com/tgmaurer/GradeMaster), an
 open-source grade manager for Windows: .NET MAUI and Blazor, drawing Bootstrap
 inside a WebView2 control, storing SQLite through Entity Framework Core. It is
-maintained and it still works. What changed is the machine the app is used on
-every day, which is now a Mac.
+maintained and it still works. What changed is the machine it is used on every
+day, which is now a Mac.
 
-**A port was possible, and was rejected.** .NET MAUI targets Mac Catalyst, so
-the existing codebase could have been taken to Apple platforms; this was a
-choice rather than a necessity. It was rejected because a port arrives
-carrying what it is built on — a web view drawing Bootstrap on a platform that
-has a native toolkit, an ORM whose change-tracking decides for itself what to
-write, packaging and dependencies shaped around Windows. None of that is a
-hard lock; all of it is cheaper to leave behind than to unpick, and none of it
-gets better by being compiled for a second platform. Running on macOS is not
+**A port was possible. I decided against it.** .NET MAUI targets Mac Catalyst,
+so the existing codebase could have been taken to Apple platforms; this was a
+choice rather than a constraint.
+
+GradeMaster is also the older of the two, written earlier in my career, and it
+carries what that implies: Entity Framework Core trusted further than it
+earns, and early structural decisions that everything since has been built on.
+None of it is a hard lock to Windows — a web view drawing Bootstrap where a
+native toolkit exists, packaging shaped around one platform, an ORM that
+decides for itself what to write — but all of it would have come along, and
+all of it is cheaper to leave behind than to unpick. Running on macOS is not
 the same as belonging there.
 
-So Scade is not a port but the same domain rebuilt on a different stack — and
-the rebuild carried a second question worth answering on its own: how good an
-app an AI agent produces when the work is driven by a written specification
-instead of a conversation, and when that specification is itself derived from
-the codebase being replaced. [How it was built](#how-it-was-built) is the rest
-of that answer.
+So I chose a fresh native app over a port: the same domain on a stack picked
+for the platform it runs on. That also let me answer a question a port would
+not have — how good an app an AI agent produces when the work is driven by a
+written specification instead of a conversation, and when that specification
+is itself derived from the codebase being replaced.
+[How it was built](#how-it-was-built) is the rest of that answer.
 
 | | GradeMaster | Scade |
 |---|---|---|
@@ -281,7 +284,7 @@ exception, and a process that can't catch it is not a process.**
 
 The division of labour, then: the agent wrote the specification and the code.
 The direction, the product decisions and the review that accepted or rejected
-each change were not its — and a specification is only a contract if somebody
+each change were mine — and a specification is only a contract if somebody
 else is holding the other end of it.
 
 ## Licence
