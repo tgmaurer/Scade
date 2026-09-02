@@ -109,9 +109,10 @@ hundred megabytes of intermediates around a 10 MB app, it is already in
 `.gitignore`, and the copy in `/Applications` does not depend on it.
 
 Then open it from `/Applications` and keep it in the Dock. Gatekeeper is
-satisfied because the app is signed with your own development certificate on
-the machine that built it; it is not notarised, so it will not run on anyone
-else's Mac without them building it too.
+satisfied because the app was built on the machine it runs on and never
+travelled, so it carries no quarantine flag. It is signed to run locally
+rather than notarised — no Apple Developer account is needed to build it, and
+it will not run on anyone else's Mac without them building it too.
 
 To update it: `git pull` in the same directory, run those three commands
 again, and replace the copy in `/Applications`. Your data is not inside the
