@@ -359,6 +359,21 @@ New Window moved beside the `⌘T` that didn't exist.
 the key window, asks SwiftUI to open another, and adds the new one to that
 window's tab group as it appears.
 
+**Closing the last window quits the app.** The macOS default is the opposite,
+and it is the right default for an app with something left to do without a
+window — another document to open, background work, a menu bar item, a sync.
+Scade has none of that. It is one database with a window on top, so a
+windowless Scade sits in the Dock claiming otherwise, and `⌘Q` becomes a
+second thing to do after the one that already meant "done". It also makes the
+restore in README honest: that is a file copy *with the app quit*, and closing
+the window now closes the database rather than putting it out of sight.
+
+`Window` in place of `WindowGroup` gets this for free, and is the wrong tool —
+it terminates on close by forbidding a second window, taking `⌘⇧N` and the
+`⌘T` above with it. `ScadeAppDelegate` answers
+`applicationShouldTerminateAfterLastWindowClosed` instead, which decides only
+what happens after the last window closes and leaves tabbing alone.
+
 ### 1.4 Implementation notes
 
 - Declared as a `Commands` scene on `WindowGroup`, in ScadeUI, not in the App
