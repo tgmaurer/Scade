@@ -35,7 +35,11 @@ struct AboutSection: View {
             // and no other way of reaching any of that.
             LabeledContent("Source") {
                 Link("github.com/tgmaurer/Scade", destination: Self.repository)
+                    // `PointerStyle` is macOS-only — there is no iOS version
+                    // to fall back to, so the call compiles out entirely.
+                    #if os(macOS)
                     .pointerStyle(.link)
+                    #endif
             }
 
             // GRDB is the only dependency Scade has, and it earns a line
@@ -45,7 +49,9 @@ struct AboutSection: View {
             // actually lives.
             LabeledContent("Built With") {
                 Link("GRDB.swift (MIT)", destination: Self.grdb)
+                    #if os(macOS)
                     .pointerStyle(.link)
+                    #endif
             }
         }
 
