@@ -64,7 +64,15 @@ final class ScadeUITests: XCTestCase {
 
     private var app: XCUIApplication!
 
-    override func setUpWithError() throws {
+    /// The `async` overrides, not `setUpWithError()`/`tearDownWithError()`.
+    ///
+    /// An override inherits its isolation from the method it overrides, so
+    /// the class's `@MainActor` does not reach the synchronous ones — they
+    /// stay nonisolated and every touch of `app` there is a concurrency
+    /// warning. `XCTestCase`'s async hooks are awaited by the runner, so an
+    /// override of one may add isolation, and `@MainActor` on it holds.
+    @MainActor
+    override func setUp() async throws {
         continueAfterFailure = false
 
         // No orientation forcing: the shell is a `TabView` now, and its tabs
@@ -79,7 +87,8 @@ final class ScadeUITests: XCTestCase {
         app.launch()
     }
 
-    override func tearDownWithError() throws {
+    @MainActor
+    override func tearDown() async throws {
         app = nil
     }
 

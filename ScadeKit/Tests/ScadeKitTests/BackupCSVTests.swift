@@ -111,8 +111,8 @@ struct BackupOverviewTests {
                 id: 1,
                 name: education,
                 semesters: 8,
-                startDate: .iso("2024-08-01") ?? .today(),
-                endDate: .iso("2028-07-31") ?? .today(),
+                startDate: .iso("2024-08-01"),
+                endDate: .iso("2028-07-31"),
                 institution: institution
             ),
             subjects: subjects
@@ -214,8 +214,10 @@ struct BackupOverviewTests {
             )
         ])
 
-        let row = try? #require(lines(sheet).dropFirst().first)
-        #expect(row?.contains("0.0") == false)
+        let rows = lines(sheet).dropFirst()
+
+        #expect(rows.count == 1)
+        #expect(rows.first?.contains("0.0") == false)
     }
 
     /// A subject at 0% counts for nothing, so an education made only of them
