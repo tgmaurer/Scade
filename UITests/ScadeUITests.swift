@@ -64,7 +64,15 @@ final class ScadeUITests: XCTestCase {
 
     private var app: XCUIApplication!
 
-    override func setUpWithError() throws {
+    /// The `async` overrides, not `setUpWithError()`/`tearDownWithError()`.
+    ///
+    /// An override inherits its isolation from the method it overrides, so
+    /// the class's `@MainActor` does not reach the synchronous ones — they
+    /// stay nonisolated and every touch of `app` there is a concurrency
+    /// warning. `XCTestCase`'s async hooks are awaited by the runner, so an
+    /// override of one may add isolation, and `@MainActor` on it holds.
+    @MainActor
+    override func setUp() async throws {
         continueAfterFailure = false
 
         // No orientation forcing: the shell is a `TabView` now, and its tabs
@@ -79,7 +87,8 @@ final class ScadeUITests: XCTestCase {
         app.launch()
     }
 
-    override func tearDownWithError() throws {
+    @MainActor
+    override func tearDown() async throws {
         app = nil
     }
 
@@ -431,6 +440,31 @@ final class ScadeUITests: XCTestCase {
     }
 
 
+
+    /// Closing the last window quits the app, rather than leaving it in the
+    /// Dock with nothing to show (SPEC-POLISH §1.3).
+    ///
+    /// macOS only: there is no windowless state to get wrong on iOS, and no
+    /// `⌘W` to reach it with.
+    ///
+    /// Worth a test because the behaviour is one line — `ScadeAppDelegate`
+    /// answering `applicationShouldTerminateAfterLastWindowClosed` — attached
+    /// by one more in `ScadeApp`, and losing either leaves an app that builds,
+    /// launches and behaves identically right up until you close its window.
+    /// Nothing else here would notice.
+    #if os(macOS)
+    func testClosingTheLastWindowQuitsTheApp() {
+        openSection(ID.educationsSection)
+
+        app.typeKey("w", modifierFlags: .command)
+
+        let quit = expectation(
+            for: NSPredicate(format: "state == %d", XCUIApplication.State.notRunning.rawValue),
+            evaluatedWith: app
+        )
+        wait(for: [quit], timeout: 10)
+    }
+    #endif
 
     /// The only destructive action that isn't scoped to one record, so the
     /// one most worth pinning down: it has to actually empty the database,

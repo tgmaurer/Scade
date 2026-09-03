@@ -10,6 +10,13 @@ struct ScadeApp: App {
     /// there is no shared singleton for a view to reach for.
     private let repositories: Repositories
 
+    /// macOS only, and the app's whole quitting policy: Scade ends with its
+    /// last window rather than staying in the Dock with nothing to do. See
+    /// `ScadeAppDelegate`.
+    #if os(macOS)
+    @NSApplicationDelegateAdaptor private var appDelegate: ScadeAppDelegate
+    #endif
+
     init() {
         do {
             repositories = Repositories(database: try Self.makeDatabase())
