@@ -32,10 +32,11 @@ being bought for an app that isn't being published. The design notes in
 SPEC §5 stay as they are — they were right about how to do it, and would be
 the starting point if a second device ever appears.
 
-**Publishing.** No release build for anyone else, no notarisation, no App
-Store. The app is built from source on the machine it runs on. README
-explains that; it is why Gatekeeper is satisfied there and would not be
-anywhere else.
+**Publishing.** No notarisation and no App Store. From 1.3.0, GitHub
+Releases carries ad-hoc-signed builds, one for Apple Silicon and one for
+Intel. Neither is notarised, so anyone who downloads one has to clear
+the quarantine flag once. The README covers that, and building from source
+is still documented next to it.
 
 ## What replaced iCloud sync
 
