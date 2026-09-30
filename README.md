@@ -21,10 +21,10 @@ A weighted grade tracker for macOS, on the Swiss 1–6 scale.
 Educations hold subjects, subjects hold grades, and every average is weighted
 on the way up.
 
-It is built to be used, not published: there is no release download and no
-App Store listing. You build it once and keep it in `/Applications` like any
-other app. See [docs/STATUS.md](docs/STATUS.md) for what that means and what
-it leaves unfinished.
+It is built to be used, not sold: there is no App Store listing. Download
+it from [Releases](https://github.com/tgmaurer/Scade/releases/latest), or
+build it yourself, and keep it in `/Applications` like any other app. See
+[docs/STATUS.md](docs/STATUS.md) for what it leaves unfinished.
 
 ## Why this exists
 
@@ -60,10 +60,10 @@ is itself derived from the codebase being replaced.
 
 | | GradeMaster | Scade |
 |---|---|---|
-| Platform | Windows 10 / 11 | macOS 26.5+ |
+| Platform | Windows 10 / 11 | macOS 26+ |
 | UI | Blazor + Bootstrap in WebView2 | SwiftUI, native |
 | Data | SQLite via Entity Framework Core | SQLite via GRDB, explicit queries |
-| Install | Installer from Releases, ~1 GB | Build it yourself, 10 MB app |
+| Install | Installer from Releases, ~1 GB | Zip from Releases or build it yourself, 4 MB |
 | Licence | GPL-3.0 | GPL-3.0 |
 
 What carried over is the domain — educations hold subjects, subjects hold
@@ -76,11 +76,70 @@ silently clamped it. Both changes are recorded there with the reasoning.
 
 ## Requirements
 
-- macOS 26.5 or later
-- Xcode 26.5 or later, signed in with an Apple ID (a free account is enough —
-  the app uses no capability that needs a paid membership)
+- macOS 26.0 or later
+- An Apple Silicon Mac. Intel Macs have a separate build too, but support
+  for them is on its way out: macOS 26 is the last release Apple ships for
+  Intel, so that build is kept working and nothing more.
+- To build from source: Xcode 26 or later. You need the full app, because
+  the Command Line Tools alone aren't enough. No Apple ID or developer
+  account is needed, because the app is signed to run locally.
 
 ## Install
+
+If you have Xcode, [building from source](#build-from-source) is simpler:
+one command picks the right build for your Mac, and there is no quarantine
+flag to clear.
+
+Each [release](https://github.com/tgmaurer/Scade/releases/latest) carries
+two zips. Pick the one for your Mac. Apple menu → **About This Mac** shows
+which kind you have: an Apple M-series chip, or an Intel processor.
+
+| Mac | Download |
+|---|---|
+| Apple Silicon (M1 and later) | `Scade-<version>-macOS-arm64.zip` |
+| Intel | `Scade-<version>-macOS-x86_64.zip` |
+
+`Scade.app` is a folder that macOS displays as a single app, so it ships
+inside a zip. Unzip it, move the app into `/Applications`, and clear the
+quarantine flag. With the zip in `~/Downloads`, run this in Terminal. On an
+Intel Mac, change `arm64` to `x86_64`.
+
+```sh
+cd ~/Downloads &&
+unzip Scade-*-macOS-arm64.zip &&
+rm -rf /Applications/Scade.app &&
+mv Scade.app /Applications/ &&
+sudo xattr -cr /Applications/Scade.app
+```
+
+The `rm -rf` line removes any earlier version, and does nothing on a first
+install. `mv` won't replace an app that is already there. The `&&` between
+the lines means each step runs only if the one before it worked. If the
+unzip fails, your installed copy is left alone instead of being deleted with
+nothing to replace it.
+
+Safari unzips downloads on its own by default. If `Scade.app` is already in
+`~/Downloads`, leave out the `unzip Scade-*-macOS-arm64.zip &&` line.
+Otherwise `unzip` finds no zip, and the commands stop there.
+
+**The `xattr` line is required.** The download is not signed with a
+Developer ID or notarised by Apple. That costs a paid membership, and this
+app isn't being sold. Your browser marks every download with a quarantine
+flag, and Gatekeeper refuses to open an unnotarised app that has one. It
+usually says *"Scade" is damaged and can't be opened*, which is misleading,
+because the app isn't damaged. `xattr -cr` clears the flag, and after that
+Scade opens like any other app. Run it only on a copy you downloaded from
+this repository's Releases page.
+
+To update, quit Scade and run the same commands on the new zip. Your data
+is not inside the app, so replacing the app doesn't touch it.
+
+## Build from source
+
+This is the simpler install if you already have Xcode. It needs no download
+and no `xattr` step, and it builds for your Mac automatically. It does need
+the full Xcode app: the Command Line Tools on their own don't include what
+`xcodebuild` needs to build an app.
 
 Clone the repository and change into it:
 
@@ -89,34 +148,59 @@ git clone https://github.com/tgmaurer/Scade.git
 cd Scade
 ```
 
-Every command below is run from that directory — `xcodebuild` is pointed at
-`Scade.xcodeproj` by relative path, so running it anywhere else finds
-nothing.
+Run every command below from that directory. `xcodebuild` finds
+`Scade.xcodeproj` by relative path, so from anywhere else it finds nothing.
 
 Then build a Release copy and move it into `/Applications`:
 
 ```sh
 xcodebuild -project Scade.xcodeproj -scheme Scade -configuration Release \
-  -destination 'platform=macOS' -derivedDataPath build
-cp -R build/Build/Products/Release/Scade.app /Applications/
+  -destination 'platform=macOS' -derivedDataPath build &&
+rm -rf /Applications/Scade.app &&
+cp -R build/Build/Products/Release/Scade.app /Applications/ &&
 rm -rf build
 ```
 
-The last command deletes the build tree. `-derivedDataPath build` keeps it
-inside the repository rather than in `~/Library/Developer/Xcode/DerivedData`,
-which is what makes it easy to find — and easy to forget. It holds a few
-hundred megabytes of intermediates around a 10 MB app, it is already in
+`-destination 'platform=macOS'` means this Mac, so the app is built for its
+architecture only: Apple Silicon on an M-series Mac, Intel on an Intel one.
+
+The first `rm -rf` removes any earlier version, so `cp -R` makes a clean
+copy instead of merging into the old one. It does nothing on a first
+install. The `&&` chain means it only runs once the build has succeeded: a
+failed build leaves your installed copy where it is.
+
+The last command deletes the build tree. `-derivedDataPath build` keeps that
+tree inside the repository rather than in `~/Library/Developer/Xcode/DerivedData`,
+which makes it easy to find and also easy to forget. The tree holds a few
+hundred megabytes of intermediates around a 10 MB app. It is already in
 `.gitignore`, and the copy in `/Applications` does not depend on it.
 
-Then open it from `/Applications` and keep it in the Dock. Gatekeeper is
-satisfied because the app was built on the machine it runs on and never
-travelled, so it carries no quarantine flag. It is signed to run locally
-rather than notarised — no Apple Developer account is needed to build it, and
-it will not run on anyone else's Mac without them building it too.
+Then open Scade from `/Applications` and keep it in the Dock. You don't need
+the `xattr` step here. The app was built on the Mac it runs on and never
+downloaded, so it has no quarantine flag.
 
-To update it: `git pull` in the same directory, run those three commands
-again, and replace the copy in `/Applications`. Your data is not inside the
-app and is not touched by this.
+To update, quit Scade, run `git pull` in the same directory, and run the
+same commands again.
+
+### Building for a specific architecture
+
+You only need this to build for a Mac other than the one you're on, which is
+how both release zips are made on one machine. Swap the destination for
+`'generic/platform=macOS'` and name the architecture:
+
+```sh
+# Apple Silicon
+xcodebuild -project Scade.xcodeproj -scheme Scade -configuration Release \
+  -destination 'generic/platform=macOS' -derivedDataPath build ARCHS=arm64
+
+# Intel
+xcodebuild -project Scade.xcodeproj -scheme Scade -configuration Release \
+  -destination 'generic/platform=macOS' -derivedDataPath build ARCHS=x86_64
+```
+
+`generic/platform=macOS` means any Mac rather than this one, so Xcode builds
+every architecture the project lists. Without `ARCHS`, that is a universal
+app of about 18 MB that runs on both kinds of Mac.
 
 ## Where your data lives
 
@@ -277,8 +361,8 @@ editing the original migration in place cannot quietly keep it green.
 
 **Claims are measured in the running app.** Help tags were verified by reading
 `AXHelp` back through the accessibility API rather than by watching for a
-tooltip; the schema migration was timed against a real database; the install
-instructions above were run end to end from a fresh clone.
+tooltip; the schema migration was timed against a real database; the
+build-from-source instructions above were run end to end from a fresh clone.
 
 That last habit exists for a reason. The agent once concluded, from a tooltip
 that failed to appear, that one SwiftUI modifier had to be applied above
