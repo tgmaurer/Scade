@@ -18,45 +18,45 @@ A weighted grade tracker for macOS, on the Swiss 1–6 scale.
 
 ![Scade_Home](assets/screenshots/scade_home_2.png)
 
-Educations hold subjects, subjects hold grades, and every average is weighted
-on the way up.
+An education holds subjects, a subject holds grades, and every average is
+weighted: grades within a subject, and subjects within an education.
 
-It is built to be used, not sold: there is no App Store listing. Download
-it from [Releases](https://github.com/tgmaurer/Scade/releases/latest), or
-build it yourself, and keep it in `/Applications` like any other app. See
-[docs/STATUS.md](docs/STATUS.md) for what it leaves unfinished.
+Scade isn't on the App Store. Download it from
+[Releases](https://github.com/tgmaurer/Scade/releases/latest) or build it
+yourself, and keep it in `/Applications` like any other app. See
+[docs/STATUS.md](docs/STATUS.md) for what is left unfinished.
 
 ## Why this exists
 
-It starts with wanting a grade tracker that works the way I want one to:
-weights that match how a course is actually graded, and the data in a file on
-my own machine rather than in somebody's account.
+I wanted a grade tracker that works the way I do: weights that match how a
+course is actually graded, and data kept in a file on my own machine instead
+of in someone else's account.
 
-[GradeMaster](https://github.com/tgmaurer/GradeMaster) was the first answer to
-that — an open-source grade manager for Windows: .NET MAUI and Blazor, drawing
-Bootstrap inside a WebView2 control, storing SQLite through Entity Framework
-Core. It is maintained and it still works. What changed is the machine it is
-used on every day, which is now a Mac.
+[GradeMaster](https://github.com/tgmaurer/GradeMaster) was my first attempt
+at that. It is an open-source grade manager for Windows, built with .NET MAUI
+and Blazor. It renders a Bootstrap UI inside a WebView2 control and stores its
+data in SQLite through Entity Framework Core. It is still maintained and it
+still works. What changed is that I now use a Mac every day.
 
-**A port was possible. I decided against it.** .NET MAUI targets Mac Catalyst,
-so the existing codebase could have been taken to Apple platforms; this was a
-choice rather than a constraint.
+**A port was possible, and I decided against it.** .NET MAUI targets Mac
+Catalyst, so the existing codebase could have been brought to Apple
+platforms. Nothing forced a rewrite.
 
-GradeMaster is also the older of the two, written earlier in my career, and it
-carries what that implies: Entity Framework Core trusted further than it
-earns, and early structural decisions that everything since has been built on.
-None of it is a hard lock to Windows — a web view drawing Bootstrap where a
-native toolkit exists, packaging shaped around one platform, an ORM that
-decides for itself what to write — but all of it would have come along, and
-all of it is cheaper to leave behind than to unpick. Running on macOS is not
-the same as belonging there.
+I wrote GradeMaster earlier in my career, and it shows. It relies on Entity
+Framework Core more than it should, and everything since has been built on a
+few early structural decisions. None of that ties it to Windows, but a port
+would have brought all of it along: a web view rendering Bootstrap where a
+native toolkit exists, packaging shaped around one platform, and an ORM that
+decides for itself what to write. Leaving those behind is cheaper than
+untangling them, and an app that merely runs on macOS doesn't feel like it
+belongs there.
 
-So I chose a fresh native app over a port: the same domain on a stack picked
-for the platform it runs on. That also let me answer a question a port would
-not have — how good an app an AI agent produces when the work is driven by a
-written specification instead of a conversation, and when that specification
-is itself derived from the codebase being replaced.
-[How it was built](#how-it-was-built) is the rest of that answer.
+So I wrote a new native app: the same domain, on a stack chosen for the
+platform it runs on. A rewrite also let me test something a port could not:
+how good an app an AI agent produces when it works from a written
+specification instead of a conversation, and when that specification is
+derived from the codebase being replaced.
+[How it was built](#how-it-was-built) describes how that went.
 
 | | GradeMaster | Scade |
 |---|---|---|
@@ -66,23 +66,23 @@ is itself derived from the codebase being replaced.
 | Install | Installer from Releases, ~1 GB | Zip from Releases or build it yourself, 4 MB |
 | Licence | GPL-3.0 | GPL-3.0 |
 
-What carried over is the domain — educations hold subjects, subjects hold
-grades, weights all the way up — and the judgement about what a screen needs
-to say. What did not carry over is the architecture, and in two places not
-even the behaviour: [SPEC.md](docs/SPEC.md) §3.2 weights each subject's
-contribution to its education where GradeMaster averages them evenly, and
-§3.4 rejects out-of-range input with a visible field error where GradeMaster
-silently clamped it. Both changes are recorded there with the reasoning.
+The domain carried over: educations hold subjects, subjects hold grades, and
+weights apply at both levels. So did the judgement about what each screen
+needs to show. The architecture did not, and in two places the behaviour
+changed as well. [SPEC.md](docs/SPEC.md) §3.2 weights each subject's
+contribution to its education, where GradeMaster averages subjects evenly.
+§3.4 rejects out-of-range input with a visible field error, where GradeMaster
+silently clamped it. The spec records the reasoning for both.
 
 ## Requirements
 
 - macOS 26.0 or later
-- An Apple Silicon Mac. Intel Macs have a separate build too, but support
-  for them is on its way out: macOS 26 is the last release Apple ships for
-  Intel, so that build is kept working and nothing more.
-- To build from source: Xcode 26 or later. You need the full app, because
-  the Command Line Tools alone aren't enough. No Apple ID or developer
-  account is needed, because the app is signed to run locally.
+- An Apple Silicon Mac. There is a separate build for Intel Macs, but macOS
+  26 is the last release Apple ships for Intel, so that build is kept working
+  and gets no further attention.
+- To build from source: Xcode 26 or later. You need the full Xcode app,
+  because the Command Line Tools alone aren't enough. You don't need an Apple
+  ID or a developer account, because the app is signed to run locally.
 
 ## Install
 
@@ -90,9 +90,10 @@ If you have Xcode, [building from source](#build-from-source) is simpler:
 one command picks the right build for your Mac, and there is no quarantine
 flag to clear.
 
-Each [release](https://github.com/tgmaurer/Scade/releases/latest) carries
-two zips. Pick the one for your Mac. Apple menu → **About This Mac** shows
-which kind you have: an Apple M-series chip, or an Intel processor.
+Each [release](https://github.com/tgmaurer/Scade/releases/latest) has two
+zips, one for each kind of Mac. To see which kind you have, open the Apple
+menu and choose **About This Mac**. It lists either an Apple M-series chip or
+an Intel processor.
 
 | Mac | Download |
 |---|---|
@@ -112,24 +113,24 @@ mv Scade.app /Applications/ &&
 sudo xattr -cr /Applications/Scade.app
 ```
 
-The `rm -rf` line removes any earlier version, and does nothing on a first
-install. `mv` won't replace an app that is already there. The `&&` between
-the lines means each step runs only if the one before it worked. If the
-unzip fails, your installed copy is left alone instead of being deleted with
-nothing to replace it.
+The `rm -rf` line removes any earlier version, because `mv` won't replace an
+app that is already there. On a first install it does nothing. The `&&`
+between the lines means each step runs only if the one before it worked, so
+if the unzip fails, your installed copy is left alone instead of being
+deleted with nothing to replace it.
 
 Safari unzips downloads on its own by default. If `Scade.app` is already in
 `~/Downloads`, leave out the `unzip Scade-*-macOS-arm64.zip &&` line.
 Otherwise `unzip` finds no zip, and the commands stop there.
 
 **The `xattr` line is required.** The download is not signed with a
-Developer ID or notarised by Apple. That costs a paid membership, and this
-app isn't being sold. Your browser marks every download with a quarantine
-flag, and Gatekeeper refuses to open an unnotarised app that has one. It
-usually says *"Scade" is damaged and can't be opened*, which is misleading,
-because the app isn't damaged. `xattr -cr` clears the flag, and after that
-Scade opens like any other app. Run it only on a copy you downloaded from
-this repository's Releases page.
+Developer ID or notarised by Apple, because both need a paid membership and
+this app isn't being sold. Your browser marks every download with a
+quarantine flag, and Gatekeeper refuses to open an unnotarised app that has
+one. The message is usually *"Scade" is damaged and can't be opened*, which
+is misleading, because the app isn't damaged. `xattr -cr` clears the flag,
+and after that Scade opens like any other app. Run it only on a copy you
+downloaded from this repository's Releases page.
 
 To update, quit Scade and run the same commands on the new zip. Your data
 is not inside the app, so replacing the app doesn't touch it.
@@ -210,26 +211,27 @@ One SQLite file, inside the app's sandbox container:
 ~/Library/Containers/com.tgmaurer.Scade/Data/Library/Application Support/Scade/scade.sqlite
 ```
 
-That path is not a detail you normally need — it matters when you restore a
-backup, below. Nothing else in the app writes outside its container except
-the backups you ask for.
+You don't normally need this path. It matters when you
+[restore a backup](#restoring). The only other place Scade writes to is the
+backup folder you choose.
 
 ## Backing up
 
-**Settings → Backup** (`⌘,`). Choose a folder once, then press **Back Up
+Open **Settings → Backup** (`⌘,`). Choose a folder once, then press **Back Up
 Now** whenever you want a copy.
 
-Choose a folder in **iCloud Drive** — say `iCloud Drive/Scade`. The point of
-a backup is to survive this Mac, and one written to this Mac's disk does not.
-The panel opens in iCloud Drive for that reason. Anywhere else works the same
-way if you would rather your grades not sync.
+A folder in **iCloud Drive** is the best choice, for example
+`iCloud Drive/Scade`. A backup should survive the loss of this Mac, and one
+that exists only on this Mac's disk won't. That is why the folder panel opens
+in iCloud Drive. Any other folder works the same way if you would rather not
+sync your grades.
 
-Scade cannot pick the folder for you: it is sandboxed, so it can only write
-where you have pointed it, and it remembers your choice as a security-scoped
-bookmark rather than a path.
+Scade can't pick the folder for you. It is sandboxed, so it can only write to
+a folder you have chosen, and it remembers that choice as a security-scoped
+bookmark instead of a path.
 
-Each backup is a dated folder — `Scade Backup 2026-08-27` — holding five
-files:
+Each backup is a dated folder, such as `Scade Backup 2026-08-27`, holding
+five files:
 
 | File | What it is |
 |---|---|
@@ -239,36 +241,39 @@ files:
 | `subjects.csv` | One row per subject, `educationId` pointing at its education |
 | `grades.csv` | One row per grade, `subjectId` pointing at its subject |
 
-**`overview.csv` is the one to open in a spreadsheet.** One row per grade,
-with the subject and education that place it spelled out on the same row, so
-there is nothing to join. The three tables under it keep the ids instead, and
-those are what a script or a re-import wants — but reading them means joining
-on `educationId` and `subjectId`, which Excel will do through Power Query and
-Numbers will not do at all.
+**`overview.csv` is the one to open in a spreadsheet.** It has one row per
+grade, with that grade's subject and education written out on the same row,
+so there is nothing to join. The other three CSVs keep ids instead, which is
+what a script or a re-import needs. Reading those by hand means joining on
+`educationId` and `subjectId`, which Excel does through Power Query and
+Numbers can't do at all.
 
-Nothing is missing from the flat sheet: an education with no subjects and a
-subject with no grades each still get a row, with the columns below them
+The overview leaves nothing out. An education with no subjects, or a subject
+with no grades, still gets a row, with the subject or grade columns left
 empty.
 
-Backing up twice in one day refreshes that day's folder rather than making a
-second one. Earlier days are never touched.
+Backing up twice in one day updates that day's folder instead of creating a
+second one. Folders from earlier days are never touched.
 
-The CSVs are for reading — a spreadsheet, a script, anything that outlives
-this app. They carry stored values rather than displayed ones, so `weight` is
-the multiplier the app calculates with: `1.0` is the `100%` you see on
-screen, `0.25` is `25%`. The two exceptions are `overview.csv`'s
-`subjectAverage` and `educationAverage`, the only computed columns in any of
-these files: they are rounded to two decimals, exactly as the app shows them,
-and an empty cell there means the same as `N/A` on screen. They are UTF-8 with a byte order mark and CRLF line
-endings, which is what Excel needs to read umlauts correctly on a
-double-click.
+The CSVs are for reading, whether in a spreadsheet, in a script, or in
+anything else that outlives this app. They hold values as the database stores
+them, so `weight` is the multiplier the app calculates with: `1.0` is the
+`100%` you see on screen, and `0.25` is `25%`. The two exceptions are
+`subjectAverage` and `educationAverage` in `overview.csv`, the only computed
+columns in any of these files. They are rounded to two decimals, exactly as
+the app shows them, and an empty cell there means the same as `N/A` on
+screen.
+
+All four CSVs are UTF-8 with a byte order mark and CRLF line endings, which
+is what Excel needs to read umlauts correctly when you double-click a file.
 
 ## Restoring
 
-There is no Import button. Restoring is a file copy, and it has one rule:
+There is no Import button. Restoring means copying one file while Scade is
+not running:
 
-1. **Quit Scade.** The app holds the database open, and will overwrite
-   whatever you put there if it is still running.
+1. **Quit Scade.** The app keeps the database open, and if it is still
+   running it will overwrite whatever you put there.
 2. Replace the live database with the one from your backup:
 
    ```sh
@@ -278,103 +283,111 @@ There is no Import button. Restoring is a file copy, and it has one rule:
 
 3. Open Scade. Everything from that backup is there.
 
-If you would rather not overwrite, move the current file aside first instead
-of deleting it — it is the only copy of anything you have not backed up.
+The current file is the only copy of anything you haven't backed up. If you
+might want it back, move it aside before step 2 instead of overwriting it.
 
 ## Repository layout
 
 | Path | What's in it |
 |---|---|
-| `App/` | The `App` target: opens the database and hands it over |
+| `App/` | The `App` target: opens the database and hands it to the view layer |
 | `ScadeKit/Sources/ScadeKit/` | Models, business logic, GRDB persistence |
 | `ScadeKit/Sources/ScadeUI/` | Every screen |
 | `ScadeKit/Tests/` | Unit tests for the logic and persistence |
 | `UITests/` | End-to-end tests |
-| `docs/` | The specs — start with `SPEC.md`, then `STATUS.md` |
+| `docs/` | The specs. Start with `SPEC.md`, then `STATUS.md` |
 
 ## Built with
 
-**Swift 6 and SwiftUI**, native the whole way down. No cross-platform
-runtime, no web view, no UI framework standing between the app and the
-system. Swift 6 language mode throughout, so data-race safety is checked by
-the compiler rather than left to convention — the view layer is main-actor
-by default and the domain layer is `Sendable` and isolated to nothing.
+Scade is written in **Swift 6 and SwiftUI** and is native throughout. It has
+no cross-platform runtime, no web view, and no third-party UI framework
+between the app and the system. The Swift 6 language mode is on everywhere,
+so the compiler checks data-race safety instead of leaving it to convention.
+The view layer is main-actor isolated by default, and the domain layer is
+`Sendable` with no actor isolation.
 
-SwiftUI draws every screen, and the menu bar, the toolbars and the Settings
-window are its own `Commands` and `Settings` scenes rather than hand-built
-imitations — so the app inherits macOS's behaviour instead of approximating
-it. The same code renders the iOS screens; see
-[docs/STATUS.md](docs/STATUS.md) for how far that got.
+SwiftUI draws every screen. The menu bar, the toolbars and the Settings
+window are built with SwiftUI's own `Commands` and `Settings` scenes, so the
+app gets standard macOS behaviour instead of a hand-built imitation of it.
+The same code renders the iOS screens; see [docs/STATUS.md](docs/STATUS.md)
+for how far that got.
 
-AppKit appears in four files, each of them somewhere SwiftUI has no
-equivalent: the backup folder panel (`NSOpenPanel`), Show in Finder
-(`NSWorkspace`), Toggle Sidebar, and window tabbing. UIKit appears nowhere
-at all.
+AppKit appears in five files, each for something SwiftUI has no equivalent
+for: the backup folder panel (`NSOpenPanel`), Show in Finder (`NSWorkspace`),
+Toggle Sidebar, window tabbing, and quitting when the last window closes.
+UIKit isn't used at all.
 
-Models, business logic and persistence sit in a Swift package target that
-imports no UI framework — 31 files, none of them touching SwiftUI — so every
-average and every validation rule is testable without a screen. Those tests
-use **Swift Testing**; the end-to-end tests drive the real app through
-**XCUITest**.
+Models, business logic and persistence live in a Swift package target of 31
+files that imports no UI framework, so every average and every validation
+rule can be tested without a screen. Those tests use **Swift Testing**. The
+end-to-end tests drive the real app through **XCUITest**.
 
-[GRDB.swift](https://github.com/groue/GRDB.swift) by Gwendal Roué — the SQLite
-toolkit the whole persistence layer sits on. MIT licensed. It is Scade's only
-dependency, and it is credited in the app as well, under **Settings → About**.
+The persistence layer is built on
+[GRDB.swift](https://github.com/groue/GRDB.swift) by Gwendal Roué, an
+MIT-licensed SQLite toolkit. It is Scade's only dependency, and it is also
+credited in the app under **Settings → About**.
 
 ## How it was built
 
-Most of this code was written by an AI agent — Claude Code — working against
-a written contract rather than a conversation. That is worth describing only
-because the method is visible in the repository and can be checked against it.
+Most of this code was written by an AI agent, Claude Code, working from a
+written specification instead of a conversation. I describe the method here
+because it is visible in the repository, so each claim below can be checked
+against it.
 
 **The specification came first, and it was derived from the old app.** The
-agent read GradeMaster's source and wrote [SPEC.md](docs/SPEC.md) from it —
+agent read GradeMaster's source and wrote [SPEC.md](docs/SPEC.md) from it,
 "merging architectural decisions with the functional/logic audit of the old
-app", as the document says at the top. That audit is what lets it separate
-GradeMaster's intentional rules from its accidents: §3.4 records that the old
-minimum of `0` on a grade value was unreachable code rather than a design
-decision, and drops it, while §3.1's weighting is kept because it was meant.
+app", as the document says at the top. That audit let the spec separate
+GradeMaster's intentional rules from its accidents. §3.4 records that the old
+minimum of `0` on a grade value was unreachable code, not a design decision,
+and drops it. §3.1 keeps the weighting, because that was intended.
 
-The result is 399 lines of what the app does — the schema, the two averaging
-formulas, validation rules field by field, screen by screen. It was committed
-with `CLAUDE.md` on 28 July 2026; the first feature pull request merged on 29
-July. Everything after that is argued against the document rather than against
-the last message in a chat. Three more joined it:
-[SPEC-POLISH.md](docs/SPEC-POLISH.md) for look and feel,
-[SPEC-BACKLOG.md](docs/SPEC-BACKLOG.md) for what is deliberately *not* built,
-and [STATUS.md](docs/STATUS.md) for where development stopped and why.
+The result is 399 lines describing what the app does: the schema, the two
+averaging formulas, the validation rules for every field, and every screen.
+It was committed together with `CLAUDE.md` on 28 July 2026, and the first
+feature pull request merged on 29 July. Every change since then has been
+judged against that document, not against the last message in a chat. Three
+more documents joined it later: [SPEC-POLISH.md](docs/SPEC-POLISH.md) for
+look and feel, [SPEC-BACKLOG.md](docs/SPEC-BACKLOG.md) for what is
+deliberately *not* built, and [STATUS.md](docs/STATUS.md) for where
+development stopped and why.
 
-**The constraints are standing, not per-prompt.** `CLAUDE.md` holds the rules
-the agent is held to on every task, and they are architectural rather than
-stylistic. No ORM change-tracking — a direct reaction to Entity Framework in
-GradeMaster: GRDB only, explicit queries, no ambient state. Business logic in
-one place, unit-tested, never duplicated across call sites. GradeMaster is a
-reference for *what* a screen must say and never for *how* it was built.
+**The constraints apply to every task.** `CLAUDE.md` holds the rules the
+agent must follow whatever the prompt says, and they are about architecture
+more than style:
 
-**Nothing is trusted because the model said it.** The package runs 297 tests.
-The averaging tests were themselves checked, by breaking the calculator four
-ways on purpose — dividing by count instead of total weight, rolling up raw
-grades instead of subject averages, applying a weight twice, counting an
-ungraded subject as zero — and confirming the suite caught each one. The
-migration suite starts from a literal copy of the schema that shipped, so
-editing the original migration in place cannot quietly keep it green.
+- No ORM change-tracking. This is a direct reaction to Entity Framework in
+  GradeMaster: GRDB only, explicit queries, no ambient state.
+- Business logic lives in one place, is unit-tested, and is never duplicated
+  across call sites.
+- GradeMaster is a reference for *what* a screen must say, never for *how* it
+  was built.
 
-**Claims are measured in the running app.** Help tags were verified by reading
-`AXHelp` back through the accessibility API rather than by watching for a
-tooltip; the schema migration was timed against a real database; the
+**Nothing is trusted just because the model said it.** The package runs 297
+tests. The averaging tests were themselves tested by breaking the calculator
+on purpose in four ways and confirming that the suite caught each one:
+dividing by count instead of total weight, rolling up raw grades instead of
+subject averages, applying a weight twice, and counting an ungraded subject
+as zero. The migration suite starts from a literal copy of the schema that
+shipped, so editing the original migration in place can't quietly keep the
+suite green.
+
+**Claims are checked in the running app.** Help tags were verified by reading
+`AXHelp` back through the accessibility API instead of watching for a
+tooltip. The schema migration was timed against a real database. The
 build-from-source instructions above were run end to end from a fresh clone.
 
-That last habit exists for a reason. The agent once concluded, from a tooltip
-that failed to appear, that one SwiftUI modifier had to be applied above
-another — and wrote it into both a code comment and the polish spec. It was
-wrong; a twenty-line probe app disproved it, and the correction is in the
-history. **An agent being confidently wrong is the normal case, not the
-exception, and a process that can't catch it is not a process.**
+That habit exists for a reason. The agent once concluded, from a tooltip that
+failed to appear, that one SwiftUI modifier had to be applied above another,
+and wrote that into both a code comment and the polish spec. It was wrong. A
+twenty-line probe app disproved it, and the correction is in the history.
+**An agent being confidently wrong is the normal case, so the process has to
+be built to catch it.**
 
-The division of labour, then: the agent wrote the specification and the code.
-The direction, the product decisions and the review that accepted or rejected
-each change were mine — and a specification is only a contract if somebody
-else is holding the other end of it.
+So the division of labour was this: the agent wrote the specification and the
+code. The direction, the product decisions and the review that accepted or
+rejected each change were mine. A specification only works as a contract when
+someone other than its author enforces it.
 
 ## Licence
 
