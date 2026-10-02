@@ -1,5 +1,8 @@
 {
   "enabledPlugins": {
     "swiftui-pro@swiftui-agent-skill": true
+  },
+  "attribution": {
+    "sessionUrl": false
   }
 }
