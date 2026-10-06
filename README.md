@@ -26,6 +26,12 @@ Scade isn't on the App Store. Download it from
 yourself, and keep it in `/Applications` like any other app. See
 [docs/STATUS.md](docs/STATUS.md) for what is left unfinished.
 
+**Maintenance.** Scade is finished enough for me to use every day, and I don't
+plan to develop it further. It isn't abandoned: I fix what breaks and keep it
+building and working, as needed, and nothing beyond that. The iOS app is
+unfinished and stays that way for now. Issues are welcome, but I can't promise
+a response time or that a feature request will be taken up.
+
 ## Why this exists
 
 I wanted a grade tracker that works the way I do: weights that match how a
